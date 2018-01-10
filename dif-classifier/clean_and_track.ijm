@@ -1,3 +1,11 @@
+//The purpose of this script is to clean up images using a median filter and background subtraction
+//followed by particle tracking via the MOSIAC particle tracking analysis tool.  
+
+//The analysis is set up to read input files from one folder, and output them into another.  The
+//user specifies a prefix (filename), and the code is carried out iteratively in two for loops.
+//It iterates over videos, then slices, which is defined by my current experimental setup.
+//The user can vary the for loop structure as needed.
+
 input =  'H:/Tracking_Videos/Gel_Studies/11_15_17_Gel_Study_37C_72pH/10mM/redo/crop/'
 output = 'H:/Tracking_Videos/Gel_Studies/11_15_17_Gel_Study_37C_72pH/10mM/redo/crop/Output/'
 filename = 'RED_PEG_37C_pH72_S1_1_'
