@@ -4,9 +4,13 @@ This project aims to take existing analyses of nanoparticle diffusion that I hav
 # Objective 1
 
 Develop a package to extract trajectory features from high-speed video of
+
 nanoparticles in the brain and to classify trajectories based on their
+
 diffusive behavior.  This package will be implemented primarily with Python,
+
 but will call on ImageJ packages including TrackMate and TrajClassifier.  We
+
 will use this package to analyze existing datasets of nanoparticle diffusion in
 the healthy developing brain.  We will automate this process to minimize
 computation time and increase reproducibility, and we will implement a data
