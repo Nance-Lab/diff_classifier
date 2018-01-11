@@ -1,5 +1,4 @@
 # diff-classifier
-
 This project aims to take existing analyses of nanoparticle diffusion that I have worked on previously and expand the analysis to additional features.  This project was done in conjunction with the eScience Institute at the University of Washington.
 
 # Objective 1
