@@ -29,7 +29,7 @@ are contained in the Detector Keys objects.  The following objects must be defin
 - KEY_TARGET_CHANNEL
 - KEY_THRESHOLD
 
-# Feature Filter
+# Spot Feature Filter
 This was the one I wanted to be sure to get into the nitty-gritty, because the example script only includes
 a single feature filter, quality.  What if you want to include multiple features?  These features are
 included in individual Factory files in the features/spot folder.
@@ -56,4 +56,109 @@ included in individual Factory files in the features/spot folder.
 **Spot Radius Estimator Factory**
 - ESTIMATED_DIAMETER
 
+**Spot Contrast Analyzer Factory**
+- CONTRAST
+
+**Spot Contrast and SNR Analyzer Factory**
+- CONTRAST
+- SNR (Signal/Noise Ratio)
+
 # Tracking
+Similar to the detection step, all the different tracking methods are contained in Factory files.  I identified the following methods currently available:
+
+- SimpleSparseLAPTrackerFactory
+- SarseLAPTrackerFactory
+- FastLAPTrackerFactory
+- LAPTrackerFactory
+- SimpleFastLAPTrackerFactory
+- KalmanTrackerFactory
+- NearestNeighborTrackerFactory
+- ManualTrackerFactory
+- SpotTrackerFactory
+
+All parameters for LAP Tracker-based methods are contained in the LAPTrackerFactor file:
+
+- KEY_ALLOW_GAP_CLOSING
+- KEY_ALLOW_TRACK_MERGING
+- KEY_ALLOW_TRACK_SPLITTING
+- KEY_ALTERNATIVE_LINKING_COST_FACTOR
+- KEY_BLOCKING_VALUE
+- KEY_CUTOFF_PERCENTILE
+- KEY_GAP_CLOSING_FEATURE_PENALTIES
+- KEY_GAP_CLOSING_MAX_DISTANCE
+- KEY_GAP_CLOSING_MAX_FRAME_GAP
+- KEY_LINKING_FEATURE_PENALTIES
+- KEY_LINKING_MAX_DISTANCE
+- KEY_MERGING_FEATURE_PENALTIES
+- KEY_MERGING_MAX_DISTANCE
+- KEY_SPLITTING_FEATURE_PENALTIES
+- KEY_SPLITTING_MAX_DISTANCE
+
+# Track Feature Filter
+After tracking has been completed, the user can filter trajectories based on the properties of the trajectories themselves, not individual spots.  These features are again contained in Factory files in features/track folder.
+
+**Track Spot Quality Feature Analyzer**
+- TRACK_MEAN_QUALITY
+- TRACK_MAX_QUALITY
+- TRACK_MIN_QUALITY
+- TRACK_MEDIAN_QUALITY
+- TRACK_STD_QUALITY
+
+**Track Speed Statistics Analyzer**
+- Velocity
+- TRACK_MEAN_SPEED
+- TRACK_MAX_SPEED
+- TRACK_MIN_SPEED
+- TRACK_MEDIAN_SPEED
+- TRACK_STD_SPEED
+
+**Track Location Analyzer**
+- Track Location
+- TRACK_X_LOCATION
+- TRACK_Y_LOCATION
+- TRACK_Z_LOCATION
+
+**Track Index Analyzer**
+- TRACK_INDEX
+- TRACK_ID
+
+**Track Duration Analyzer**
+- Track duration
+- TRACK_DURATION
+- TRACK_START
+- TRACK_STOP
+- TRACK_DISPLACEMENT
+
+**Track Branching Analyzer**
+- Branching analyzer
+- NUMBER_GAPS
+- LONGEST_GAP
+- NUMBER_SPLITS
+- NUMBER_MERGES
+- NUMBER_COMPLEX
+- NUMBER_SPOTS
+
+# Edge Features
+There aren't any examples including filtering based on edge features, and I don't remember seeing these in the GUI.  However, I will include them here.  Maybe it would be easy to include them in a script, if desired.  I'm not sure what an edge is really atm.
+
+**Edge Velocity Analyzer**
+- Edge velocity
+- VELOCITY
+- DISPLACEMENT
+
+**Edge Time Location Analyzer**
+- Edge mean location
+- EDGE_TIME
+- EDGE_X_LOCATION
+- EDGE_Y_LOCATION
+- EDGE_Z_LOCATION
+
+**Edge Target Analyzer**
+- Edge target
+- SPOT_SOURCE_ID
+- SPOT_TARGET_ID
+- LINK_COST
+
+Finally, I was able to locate the export as xml file in the actions directory, ExportTracksToXML.java
+
+
