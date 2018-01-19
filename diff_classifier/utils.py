@@ -17,7 +17,7 @@ def csv_to_pd(csvfname):
     
     return data
 
-def partition_im(tiffname, irows=4, icols=4, ires=512)
+def partition_im(tiffname, irows=4, icols=4, ires=512):
     test = sio.imread(tiffname)
     test2 = np.zeros((test.shape[0], 2048, 2048), dtype=test.dtype)
     test2[:, 0:2044, :] = test
