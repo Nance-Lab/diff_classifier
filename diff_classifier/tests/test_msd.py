@@ -6,15 +6,16 @@ import pandas.util.testing as pdt
 import numpy.testing as npt
 from diff_classifier.msd import all_msds, nth_diff, msd_calc
 
+
 def test_nth_diff():
 
     d = {'col1': [1, 2, 3, 4, 5]}
     df = pd.DataFrame(data=d)
 
     test_d = {'col1': [1, 1, 1, 1]}
-    test_df = pd.DataFrame(data=d)
+    test_df = pd.DataFrame(data=test_d)
 
-    pdt.assert_frame_equal(nth_diff(df['col1'], 1), test_df['col1'])
+    pdt.assert_series_equal(nth_diff(df['col1'], 1), test_df['col1'])
 
 
 def test_msd_calc():
