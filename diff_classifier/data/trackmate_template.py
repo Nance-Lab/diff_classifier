@@ -27,7 +27,7 @@ import fiji.plugin.trackmate.util.TMUtils as TMUtils
 
 # Get currently selected image
 #imp = WindowManager.getCurrentImage()
-imp = IJ.openImage({target_file})
+imp = IJ.openImage('{target_file}')
 #imp = IJ.openImage('/home/ubuntu/data/RED_nPEG_37C_pH72_S1_1_1_2.tif')
 #imp.show()
 
