@@ -64,6 +64,7 @@ def track(target, out_file, template=None):
     fid.write(script.format(target_file=target))
     fid.close()
     cmd = "%s --ij2 --headless --run %s"%(fijibin.BIN, tf.name)
-    sp = subprocess.run(cmd, stdout=subprocess.PIPE)
+    sp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     fid = open(out_file, 'w')
     fid.write(sp.stdout.decode())
+    fid.close()
