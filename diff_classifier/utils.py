@@ -4,6 +4,21 @@ import skimage.io as sio
 
 
 def csv_to_pd(csvfname):
+    """
+    csv_to_pd(csvfname)
+
+    Reads Trackmate csv output file and converts to a pandas dataframe.
+
+    Parameters
+    ----------
+
+    Returns
+    ----------
+
+    Examples
+    ----------
+
+    """
     csvfile = open(csvfname)
 
     line = 'test'
