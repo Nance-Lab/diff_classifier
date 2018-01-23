@@ -41,7 +41,7 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
                        new_image)
 
 
-def track(target, out_file, template=None):
+def track(target, out_file, template=None, fiji_bin=None):
     """
 
     target : str
@@ -58,12 +58,14 @@ def track(target, out_file, template=None):
                            'data',
                            'trackmate_template.py')
 
+    if fiji_bin is None:
+        fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
+
     script = ''.join(open(template).readlines())
     tf = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tf.name, 'w')
     fid.write(script.format(target_file=target))
     fid.close()
-    fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tf.name)
     print(cmd)
     sp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
