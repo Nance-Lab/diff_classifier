@@ -11,12 +11,16 @@ def csv_to_pd(csvfname):
 
     Parameters
     ----------
+    csvfname : Output csv from a file similar to trackmate_template.  Must
+        include line 'Data starts here.\n' line in order to parse correctly.
 
     Returns
     ----------
+    data : pandas dataframe containing all trajectories from csvfname.
 
     Examples
     ----------
+    >>> data = csv_to_pd('../data/test.csv')
 
     """
     csvfile = open(csvfname)
