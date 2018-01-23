@@ -40,8 +40,8 @@ def nth_diff(dataframe, n=1):
     Name: col1, dtype: int64
     """
 
-    assert type(dataframe) == 'pandas.core.frame.DataFrame', "dataframe must be a pandas dataframe."
-    assert type(n) == 'int', "n must be an integer."
+    assert type(dataframe) == pd.core.series.Series, "dataframe must be a pandas dataframe."
+    assert type(n) == int, "n must be an integer."
 
     test1 = dataframe[:-n].reset_index(drop=True)
     test2 = dataframe[n:].reset_index(drop=True)
@@ -74,13 +74,13 @@ def msd_calc(track):
     array([  0., 2., 8., 18., 32.])
     """
 
-    assert type(track['Frame']) == 'pandas.core.series.Series', "track must contain column 'Frames'"
-    assert type(track['X']) == 'pandas.core.series.Series', "track must contain column 'X'"
-    assert type(track['Y']) == 'pandas.core.series.Series', "track must contain column 'Y'"
+    assert type(track['Frame']) == pd.core.series.Series, "track must contain column 'Frame'"
+    assert type(track['X']) == pd.core.series.Series, "track must contain column 'X'"
+    assert type(track['Y']) == pd.core.series.Series, "track must contain column 'Y'"
     assert track.shape[0] > 0, "track is empty"
-    assert track['Frame'].dtype == 'int64', "Data in 'Frame' must be if type int64."
-    assert track['X'].dtype == 'int64', "Data in 'X' must be if type int64."
-    assert track['Y'].dtype == 'int64', "Data in 'Y' must be if type int64."
+    assert track['Frame'].dtype == np.dtype('int64'), "Data in 'Frame' must be if type int64."
+    assert track['X'].dtype == np.dtype('int64'), "Data in 'X' must be if type int64."
+    assert track['Y'].dtype == np.dtype('int64'), "Data in 'Y' must be if type int64."
 
     length = track.shape[0]
     msd = np.zeros(length)
@@ -99,7 +99,7 @@ def msd_calc(track):
 
 def all_msds(data):
     """
-    Returns numpy array containing MSD data of all tracks in a trajectory pandas datframe.
+    Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.
 
     Parameters
     ----------
@@ -122,15 +122,15 @@ def all_msds(data):
     array([0., 2., 8., 18., 32., 0., 2., 8., 18., 32.])
     """
 
-    assert type(data['Frame']) == 'pandas.core.series.Series', "data must contain column 'Frames'"
-    assert type(data['Track_ID']) == 'pandas.core.series.Series', "data must contain column 'Track_ID'"
-    assert type(data['X']) == 'pandas.core.series.Series', "data must contain column 'X'"
-    assert type(data['Y']) == 'pandas.core.series.Series', "data must contain column 'Y'"
+    assert type(data['Frame']) == pd.core.series.Series, "data must contain column 'Frame'"
+    assert type(data['Track_ID']) == pd.core.series.Series, "data must contain column 'Track_ID'"
+    assert type(data['X']) == pd.core.series.Series, "data must contain column 'X'"
+    assert type(data['Y']) == pd.core.series.Series, "data must contain column 'Y'"
     assert data.shape[0] > 0, "data is empty"
-    assert data['Frame'].dtype == 'int64', "Data in 'Frame' must be if type int64."
-    assert data['Track_ID'].dtype == 'int64', "Data in 'Track_ID' must be if type int64."
-    assert data['X'].dtype == 'int64', "Data in 'X' must be if type int64."
-    assert data['Y'].dtype == 'int64', "Data in 'Y' must be if type int64."
+    assert data['Frame'].dtype == np.dtype('int64'), "Data in 'Frame' must be if type int64."
+    assert data['Track_ID'].dtype == np.dtype('int64'), "Data in 'Track_ID' must be if type int64."
+    assert data['X'].dtype == np.dtype('int64'), "Data in 'X' must be if type int64."
+    assert data['Y'].dtype == np.dtype('int64'), "Data in 'Y' must be if type int64."
 
     trackids = data.Track_ID.unique()
     partcount = trackids.shape[0]
