@@ -6,7 +6,6 @@ env:
   - PIP_DEPS="pytest coveralls pytest-cov flake8"
 
 python:
-- '2.7'
 - '3.6'
 
 install:
