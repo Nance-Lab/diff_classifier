@@ -78,12 +78,13 @@ def msd_calc(track):
     assert type(track['X']) == pd.core.series.Series, "track must contain column 'X'"
     assert type(track['Y']) == pd.core.series.Series, "track must contain column 'Y'"
     assert track.shape[0] > 0, "track is empty"
-    assert track['Frame'].dtype == np.dtype('int64'), "Data in 'Frame' must be if type int64."
-    assert track['X'].dtype == np.dtype('int64'), "Data in 'X' must be if type int64."
-    assert track['Y'].dtype == np.dtype('int64'), "Data in 'Y' must be if type int64."
+    assert track['Frame'].dtype == np.int64 or np.float64, "Data in 'Frame' must be if type int64."
+    assert track['X'].dtype == np.int64 or np.float64, "Data in 'X' must be if type int64."
+    assert track['Y'].dtype == np.int64 or np.float64, "Data in 'Y' must be if type int64."
 
     length = track.shape[0]
     msd = np.zeros(length)
+    gauss = np.zeros(length)
 
     for frame in range(0, length-1):
         # creates array to ignore when particles skip frames.
@@ -93,8 +94,9 @@ def msd_calc(track):
         y = ma.array(np.square(nth_diff(track['Y'], n=frame+1)), mask=inc.mask)
 
         msd[frame+1] = ma.mean(x + y)
+        gauss[frame+1] = ma.mean(x**2 + y**2)/(2*(msd[frame+1]**2))
 
-    return msd
+    return msd, gauss
 
 
 def all_msds(data):
@@ -127,14 +129,15 @@ def all_msds(data):
     assert type(data['X']) == pd.core.series.Series, "data must contain column 'X'"
     assert type(data['Y']) == pd.core.series.Series, "data must contain column 'Y'"
     assert data.shape[0] > 0, "data is empty"
-    assert data['Frame'].dtype == np.dtype('int64'), "Data in 'Frame' must be if type int64."
-    assert data['Track_ID'].dtype == np.dtype('int64'), "Data in 'Track_ID' must be if type int64."
-    assert data['X'].dtype == np.dtype('int64'), "Data in 'X' must be if type int64."
-    assert data['Y'].dtype == np.dtype('int64'), "Data in 'Y' must be if type int64."
+    assert data['Frame'].dtype == np.int64 or np.float64, "Data in 'Frame' must be if type int64."
+    assert data['Track_ID'].dtype == np.int64 or np.float64, "Data in 'Track_ID' must be if type int64."
+    assert data['X'].dtype == np.int64 or np.float64, "Data in 'X' must be if type int64."
+    assert data['Y'].dtype == np.int64 or np.float64, "Data in 'Y' must be if type int64."
 
     trackids = data.Track_ID.unique()
     partcount = trackids.shape[0]
-    msds = np.zeros(data.shape[0])
+    data['MSDs'] = np.zeros(data.shape[0])
+    data['Gauss'] = np.zeros(data.shape[0])
 
     for particle in range(0, partcount):
         single_track = data.loc[data['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
@@ -145,5 +148,6 @@ def all_msds(data):
         else:
             index1 = index2
             index2 = index1 + single_track.shape[0]
-        msds[index1:index2] = msd_calc(single_track)
-    return msds
+        data['MSDs'][index1:index2], data['Gauss'][index1:index2] = msd_calc(single_track)
+        data['Frame'][index1:index2] = data['Frame'][index1:index2] - (data['Frame'][index1] - 1)
+    return data
