@@ -46,8 +46,10 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
     return names
 
 
-def track(target, out_file, template=None, fiji_bin=None, quality=10, median_intensity=10, snr=0.5, linking_max_distance=10,
-          gap_closing_max_distance=10, max_frame_gap=3, track_displacement=5):
+def track(target, out_file, template=None, fiji_bin=None, radius=7.0, threshold=1.0, 
+          do_median_filtering=True, quality=10.0, median_intensity=10.0, snr=0.5, 
+          linking_max_distance=10., gap_closing_max_distance=10., max_frame_gap=3.0,
+          track_displacement=5.0):
     """
 
     target : str
@@ -74,9 +76,12 @@ def track(target, out_file, template=None, fiji_bin=None, quality=10, median_int
     script = ''.join(open(template).readlines())
     tf = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tf.name, 'w')
-    fid.write(script.format(target_file=target, quality=quality, median_intensity=median_intensity, snr=snr,
-                            linking_max_distance=linking_max_distance, gap_closing_max_distance=gap_closing_max_distance,
-                            max_frame_gap=max_frame_gap, track_displacement=track_displacement))
+    fid.write(script.format(target_file=target, radius=str(radius), threshold=str(threshold),
+                            do_median_filtering=str(do_median_filtering), quality=str(quality),
+                            median_intensity=str(median_intensity), snr=str(snr),
+                            linking_max_distance=str(linking_max_distance),
+                            gap_closing_max_distance=str(gap_closing_max_distance),
+                            max_frame_gap=str(max_frame_gap), track_displacement=str(track_displacement)))
     fid.close()
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tf.name)
     print(cmd)
