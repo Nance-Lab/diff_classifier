@@ -1,7 +1,7 @@
 diff_classifier/__pycache__
 *.csv
 *.tif
-diff_classifier/notebooks/.ipynb_checkpoints
+diff_classifier/notebooks/.ipynb_checkpoints/*
 diff_classifier/tests/.cache
 diff_classifier/tests/__pycache__
 *-checkpoint.ipynb
