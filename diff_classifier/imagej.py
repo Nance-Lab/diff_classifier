@@ -34,15 +34,20 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
     test2[:, 0:2044, :] = test
 
     new_image = np.zeros((test.shape[0], ires, ires), dtype=test.dtype)
+    names = []
 
     for row in range(irows):
         for col in range(icols):
             new_image = test2[:, row*ires:(row+1)*ires, col*ires:(col+1)*ires]
-            sio.imsave(tiffname.split('.tif')[0] + '_%s_%s.tif' % (row, col),
-                       new_image)
+            current = tiffname.split('.tif')[0] + '_%s_%s.tif' % (row, col)
+            sio.imsave(current, new_image)
+            names.append(current)
+    
+    return names
 
 
-def track(target, out_file, template=None, fiji_bin=None):
+def track(target, out_file, template=None, fiji_bin=None, quality=10, median_intensity=10, snr=0.5, linking_max_distance=10,
+          gap_closing_max_distance=10, max_frame_gap=3, track_displacement=5):
     """
 
     target : str
@@ -69,7 +74,9 @@ def track(target, out_file, template=None, fiji_bin=None):
     script = ''.join(open(template).readlines())
     tf = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tf.name, 'w')
-    fid.write(script.format(target_file=target))
+    fid.write(script.format(target_file=target, quality=quality, median_intensity=median_intensity, snr=snr,
+                            linking_max_distance=linking_max_distance, gap_closing_max_distance=gap_closing_max_distance,
+                            max_frame_gap=max_frame_gap, track_displacement=track_displacement))
     fid.close()
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tf.name)
     print(cmd)
