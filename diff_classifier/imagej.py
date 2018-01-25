@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 import os.path as op
 import skimage.io as sio
 import subprocess
@@ -59,7 +60,11 @@ def track(target, out_file, template=None, fiji_bin=None):
                            'trackmate_template.py')
 
     if fiji_bin is None:
-        fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
+        if sys.platform == "darwin":
+            fiji_bin = op.join(
+                '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
+        elif sys.platform.startswith("linux"):
+            fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
 
     script = ''.join(open(template).readlines())
     tf = tempfile.NamedTemporaryFile(suffix=".py")
