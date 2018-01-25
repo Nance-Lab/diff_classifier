@@ -52,10 +52,10 @@ settings.setFrom(imp)
 settings.detectorFactory = DogDetectorFactory()
 settings.detectorSettings = {{
     DetectorKeys.KEY_DO_SUBPIXEL_LOCALIZATION : True,
-    DetectorKeys.KEY_RADIUS : 2.5,
+    DetectorKeys.KEY_RADIUS : {radius},
     DetectorKeys.KEY_TARGET_CHANNEL : 1,
-    DetectorKeys.KEY_THRESHOLD : 5.,
-    DetectorKeys.KEY_DO_MEDIAN_FILTERING : False,
+    DetectorKeys.KEY_THRESHOLD : {threshold},
+    DetectorKeys.KEY_DO_MEDIAN_FILTERING : {do_median_filtering},
 }}
 
 # Configure tracker
