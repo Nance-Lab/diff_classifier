@@ -61,9 +61,9 @@ settings.detectorSettings = {{
 # Configure tracker
 settings.trackerFactory = SparseLAPTrackerFactory()
 settings.trackerSettings = LAPUtils.getDefaultLAPSettingsMap()
-settings.trackerSettings['LINKING_MAX_DISTANCE'] = 10.0
-settings.trackerSettings['GAP_CLOSING_MAX_DISTANCE']=10.0
-settings.trackerSettings['MAX_FRAME_GAP']= 3
+settings.trackerSettings['LINKING_MAX_DISTANCE'] = {linking_max_distance}
+settings.trackerSettings['GAP_CLOSING_MAX_DISTANCE']={gap_closing_max_distance}
+settings.trackerSettings['MAX_FRAME_GAP']= {max_frame_gap}
 
 # Add the analyzers for some spot features.
 # You need to configure TrackMate with analyzers that will generate
@@ -76,11 +76,11 @@ settings.trackerSettings['MAX_FRAME_GAP']= 3
 settings.addSpotAnalyzerFactory(SpotIntensityAnalyzerFactory())
 settings.addSpotAnalyzerFactory(SpotContrastAndSNRAnalyzerFactory())
 
-filter2 = FeatureFilter('QUALITY', 10, True)
+filter2 = FeatureFilter('QUALITY', {quality}, True)
 settings.addSpotFilter(filter2)
-filter3 = FeatureFilter('MEDIAN_INTENSITY', 10, True)
+filter3 = FeatureFilter('MEDIAN_INTENSITY', {median_intensity}, True)
 settings.addSpotFilter(filter3)
-filter4 = FeatureFilter('SNR', 0.5, True)
+filter4 = FeatureFilter('SNR', {snr}, True)
 settings.addSpotFilter(filter4)
 
 
@@ -88,7 +88,7 @@ settings.addSpotFilter(filter4)
 settings.addTrackAnalyzer(TrackSpeedStatisticsAnalyzer())
 settings.addTrackAnalyzer(TrackDurationAnalyzer())
 
-filter5 = FeatureFilter('TRACK_DISPLACEMENT', 5, True)
+filter5 = FeatureFilter('TRACK_DISPLACEMENT', {track_displacement}, True)
 settings.addTrackFilter(filter5)
 
 settings.initialSpotFilterValue = 1
