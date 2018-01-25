@@ -1,7 +1,7 @@
 import numpy as np
+import sys
 import os.path as op
 import skimage.io as sio
-import fijibin
 import subprocess
 import tempfile
 import diff_classifier as dc
@@ -38,10 +38,11 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
     for row in range(irows):
         for col in range(icols):
             new_image = test2[:, row*ires:(row+1)*ires, col*ires:(col+1)*ires]
-            sio.imsave(tiffname.split('.tif')[0] + '_%s_%s.tif' % (row, col), new_image)
+            sio.imsave(tiffname.split('.tif')[0] + '_%s_%s.tif' % (row, col),
+                       new_image)
 
 
-def track(target, out_file, template=None):
+def track(target, out_file, template=None, fiji_bin=None):
     """
 
     target : str
@@ -58,12 +59,21 @@ def track(target, out_file, template=None):
                            'data',
                            'trackmate_template.py')
 
+    if fiji_bin is None:
+        if sys.platform == "darwin":
+            fiji_bin = op.join(
+                '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
+        elif sys.platform.startswith("linux"):
+            fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
+
     script = ''.join(open(template).readlines())
     tf = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tf.name, 'w')
     fid.write(script.format(target_file=target))
     fid.close()
-    cmd = "%s --ij2 --headless --run %s"%(fijibin.BIN, tf.name)
-    sp = subprocess.run(cmd, stdout=subprocess.PIPE)
+    cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tf.name)
+    print(cmd)
+    sp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     fid = open(out_file, 'w')
     fid.write(sp.stdout.decode())
+    fid.close()
