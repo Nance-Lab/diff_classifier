@@ -81,6 +81,7 @@ settings.addSpotAnalyzerFactory(SpotContrastAndSNRAnalyzerFactory())
 
 filter2 = FeatureFilter('QUALITY', {quality}, True)
 settings.addSpotFilter(filter2)
+
 #filter3 = FeatureFilter('MEDIAN_INTENSITY', {median_intensity}, False)
 #settings.addSpotFilter(filter3)
 #filter4 = FeatureFilter('SNR', {snr}, True)
@@ -94,7 +95,7 @@ settings.addTrackAnalyzer(TrackDurationAnalyzer())
 #filter5 = FeatureFilter('TRACK_DISPLACEMENT', {track_displacement}, True)
 #settings.addTrackFilter(filter5)
 
-settings.initialSpotFilterValue = 0
+settings.initialSpotFilterValue = 1
 
 print(str(settings))
 
@@ -123,7 +124,7 @@ if not ok:
 # Display results
 #----------------
 
-#model.getLogger().log('Found ' + str(model.getTrackModel().nTracks(True)) + ' tracks.')
+model.getLogger().log('Found ' + str(model.getTrackModel().nTracks(True)) + ' tracks.')
 
 selectionModel = SelectionModel(model)
 #displayer =  HyperStackDisplayer(model, selectionModel, imp)
