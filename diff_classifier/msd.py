@@ -63,6 +63,7 @@ def msd_calc(track):
     ----------
     msd : numpy array the same length as track containing the calculated MSDs using the
           formula MSD = <(x-x0)**2>
+    gauss : numpy array the same length as track containing the calculated Gaussianity
 
     Examples
     ----------
@@ -71,7 +72,8 @@ def msd_calc(track):
              'Y': [6, 7, 8, 9, 10]}
     >>> df = pd.DataFrame(data=d)
     >>> msd_calc(df)
-    array([  0., 2., 8., 18., 32.])
+    (array([  0.,   2.,   8.,  18.,  32.]),
+     array([ 0.  ,  0.25,  0.25,  0.25,  0.25]))
     """
 
     assert type(track['Frame']) == pd.core.series.Series, "track must contain column 'Frame'"
@@ -121,7 +123,6 @@ def all_msds(data):
              'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
     >>> df = pd.DataFrame(data=d)
     >>> all_msds(df)
-    array([0., 2., 8., 18., 32., 0., 2., 8., 18., 32.])
     """
 
     assert type(data['Frame']) == pd.core.series.Series, "data must contain column 'Frame'"
@@ -148,6 +149,8 @@ def all_msds(data):
         else:
             index1 = index2
             index2 = index1 + single_track.shape[0]
-        data['MSDs'][index1:index2], data['Gauss'][index1:index2] = msd_calc(single_track)
-        data['Frame'][index1:index2] = data['Frame'][index1:index2] - (data['Frame'][index1] - 1)
+        #data['MSDs'][index1:index2], data['Gauss'][index1:index2] = msd_calc(single_track)
+        #data['Frame'][index1:index2] = data['Frame'][index1:index2] - (data['Frame'][index1] - 1)
+        data.loc[:, 'MSDs'][index1:index2], data.loc[:, 'Gauss'][index1:index2] = msd_calc(single_track)
+        data.loc[:, 'Frame'][index1:index2] = data.loc[:, 'Frame'][index1:index2] - (data.loc[:, 'Frame'][index1] - 1)
     return data
