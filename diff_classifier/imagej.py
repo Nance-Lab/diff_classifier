@@ -46,10 +46,10 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
     return names
 
 
-def track(target, out_file, template=None, fiji_bin=None, radius=7.0, threshold=1.0, 
-          do_median_filtering=True, quality=10.0, median_intensity=10.0, snr=0.5, 
-          linking_max_distance=10., gap_closing_max_distance=10., max_frame_gap=3.0,
-          track_displacement=5.0):
+def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=5., 
+          do_median_filtering=False, quality=30.0, median_intensity=55000.0, snr=0.0, 
+          linking_max_distance=10.0, gap_closing_max_distance=10.0, max_frame_gap=3,
+          track_displacement=0.0):
     """
 
     target : str
@@ -64,7 +64,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=7.0, threshold=
     if template is None:
         template = op.join(op.split(dc.__file__)[0],
                            'data',
-                           'trackmate_template.py')
+                           'trackmate_template3.py')
 
     if fiji_bin is None:
         if sys.platform == "darwin":
