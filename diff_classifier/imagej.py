@@ -85,7 +85,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=
     fid.close()
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tf.name)
     print(cmd)
-    sp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
+    sp = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     fid = open(out_file, 'w')
     fid.write(sp.stdout.decode())
     fid.close()
