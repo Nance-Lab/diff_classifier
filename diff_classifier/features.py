@@ -511,7 +511,7 @@ def boundedness(track, framerate=1):
     r = np.max(distance)/2
     N = df['Frame'][df['Frame'].shape[0]-1]
     f = N*framerate
-    D = df['MSDs'][length-1]/(4*f)
+    D = df['MSDs'][2]/(4*f)
 
     B = D*f/(r**2)
     Df = np.log(N)/np.log(N*2*r/L)
@@ -623,25 +623,26 @@ def msd_ratio(track, n1=3, n2=100):
     return ratio
 
 
-def calculate_features(df):
+def calculate_features(df, framerate=1):
 
     # Skeleton of Trajectory features metadata table.
     # Builds entry for each unique Track ID.
-    die = {'Track_ID': df.Track_ID.unique(),
-          'alpha': df.Track_ID.unique(),
-          'D_fit': df.Track_ID.unique(),
-          'kurtosis': df.Track_ID.unique(),
-          'asymmetry1': df.Track_ID.unique(),
-          'asymmetry2': df.Track_ID.unique(),
-          'asymmetry3': df.Track_ID.unique(),
-          'AR': df.Track_ID.unique(),
-          'elongation': df.Track_ID.unique(),
-          'boundedness': df.Track_ID.unique(),
-          'fractal_dim': df.Track_ID.unique(),
-          'trappedness': df.Track_ID.unique(),
-          'efficiency': df.Track_ID.unique(),
-          'straightness': df.Track_ID.unique(),
-          'MSD_ratio': df.Track_ID.unique()}
+    holder = df.Track_ID.unique().astype(float)
+    die = {'Track_ID': holder,
+          'alpha': holder,
+          'D_fit': holder,
+          'kurtosis': holder,
+          'asymmetry1': holder,
+          'asymmetry2': holder,
+          'asymmetry3': holder,
+          'AR': holder,
+          'elongation': holder,
+          'boundedness': holder,
+          'fractal_dim': holder,
+          'trappedness': holder,
+          'efficiency': holder,
+          'straightness': holder,
+          'MSD_ratio': holder}
     di = pd.DataFrame(data=die)
 
     trackids = df.Track_ID.unique()
@@ -651,12 +652,15 @@ def calculate_features(df):
     for particle in range(0, partcount):
         single_track = df.loc[df['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
                                                                                  ascending=[1, 1]).reset_index(drop=True)
-        di['alpha'], di['D_fit'] = alpha_calc(single_track)
-        di['kurtosis'] = kurtosis(single_track)
-        l1, l2, di['asymmetry1'], di['asymmetry2'], di['asymmetry3'] = asymmetry(single_track)
-        di['AR'], di['elongation'] = aspectratio(single_track)
-        di['boundedness'], di['fractal_dim'], di['trappedness'] = boundedness(single_track)
-        di['efficiency'], di['straightness'] = efficiency(single_track)
-        di['MSD_ratio'] = msd_ratio(single_track, 2, single_track['Frame'][single_track.shape[0]-2])
+        di['alpha'][particle], di['D_fit'][particle] = alpha_calc(single_track)
+        di['kurtosis'][particle] = kurtosis(single_track)
+        l1, l2, di['asymmetry1'][particle], di['asymmetry2'][particle], di['asymmetry3'][particle] = asymmetry(single_track)
+        di['AR'][particle], di['elongation'][particle] = aspectratio(single_track)
+        di['boundedness'][particle], di['fractal_dim'][particle], di['trappedness'][particle] = boundedness(single_track, framerate)
+        di['efficiency'][particle], di['straightness'][particle] = efficiency(single_track)
+        if single_track['Frame'][single_track.shape[0]-2] > 2:
+            di['MSD_ratio'][particle] = msd_ratio(single_track, 2, single_track['Frame'][single_track.shape[0]-2])
+        else:
+            di['MSD_ratio'][particle] = 0
     
     return di

@@ -2,6 +2,10 @@ diff_classifier/__pycache__
 *.csv
 *.tif
 diff_classifier/notebooks/.ipynb_checkpoints/*
-diff_classifier/tests/.cache
+*.cache
 diff_classifier/tests/__pycache__
 *-checkpoint.ipynb
+*.pyc
+*.egg-info
+notebooks/cloudknot_docker*
+
