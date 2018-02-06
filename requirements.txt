@@ -1,5 +1,4 @@
 numpy
 scipy
 pandas
-scikit_image
-fijibin
+scikit-image
