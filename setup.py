@@ -22,7 +22,8 @@ opts = dict(name=NAME,
             platforms=PLATFORMS,
             version=VERSION,
             install_requires=REQUIRES,
-            requires=REQUIRES)
+            requires=REQUIRES,
+            package_data=PACKAGE_DATA)
 
 
 if __name__ == '__main__':
