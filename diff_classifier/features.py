@@ -511,7 +511,7 @@ def boundedness(track, framerate=1):
     r = np.max(distance)/2
     N = df['Frame'][df['Frame'].shape[0]-1]
     f = N*framerate
-    D = df['MSDs'][length-1]/(4*f)
+    D = df['MSDs'][2]/(4*f)
 
     B = D*f/(r**2)
     Df = np.log(N)/np.log(N*2*r/L)
@@ -519,16 +519,17 @@ def boundedness(track, framerate=1):
 
     return B, Df, pf
 
+
 def efficiency(track):
     """
     Calculates the efficiency and straitness of the input track
-    
+
     Parameters
     ----------
     track : pandas DataFrame
         At a minimum, must contain a Frames and a MSDs column.  The function
         msd_calc can be used to generate the correctly formatted pd dataframe.
-    
+
     Returns
     ----------
     eff : numpy.float64
@@ -539,7 +540,7 @@ def efficiency(track):
         Relates the net displacement L to teh sum of step lengths and is
         defined as:
         S = |x(N-1)-x(0)|/SUM(|x(i) - x(i-1)|
-    
+
     Examples
     ----------
     >>> frames = 10
@@ -550,7 +551,7 @@ def efficiency(track):
     >>> df['MSDs'], df['Gauss'] = msd_calc(df)
     >>> ft.efficiency(df)
     (9.0, 0.9999999999999999)
-    
+
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
                    'X': np.sin(np.linspace(1, frames, frames))+3,
@@ -560,15 +561,15 @@ def efficiency(track):
     >>> ft.efficiency(df)
     (0.46192924086141945, 0.22655125514290225)
     """
-    
+
     df = track
     length = df.shape[0]
     num = (nth_diff(df['X'], length-1)**2 + nth_diff(df['Y'], length-1)**2)[0]
     num2 = np.sqrt(num)
-    
+
     den = np.sum(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2)
     den2 = np.sum(np.sqrt(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2))
-    
+
     eff = num/den
     strait = num2/den2
     return eff, strait
@@ -577,7 +578,7 @@ def efficiency(track):
 def msd_ratio(track, n1=3, n2=100):
     """
     Calculates the MSD ratio of the input track at the specified frames.
-    
+
     Parameters
     ----------
     track : pandas DataFrame
@@ -587,7 +588,7 @@ def msd_ratio(track, n1=3, n2=100):
         First frame at which to calculate the MSD ratio.
     n2 : int
         Last frame at which to calculate the MSD ratio.
-        
+
     Returns
     ----------
     ratio: numpy.float64
@@ -595,7 +596,7 @@ def msd_ratio(track, n1=3, n2=100):
         [MSD(n1)/MSD(n2)] - [n1/n2]
         where n1 < n2.  For Brownian motion, it is 0; for restricted motion it
         is < 0.  For directed motion it is > 0.
-    
+
     Examples
     ----------
     >>> frames = 10
@@ -606,7 +607,7 @@ def msd_ratio(track, n1=3, n2=100):
     >>> df['MSDs'], df['Gauss'] = msd_calc(df)
     >>> ft.msd_ratio(df, 1, 9)
     -0.18765432098765433
-    
+
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.sin(np.linspace(1, frames, frames))+3,
@@ -616,47 +617,50 @@ def msd_ratio(track, n1=3, n2=100):
     >>> ft.msd_ratio(df, 1, 9)
     0.04053708075268797
     """
-    
+
     df = track
     assert n1 < n2, "n1 must be less than n2"
     ratio = (df['MSDs'][n1]/df['MSDs'][n2]) - (df['Frame'][n1]/df['Frame'][n2])
     return ratio
 
 
-def calculate_features(df):
+def calculate_features(df, framerate=1):
 
     # Skeleton of Trajectory features metadata table.
     # Builds entry for each unique Track ID.
-    die = {'Track_ID': df.Track_ID.unique(),
-          'alpha': df.Track_ID.unique(),
-          'D_fit': df.Track_ID.unique(),
-          'kurtosis': df.Track_ID.unique(),
-          'asymmetry1': df.Track_ID.unique(),
-          'asymmetry2': df.Track_ID.unique(),
-          'asymmetry3': df.Track_ID.unique(),
-          'AR': df.Track_ID.unique(),
-          'elongation': df.Track_ID.unique(),
-          'boundedness': df.Track_ID.unique(),
-          'fractal_dim': df.Track_ID.unique(),
-          'trappedness': df.Track_ID.unique(),
-          'efficiency': df.Track_ID.unique(),
-          'straightness': df.Track_ID.unique(),
-          'MSD_ratio': df.Track_ID.unique()}
+    holder = df.Track_ID.unique().astype(float)
+    die = {'Track_ID': holder,
+           'alpha': holder,
+           'D_fit': holder,
+           'kurtosis': holder,
+           'asymmetry1': holder,
+           'asymmetry2': holder,
+           'asymmetry3': holder,
+           'AR': holder,
+           'elongation': holder,
+           'boundedness': holder,
+           'fractal_dim': holder,
+           'trappedness': holder,
+           'efficiency': holder,
+           'straightness': holder,
+           'MSD_ratio': holder}
     di = pd.DataFrame(data=die)
 
     trackids = df.Track_ID.unique()
     partcount = trackids.shape[0]
 
-
     for particle in range(0, partcount):
         single_track = df.loc[df['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
-                                                                                 ascending=[1, 1]).reset_index(drop=True)
-        di['alpha'], di['D_fit'] = alpha_calc(single_track)
-        di['kurtosis'] = kurtosis(single_track)
-        l1, l2, di['asymmetry1'], di['asymmetry2'], di['asymmetry3'] = asymmetry(single_track)
-        di['AR'], di['elongation'] = aspectratio(single_track)
-        di['boundedness'], di['fractal_dim'], di['trappedness'] = boundedness(single_track)
-        di['efficiency'], di['straightness'] = efficiency(single_track)
-        di['MSD_ratio'] = msd_ratio(single_track, 2, single_track['Frame'][single_track.shape[0]-2])
-    
+                                                                                ascending=[1, 1]).reset_index(drop=True)
+        di['alpha'][particle], di['D_fit'][particle] = alpha_calc(single_track)
+        di['kurtosis'][particle] = kurtosis(single_track)
+        l1, l2, di['asymmetry1'][particle], di['asymmetry2'][particle], di['asymmetry3'][particle] = asymmetry(single_track)
+        di['AR'][particle], di['elongation'][particle] = aspectratio(single_track)
+        di['boundedness'][particle], di['fractal_dim'][particle], di['trappedness'][particle] = boundedness(single_track, framerate)
+        di['efficiency'][particle], di['straightness'][particle] = efficiency(single_track)
+        if single_track['Frame'][single_track.shape[0]-2] > 2:
+            di['MSD_ratio'][particle] = msd_ratio(single_track, 2, single_track['Frame'][single_track.shape[0]-2])
+        else:
+            di['MSD_ratio'][particle] = 0
+
     return di
