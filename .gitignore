@@ -8,4 +8,4 @@ diff_classifier/tests/__pycache__
 *.pyc
 *.egg-info
 notebooks/cloudknot_docker*
-
+*.swp
