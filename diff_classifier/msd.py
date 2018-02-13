@@ -129,7 +129,7 @@ def msd_calc(track, length=10):
         MSD[frame+1] = np.nanmean(x + y)
         gauss[frame+1] = np.nanmean(x**2 + y**2)/(2*(MSD[frame+1]**2))
 
-    new_track['MSD'] = pd.Series(MSD, index=new_track.index)
+    new_track['MSDs'] = pd.Series(MSD, index=new_track.index)
     new_track['Gauss'] = pd.Series(gauss, index=new_track.index)
 
     return new_track
@@ -199,14 +199,14 @@ def all_msds(data):
         new_ID[index1:index2] = particle+1
         new_x[index1:index2] = new_single_track['X']
         new_y[index1:index2] = new_single_track['Y']
-        MSD[index1:index2] = new_single_track['MSD']
+        MSD[index1:index2] = new_single_track['MSDs']
         gauss[index1:index2] = new_single_track['Gauss']
 
     d = {'Frame': new_frame,
          'Track_ID': new_ID,
          'X': new_x,
          'Y': new_y,
-         'MSD': MSD,
+         'MSDs': MSD,
          'Gauss': gauss}
     new_data = pd.DataFrame(data=d)
    
