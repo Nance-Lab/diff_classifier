@@ -11,6 +11,27 @@ from diff_classifier.utils import csv_to_pd
 from diff_classifier.msd import nth_diff, msd_calc, all_msds
 
 
+def unmask_track(track):
+    x = ma.masked_invalid(track['X'])
+    short_mask = ma.getmask(x)
+    comp_frame = ma.compressed(ma.masked_where(short_mask, track['Frame']))
+    comp_ID = ma.compressed(ma.masked_where(short_mask, track['Track_ID']))
+    comp_x = ma.compressed(ma.masked_where(short_mask, track['X']))
+    comp_y = ma.compressed(ma.masked_where(short_mask, track['Y']))
+    comp_msd = ma.compressed(ma.masked_where(short_mask, track['MSDs']))
+    comp_gauss = ma.compressed(ma.masked_where(short_mask, track['Gauss']))
+
+
+    d = {'Frame': comp_frame,
+             'Track_ID': comp_ID,
+             'X': comp_x,
+             'Y': comp_y,
+             'MSDs': comp_msd,
+             'Gauss': comp_gauss}
+    comp_track = pd.DataFrame(data=d)
+    return comp_track
+
+
 def alpha_calc(track):
     """
     Calculates the parameter alpha by fitting track MSD data to a function.
@@ -56,8 +77,8 @@ def alpha_calc(track):
     assert type(track['Frame']) == pd.core.series.Series, "track must contain Frame column."
     assert track.shape[0] > 0, "track must not be empty."
 
-    x = track['Frame'] - 1
     y = track['MSDs']
+    x = track['Frame'] - 1
 
     def msd_alpha(x, a, D):
         return 4*D*(x**a)
@@ -441,7 +462,7 @@ def aspectratio(track):
         ar = 1/ar
     elong = 1 - (1/ar)
 
-    return ar, elong
+    return ar, elong, center_point
 
 
 def boundedness(track, framerate=1):
@@ -500,22 +521,29 @@ def boundedness(track, framerate=1):
     assert type(track['MSDs']) == pd.core.series.Series, "track must contain MSDs column."
     assert type(track['Frame']) == pd.core.series.Series, "track must contain Frame column."
     assert track.shape[0] > 0, "track must not be empty."
+    
     df = track
-    length = df.shape[0]
-    distance = np.zeros((length, length))
+    
+    if df.shape[0] > 2:
+        length = df.shape[0]
+        distance = np.zeros((length, length))
 
-    for frame in range(0, length-1):
-        distance[frame, 0:length-frame-1] = (np.sqrt(nth_diff(df['X'], frame+1)**2 + nth_diff(df['Y'], frame+1)**2).values)
+        for frame in range(0, length-1):
+            distance[frame, 0:length-frame-1] = (np.sqrt(nth_diff(df['X'], frame+1)**2 + nth_diff(df['Y'], frame+1)**2).values)
 
-    L = np.sum((np.sqrt(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2).values))
-    r = np.max(distance)/2
-    N = df['Frame'][df['Frame'].shape[0]-1]
-    f = N*framerate
-    D = df['MSDs'][2]/(4*f)
+        L = np.sum((np.sqrt(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2).values))
+        r = np.max(distance)/2
+        N = df['Frame'][df['Frame'].shape[0]-1]
+        f = N*framerate
+        D = df['MSDs'][2]/(4*f)
 
-    B = D*f/(r**2)
-    Df = np.log(N)/np.log(N*2*r/L)
-    pf = 1 - np.exp(0.2048 - 0.25117*(D*f/(r**2)))
+        B = D*f/(r**2)
+        Df = np.log(N)/np.log(N*2*r/L)
+        pf = 1 - np.exp(0.2048 - 0.25117*(D*f/(r**2)))
+    else:
+        B = np.nan
+        Df = np.nan
+        pf = np.nan
 
     return B, Df, pf
 
@@ -643,19 +671,23 @@ def calculate_features(df, framerate=1):
            'trappedness': holder,
            'efficiency': holder,
            'straightness': holder,
-           'MSD_ratio': holder}
+           'MSD_ratio': holder,
+           'X': holder,
+           'Y': holder}
+    
     di = pd.DataFrame(data=die)
 
     trackids = df.Track_ID.unique()
     partcount = trackids.shape[0]
 
     for particle in range(0, partcount):
-        single_track = df.loc[df['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
+        single_track_masked = df.loc[df['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
                                                                                 ascending=[1, 1]).reset_index(drop=True)
+        single_track = unmask_track(single_track_masked)
         di['alpha'][particle], di['D_fit'][particle] = alpha_calc(single_track)
         di['kurtosis'][particle] = kurtosis(single_track)
         l1, l2, di['asymmetry1'][particle], di['asymmetry2'][particle], di['asymmetry3'][particle] = asymmetry(single_track)
-        di['AR'][particle], di['elongation'][particle] = aspectratio(single_track)
+        di['AR'][particle], di['elongation'][particle], (di['X'][particle], di['Y'][particle]) = aspectratio(single_track)
         di['boundedness'][particle], di['fractal_dim'][particle], di['trappedness'][particle] = boundedness(single_track, framerate)
         di['efficiency'][particle], di['straightness'][particle] = efficiency(single_track)
         if single_track['Frame'][single_track.shape[0]-2] > 2:
