@@ -38,7 +38,7 @@ def download_and_track(filename):
     if not op.isfile(outfile):
         ij.track(local_im, outfile, template=None, fiji_bin=None, radius=4.5, threshold=0., 
               do_median_filtering=True, quality=4.5, median_intensity=300.0, snr=0.0, 
-              linking_max_distance=7.0, gap_closing_max_distance=10.0, max_frame_gap=2,
+              linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
               track_displacement=10.0)
 
         aws.upload_s3(outfile, op.join(op.split(filename)[0], outfile))
