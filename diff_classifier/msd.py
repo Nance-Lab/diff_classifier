@@ -42,14 +42,18 @@ def nth_diff(dataframe, n=1):
 
     assert type(dataframe) == pd.core.series.Series, "dataframe must be a pandas dataframe."
     assert type(n) == int, "n must be an integer."
-
-    test1 = dataframe[:-n].reset_index(drop=True)
-    test2 = dataframe[n:].reset_index(drop=True)
-    diff = test2 - test1
+    
+    length = dataframe.shape[0]
+    if n <= length:
+        test1 = dataframe[:-n].reset_index(drop=True)
+        test2 = dataframe[n:].reset_index(drop=True)
+        diff = test2 - test1
+    else:
+        diff = np.array([np.nan, np.nan])
     return diff
 
 
-def msd_calc(track):
+def msd_calc(track, length=10):
     """
     msdcalc(track = pdarray)
 
@@ -84,21 +88,51 @@ def msd_calc(track):
     assert track['X'].dtype == np.int64 or np.float64, "Data in 'X' must be if type int64."
     assert track['Y'].dtype == np.int64 or np.float64, "Data in 'Y' must be if type int64."
 
-    length = track.shape[0]
-    msd = np.zeros(length)
+    MSD = np.zeros(length)
     gauss = np.zeros(length)
+
+    inc = nth_diff(track['Frame'], n=1)
+    new_x = np.zeros(length)
+    new_y = np.zeros(length)
+
+    smaller = np.shape(track)[0]
+
+    new_x[0] = track['X'][0]
+    new_y[0] = track['Y'][0]
+    current = 1
+    for i in range(1, smaller):
+        if inc[i-1] == 1:
+            new_x[current] = track['X'][i]
+            new_y[current] = track['Y'][i]
+            current = current + 1
+        else:
+            new_x[current:int(current+inc[i-1])-1] = track['X'][i-1]
+            new_x[int(current+inc[i-1])-1] = track['X'][i]
+            new_y[current:int(current+inc[i-1])-1] = track['Y'][i-1]
+            new_y[int(current+inc[i-1])-1] = track['Y'][i]
+            current = int(current + inc[i-1])
+
+    int_x = ma.masked_equal(new_x, 0)
+    int_y = ma.masked_equal(new_y, 0)
+    d = {'Frame': np.linspace(1, length, length),
+                 'X': int_x,
+                 'Y': int_y}
+    new_track = pd.DataFrame(data=d)
 
     for frame in range(0, length-1):
         # creates array to ignore when particles skip frames.
-        inc = ma.masked_where(nth_diff(track['Frame'], n=frame+1) != frame+1, nth_diff(track['Frame'], n=frame+1))
+        #inc = ma.masked_where(msd.nth_diff(track['Frame'], n=frame+1) != frame+1, msd.nth_diff(track['Frame'], n=frame+1))
 
-        x = ma.array(np.square(nth_diff(track['X'], n=frame+1)), mask=inc.mask)
-        y = ma.array(np.square(nth_diff(track['Y'], n=frame+1)), mask=inc.mask)
+        x = np.square(nth_diff(new_track['X'], n=frame+1))
+        y = np.square(nth_diff(new_track['Y'], n=frame+1))
 
-        msd[frame+1] = ma.mean(x + y)
-        gauss[frame+1] = ma.mean(x**2 + y**2)/(2*(msd[frame+1]**2))
+        MSD[frame+1] = np.nanmean(x + y)
+        gauss[frame+1] = np.nanmean(x**2 + y**2)/(2*(MSD[frame+1]**2))
 
-    return msd, gauss
+    new_track['MSD'] = pd.Series(MSD, index=new_track.index)
+    new_track['Gauss'] = pd.Series(gauss, index=new_track.index)
+
+    return new_track
 
 
 def all_msds(data):
@@ -139,18 +173,41 @@ def all_msds(data):
     partcount = trackids.shape[0]
     data['MSDs'] = np.zeros(data.shape[0])
     data['Gauss'] = np.zeros(data.shape[0])
+    length = int(max(data['Frame'])) + 1
+
+    new_length = partcount*(length)
+    new_frame = np.zeros(new_length)
+    new_ID = np.zeros(new_length)
+    new_x = np.zeros(new_length)
+    new_y = np.zeros(new_length)
+    MSD = np.zeros(new_length)
+    gauss = np.zeros(new_length)
 
     for particle in range(0, partcount):
         single_track = data.loc[data['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
                                                                                     ascending=[1, 1]).reset_index(drop=True)
         if particle == 0:
             index1 = 0
-            index2 = single_track.shape[0]
+            index2 = length
         else:
             index1 = index2
-            index2 = index1 + single_track.shape[0]
+            index2 = index2 + length
         #data['MSDs'][index1:index2], data['Gauss'][index1:index2] = msd_calc(single_track)
         #data['Frame'][index1:index2] = data['Frame'][index1:index2] - (data['Frame'][index1] - 1)
-        data.loc[:, 'MSDs'][index1:index2], data.loc[:, 'Gauss'][index1:index2] = msd_calc(single_track)
-        data.loc[:, 'Frame'][index1:index2] = data.loc[:, 'Frame'][index1:index2] - (data.loc[:, 'Frame'][index1] - 1)
-    return data
+        new_single_track =  msd_calc(single_track, length=length)
+        new_frame[index1:index2] = np.linspace(1, length, length)
+        new_ID[index1:index2] = particle+1
+        new_x[index1:index2] = new_single_track['X']
+        new_y[index1:index2] = new_single_track['Y']
+        MSD[index1:index2] = new_single_track['MSD']
+        gauss[index1:index2] = new_single_track['Gauss']
+
+    d = {'Frame': new_frame,
+         'Track_ID': new_ID,
+         'X': new_x,
+         'Y': new_y,
+         'MSD': MSD,
+         'Gauss': gauss}
+    new_data = pd.DataFrame(data=d)
+   
+    return new_data

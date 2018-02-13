@@ -28,10 +28,10 @@ import fiji.plugin.trackmate.util.TMUtils as TMUtils
 
 # Get currently selected image
 #imp = WindowManager.getCurrentImage()
-imp = IJ.openImage('{target_file}')
-IJ.run(imp, "Properties...", "channels=1 slices=1 frames=651 unit=pixel pixel_width=1.0000 pixel_height=1.0000 voxel_depth=1.0000");
+#imp = IJ.openImage('{target_file}')
+#IJ.run(imp, "Properties...", "channels=1 slices=1 frames=651 unit=pixel pixel_width=1.0000 pixel_height=1.0000 voxel_depth=1.0000");
 #imp = IJ.openImage('/home/ubuntu/data/RED_nPEG_37C_pH72_S1_1_1_2.tif')
-#imp = IJ.openImage('http://fiji.sc/samples/FakeTracks.tif')
+imp = IJ.openImage('http://fiji.sc/samples/FakeTracks.tif')
 #imp.show()
 
 
@@ -79,8 +79,9 @@ settings.trackerSettings['MAX_FRAME_GAP']= {max_frame_gap}
 settings.addSpotAnalyzerFactory(SpotIntensityAnalyzerFactory())
 settings.addSpotAnalyzerFactory(SpotContrastAndSNRAnalyzerFactory())
 
-filter2 = FeatureFilter('QUALITY', {quality}, True)
-settings.addSpotFilter(filter2)
+#filter2 = FeatureFilter('QUALITY', {quality}, True)
+#settings.addSpotFilter(filter2)
+
 #filter3 = FeatureFilter('MEDIAN_INTENSITY', {median_intensity}, False)
 #settings.addSpotFilter(filter3)
 #filter4 = FeatureFilter('SNR', {snr}, True)
@@ -94,7 +95,7 @@ settings.addTrackAnalyzer(TrackDurationAnalyzer())
 #filter5 = FeatureFilter('TRACK_DISPLACEMENT', {track_displacement}, True)
 #settings.addTrackFilter(filter5)
 
-settings.initialSpotFilterValue = 0
+settings.initialSpotFilterValue = 1
 
 print(str(settings))
 
@@ -123,7 +124,7 @@ if not ok:
 # Display results
 #----------------
 
-#model.getLogger().log('Found ' + str(model.getTrackModel().nTracks(True)) + ' tracks.')
+model.getLogger().log('Found ' + str(model.getTrackModel().nTracks(True)) + ' tracks.')
 
 selectionModel = SelectionModel(model)
 #displayer =  HyperStackDisplayer(model, selectionModel, imp)

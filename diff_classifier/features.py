@@ -7,12 +7,8 @@ import math
 import struct
 import sys
 
-# modulef = '/home/ubuntu/source/diff-classifier/diff_classifier/'
-modulef = 'C:/Users/koolk/Desktop/diff-classifier/diff_classifier/'
-sys.path.insert(0, modulef)
-
-from utils import csv_to_pd
-from msd import nth_diff, msd_calc, all_msds
+from diff_classifier.utils import csv_to_pd
+from diff_classifier.msd import nth_diff, msd_calc, all_msds
 
 
 def alpha_calc(track):
@@ -43,7 +39,7 @@ def alpha_calc(track):
     >>> df = pd.DataFrame(data=d)
     >>> df['MSDs'], df['Gauss'] = msd_calc(df)
     >>> alpha_calc(df)
-    (2.0000000000000004, 0.4999999999999989)
+    (2.0000000000000004, 0.4999999999999999)
 
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
@@ -52,7 +48,7 @@ def alpha_calc(track):
     >>> df = pd.DataFrame(data=d)
     >>> df['MSDs'], df['Gauss'] = msd_calc(df)
     >>> alpha_calc(df)
-    (0.023690304124404888, 0.5144434271906756)
+    (0.023690002018364065, 0.5144436515510022)
     """
 
     assert type(track) == pd.core.frame.DataFrame, "track must be a pandas dataframe."
@@ -437,7 +433,7 @@ def aspectratio(track):
     assert type(track['Y']) == pd.core.series.Series, "track must contain Y column."
     assert track.shape[0] > 0, "track must not be empty."
 
-    rot_angle, area, width, height, center_point, corner_points = minBoundingRect(df)
+    rot_angle, area, width, height, center_point, corner_points = minBoundingRect(track)
     ar = width/height
     if ar > 1:
         counter = 1
@@ -515,10 +511,156 @@ def boundedness(track, framerate=1):
     r = np.max(distance)/2
     N = df['Frame'][df['Frame'].shape[0]-1]
     f = N*framerate
-    D = df['MSDs'][length-1]/(4*f)
+    D = df['MSDs'][2]/(4*f)
 
     B = D*f/(r**2)
     Df = np.log(N)/np.log(N*2*r/L)
     pf = 1 - np.exp(0.2048 - 0.25117*(D*f/(r**2)))
 
     return B, Df, pf
+
+
+def efficiency(track):
+    """
+    Calculates the efficiency and straitness of the input track
+
+    Parameters
+    ----------
+    track : pandas DataFrame
+        At a minimum, must contain a Frames and a MSDs column.  The function
+        msd_calc can be used to generate the correctly formatted pd dataframe.
+
+    Returns
+    ----------
+    eff : numpy.float64
+        Efficiency of the input track.  Relates the sum of squared step
+        lengths.  Based on Helmuth et al. (2007) and defined as:
+        E = |x(N-1)-x(0)|**2/SUM(|x(i) - x(i-1)|**2
+    strait : numpy.float64
+        Relates the net displacement L to teh sum of step lengths and is
+        defined as:
+        S = |x(N-1)-x(0)|/SUM(|x(i) - x(i-1)|
+
+    Examples
+    ----------
+    >>> frames = 10
+    >>> d = {'Frame': np.linspace(1, frames, frames),
+                   'X': np.linspace(1, frames, frames)+5,
+                   'Y': np.linspace(1, frames, frames)+3}
+    >>> df = pd.DataFrame(data=d)
+    >>> df['MSDs'], df['Gauss'] = msd_calc(df)
+    >>> ft.efficiency(df)
+    (9.0, 0.9999999999999999)
+
+    >>> frames = 10
+    >>> d = {'Frame': np.linspace(1, frames, frames),
+                   'X': np.sin(np.linspace(1, frames, frames))+3,
+                   'Y': np.cos(np.linspace(1, frames, frames))+3}
+    >>> df = pd.DataFrame(data=d)
+    >>> df['MSDs'], df['Gauss'] = msd_calc(df)
+    >>> ft.efficiency(df)
+    (0.46192924086141945, 0.22655125514290225)
+    """
+
+    df = track
+    length = df.shape[0]
+    num = (nth_diff(df['X'], length-1)**2 + nth_diff(df['Y'], length-1)**2)[0]
+    num2 = np.sqrt(num)
+
+    den = np.sum(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2)
+    den2 = np.sum(np.sqrt(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2))
+
+    eff = num/den
+    strait = num2/den2
+    return eff, strait
+
+
+def msd_ratio(track, n1=3, n2=100):
+    """
+    Calculates the MSD ratio of the input track at the specified frames.
+
+    Parameters
+    ----------
+    track : pandas DataFrame
+        At a minimum, must contain a Frames and a MSDs column.  The function
+        msd_calc can be used to generate the correctly formatted pd dataframe.
+    n1 : int
+        First frame at which to calculate the MSD ratio.
+    n2 : int
+        Last frame at which to calculate the MSD ratio.
+
+    Returns
+    ----------
+    ratio: numpy.float64
+        MSD ratio as defined by
+        [MSD(n1)/MSD(n2)] - [n1/n2]
+        where n1 < n2.  For Brownian motion, it is 0; for restricted motion it
+        is < 0.  For directed motion it is > 0.
+
+    Examples
+    ----------
+    >>> frames = 10
+    >>> d = {'Frame': np.linspace(1, frames, frames),
+             'X': np.linspace(1, frames, frames)+5,
+             'Y': np.linspace(1, frames, frames)+3}
+    >>> df = pd.DataFrame(data=d)
+    >>> df['MSDs'], df['Gauss'] = msd_calc(df)
+    >>> ft.msd_ratio(df, 1, 9)
+    -0.18765432098765433
+
+    >>> frames = 10
+    >>> d = {'Frame': np.linspace(1, frames, frames),
+             'X': np.sin(np.linspace(1, frames, frames))+3,
+             'Y': np.cos(np.linspace(1, frames, frames))+3}
+    >>> df = pd.DataFrame(data=d)
+    >>> df['MSDs'], df['Gauss'] = msd_calc(df)
+    >>> ft.msd_ratio(df, 1, 9)
+    0.04053708075268797
+    """
+
+    df = track
+    assert n1 < n2, "n1 must be less than n2"
+    ratio = (df['MSDs'][n1]/df['MSDs'][n2]) - (df['Frame'][n1]/df['Frame'][n2])
+    return ratio
+
+
+def calculate_features(df, framerate=1):
+
+    # Skeleton of Trajectory features metadata table.
+    # Builds entry for each unique Track ID.
+    holder = df.Track_ID.unique().astype(float)
+    die = {'Track_ID': holder,
+           'alpha': holder,
+           'D_fit': holder,
+           'kurtosis': holder,
+           'asymmetry1': holder,
+           'asymmetry2': holder,
+           'asymmetry3': holder,
+           'AR': holder,
+           'elongation': holder,
+           'boundedness': holder,
+           'fractal_dim': holder,
+           'trappedness': holder,
+           'efficiency': holder,
+           'straightness': holder,
+           'MSD_ratio': holder}
+    di = pd.DataFrame(data=die)
+
+    trackids = df.Track_ID.unique()
+    partcount = trackids.shape[0]
+
+    for particle in range(0, partcount):
+        single_track = df.loc[df['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
+                                                                                ascending=[1, 1]).reset_index(drop=True)
+        di['alpha'][particle], di['D_fit'][particle] = alpha_calc(single_track)
+        di['kurtosis'][particle] = kurtosis(single_track)
+        l1, l2, di['asymmetry1'][particle], di['asymmetry2'][particle], di['asymmetry3'][particle] = asymmetry(single_track)
+        di['AR'][particle], di['elongation'][particle] = aspectratio(single_track)
+        di['boundedness'][particle], di['fractal_dim'][particle], di['trappedness'][particle] = boundedness(single_track, framerate)
+        di['efficiency'][particle], di['straightness'][particle] = efficiency(single_track)
+        if single_track['Frame'][single_track.shape[0]-2] > 2:
+            di['MSD_ratio'][particle] = msd_ratio(single_track, 2, single_track['Frame'][single_track.shape[0]-2])
+        else:
+            di['MSD_ratio'][particle] = 0
+
+    return di

@@ -34,15 +34,22 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
     test2[:, 0:2044, :] = test
 
     new_image = np.zeros((test.shape[0], ires, ires), dtype=test.dtype)
+    names = []
 
     for row in range(irows):
         for col in range(icols):
             new_image = test2[:, row*ires:(row+1)*ires, col*ires:(col+1)*ires]
-            sio.imsave(tiffname.split('.tif')[0] + '_%s_%s.tif' % (row, col),
-                       new_image)
+            current = tiffname.split('.tif')[0] + '_%s_%s.tif' % (row, col)
+            sio.imsave(current, new_image)
+            names.append(current)
+    
+    return names
 
 
-def track(target, out_file, template=None, fiji_bin=None):
+def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=5., 
+          do_median_filtering=False, quality=30.0, median_intensity=55000.0, snr=0.0, 
+          linking_max_distance=10.0, gap_closing_max_distance=10.0, max_frame_gap=3,
+          track_displacement=0.0):
     """
 
     target : str
@@ -57,7 +64,7 @@ def track(target, out_file, template=None, fiji_bin=None):
     if template is None:
         template = op.join(op.split(dc.__file__)[0],
                            'data',
-                           'trackmate_template.py')
+                           'trackmate_template3.py')
 
     if fiji_bin is None:
         if sys.platform == "darwin":
@@ -69,7 +76,12 @@ def track(target, out_file, template=None, fiji_bin=None):
     script = ''.join(open(template).readlines())
     tf = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tf.name, 'w')
-    fid.write(script.format(target_file=target))
+    fid.write(script.format(target_file=target, radius=str(radius), threshold=str(threshold),
+                            do_median_filtering=str(do_median_filtering), quality=str(quality),
+                            median_intensity=str(median_intensity), snr=str(snr),
+                            linking_max_distance=str(linking_max_distance),
+                            gap_closing_max_distance=str(gap_closing_max_distance),
+                            max_frame_gap=str(max_frame_gap), track_displacement=str(track_displacement)))
     fid.close()
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tf.name)
     print(cmd)
