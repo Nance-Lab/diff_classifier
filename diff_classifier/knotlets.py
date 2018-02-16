@@ -124,15 +124,22 @@ def download_split_track_msds(prefix):
             names = ij.partition_im(local_name)
             for name in names:
                 aws.upload_s3(name, op.join(remote_folder, name))
-    print("Done with splitting.  Should output file of name {}".format(op.join(remote_folder, name)))
+                print("Done with splitting.  Should output file of name {}".format(op.join(remote_folder, name)))
     
     
+    names = []
+    for i in range(0, 4):
+        for j in range(0, 4):
+            names.append('{}_{}_{}.tif'.format(prefix, i, j))
     #Tracking section
     ################################################################################################
     for name in names:
         outfile = 'Traj_' + name.split('.')[0] + '.csv'
         local_im = op.join(local_folder, name)
-        if not op.isfile(outfile):
+        
+        try:
+            aws.download_s3(op.join(remote_folder, outfile), outfile)
+        except:
             ij.track(local_im, outfile, template=None, fiji_bin=None, radius=4.5, threshold=0., 
                   do_median_filtering=True, quality=4.5, median_intensity=300.0, snr=0.0, 
                   linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
