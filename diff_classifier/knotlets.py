@@ -129,7 +129,7 @@ def download_split_track_msds(prefix):
     
     #Tracking section
     ################################################################################################
-    for name in names
+    for name in names:
         outfile = 'Traj_' + name.split('.')[0] + '.csv'
         local_im = op.join(local_folder, name)
         if not op.isfile(outfile):
@@ -145,7 +145,7 @@ def download_split_track_msds(prefix):
     #MSD and features section
     #################################################################################################
     counter = 0
-    for name in names
+    for name in names:
         row = int(name.split('.')[0].split('_')[4])
         col = int(name.split('.')[0].split('_')[5])
         
