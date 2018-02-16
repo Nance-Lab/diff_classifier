@@ -13,13 +13,15 @@ from diff_classifier.msd import nth_diff, msd_calc, all_msds
 
 def unmask_track(track):
     x = ma.masked_invalid(track['X'])
-    short_mask = ma.getmask(x)
-    comp_frame = ma.compressed(ma.masked_where(short_mask, track['Frame']))
-    comp_ID = ma.compressed(ma.masked_where(short_mask, track['Track_ID']))
-    comp_x = ma.compressed(ma.masked_where(short_mask, track['X']))
-    comp_y = ma.compressed(ma.masked_where(short_mask, track['Y']))
-    comp_msd = ma.compressed(ma.masked_where(short_mask, track['MSDs']))
-    comp_gauss = ma.compressed(ma.masked_where(short_mask, track['Gauss']))
+    msd = ma.masked_invalid(track['MSDs'])
+    x_mask = ma.getmask(x)
+    msd_mask = ma.getmask(msd)
+    comp_frame = ma.compressed(ma.masked_where(msd_mask, track['Frame']))
+    comp_ID = ma.compressed(ma.masked_where(msd_mask, track['Track_ID']))
+    comp_x = ma.compressed(ma.masked_where(x_mask, track['X']))
+    comp_y = ma.compressed(ma.masked_where(x_mask, track['Y']))
+    comp_msd = ma.compressed(ma.masked_where(msd_mask, track['MSDs']))
+    comp_gauss = ma.compressed(ma.masked_where(msd_mask, track['Gauss']))
 
 
     d = {'Frame': comp_frame,
@@ -72,13 +74,13 @@ def alpha_calc(track):
     (0.023690002018364065, 0.5144436515510022)
     """
 
-    assert type(track) == pd.core.frame.DataFrame, "track must be a pandas dataframe."
-    assert type(track['MSDs']) == pd.core.series.Series, "track must contain MSDs column."
-    assert type(track['Frame']) == pd.core.series.Series, "track must contain Frame column."
-    assert track.shape[0] > 0, "track must not be empty."
+    #assert type(track) == pd.core.frame.DataFrame, "track must be a pandas dataframe."
+    #assert type(track['MSDs']) == pd.core.series.Series, "track must contain MSDs column."
+    #assert type(track['Frame']) == pd.core.series.Series, "track must contain Frame column."
+    #assert track.shape[0] > 0, "track must not be empty."
 
     y = track['MSDs']
-    x = track['Frame'] - 1
+    x = track['Frame']
 
     def msd_alpha(x, a, D):
         return 4*D*(x**a)
@@ -672,6 +674,7 @@ def calculate_features(df, framerate=1):
            'efficiency': holder,
            'straightness': holder,
            'MSD_ratio': holder,
+           'frames': holder,
            'X': holder,
            'Y': holder}
     
@@ -690,6 +693,7 @@ def calculate_features(df, framerate=1):
         di['AR'][particle], di['elongation'][particle], (di['X'][particle], di['Y'][particle]) = aspectratio(single_track)
         di['boundedness'][particle], di['fractal_dim'][particle], di['trappedness'][particle] = boundedness(single_track, framerate)
         di['efficiency'][particle], di['straightness'][particle] = efficiency(single_track)
+        di['frames'][particle] = single_track.shape[0]
         if single_track['Frame'][single_track.shape[0]-2] > 2:
             di['MSD_ratio'][particle] = msd_ratio(single_track, 2, single_track['Frame'][single_track.shape[0]-2])
         else:
