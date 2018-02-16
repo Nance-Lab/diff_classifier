@@ -311,5 +311,13 @@ def all_msds2(data, frames=651):
              'MSDs': [],
              'Gauss': []}
         new_data = pd.DataFrame(data=d)
+    except IndexError:
+        d = {'Frame': [],
+             'Track_ID': [],
+             'X': [],
+             'Y': [],
+             'MSDs': [],
+             'Gauss': []}
+        new_data = pd.DataFrame(data=d)
     
     return new_data
