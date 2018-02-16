@@ -280,28 +280,36 @@ def make_xyarray(data, length=651):
 
 
 def all_msds2(data, frames=651):
+    try:
+        f_array, t_array, x_array, y_array = make_xyarray(data, length=frames)
 
-    f_array, t_array, x_array, y_array = make_xyarray(data, length=frames)
+        length = int(x_array.shape[0])
+        particles = int(x_array.shape[1])
 
-    length = int(x_array.shape[0])
-    particles = int(x_array.shape[1])
+        MSD = np.zeros((length, particles))
+        gauss = np.zeros((length, particles))
 
-    MSD = np.zeros((length, particles))
-    gauss = np.zeros((length, particles))
+        for frame in range(0, length-1):
+            x = np.square(nth_diff(x_array, n=frame+1))
+            y = np.square(nth_diff(y_array, n=frame+1))
 
-    for frame in range(0, length-1):
-        x = np.square(nth_diff(x_array, n=frame+1))
-        y = np.square(nth_diff(y_array, n=frame+1))
+            MSD[frame+1, :] = np.nanmean(x + y, axis=0)
+            gauss[frame+1, :] = np.nanmean(x**2 + y**2, axis=0)/(2*(MSD[frame+1]**2))
 
-        MSD[frame+1, :] = np.nanmean(x + y, axis=0)
-        gauss[frame+1, :] = np.nanmean(x**2 + y**2, axis=0)/(2*(MSD[frame+1]**2))
-    
-    d = {'Frame': f_array.flatten('F'),
-         'Track_ID': t_array.flatten('F'),
-         'X': x_array.flatten('F'),
-         'Y': y_array.flatten('F'),
-         'MSDs': MSD.flatten('F'),
-         'Gauss': gauss.flatten('F')}
-    new_data = pd.DataFrame(data=d)
+        d = {'Frame': f_array.flatten('F'),
+             'Track_ID': t_array.flatten('F'),
+             'X': x_array.flatten('F'),
+             'Y': y_array.flatten('F'),
+             'MSDs': MSD.flatten('F'),
+             'Gauss': gauss.flatten('F')}
+        new_data = pd.DataFrame(data=d)
+    except ValueError:
+        d = {'Frame': [],
+             'Track_ID': [],
+             'X': [],
+             'Y': [],
+             'MSDs': [],
+             'Gauss': []}
+        new_data = pd.DataFrame(data=d)
     
     return new_data
