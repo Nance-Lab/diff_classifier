@@ -3,9 +3,10 @@ import numpy as np
 import skimage.io as sio
 import numpy.ma as ma
 from scipy import interpolate
+import warnings
 
 
-def nth_diff(dataframe, n=1):
+def nth_diff(dataframe, n=1, ax=0):
     """
     nth_diff(dataframe, n=int)
 
@@ -17,6 +18,9 @@ def nth_diff(dataframe, n=1):
         input data on which differences are to be calculated.
     n : int, default is 1
         Function calculated x(i) - x(i - n) for all values in pandas column
+    ax : int, 0 or 1
+        Axis along which differences are to be calculated.  Default is 0.  If 0,
+        input must be a pandas series.  If 1, input must be a numpy array.
 
     Returns
     ----------
@@ -25,24 +29,39 @@ def nth_diff(dataframe, n=1):
 
     Examples
     ----------
-    >>> d = {'col1': [1, 2, 3, 4, 5]}
-    >>> df = pd.DataFrame(data=d)
-    >>> nth_diff(df['col1'], 1)
-    0   1
-    1   1
-    2   1
-    3   1
+    >>>> d = {'col1': [1, 2, 3, 4, 5]}
+    >>>> df = pd.DataFrame(data=d)
+    >>>> nth_diff(df)
+    
+    0    1
+    1    1
+    2    1
+    3    1
     Name: col1, dtype: int64
 
-    >>> nth_diff(df['col1'], 2)
-    0   2
-    1   2
-    2   2
-    Name: col1, dtype: int64
+    
+    #test2
+    >>>> df = np.ones((5, 10))
+    >>>> nth_diff(df)
+    
+    array([[0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+    
+    >>>> df = np.ones((5, 10))
+    >>>> nth_diff (df)
+    
+    array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+    
     """
 
     #assert type(dataframe) == pd.core.series.Series, "dataframe must be a pandas dataframe."
-    #assert type(n) == int, "n must be an integer."
+    assert type(n) == int, "n must be an integer."
    
     if dataframe.ndim == 1:
         length = dataframe.shape[0]
@@ -55,8 +74,12 @@ def nth_diff(dataframe, n=1):
     else:
         length = dataframe.shape[0]
         if n <= length:
-            test1 = dataframe[:-n, :]
-            test2 = dataframe[n:, :]
+            if ax==0:
+                test1 = dataframe[:-n, :]
+                test2 = dataframe[n:, :]
+            else:
+                test1 = dataframe[:, :-n]
+                test2 = dataframe[:, n:]
             diff = test2 - test1
         else:
             diff = np.array([np.nan, np.nan])
@@ -76,19 +99,25 @@ def msd_calc(track, length=10):
 
     Returns
     ----------
-    msd : numpy array the same length as track containing the calculated MSDs using the
-          formula MSD = <(x-x0)**2>
-    gauss : numpy array the same length as track containing the calculated Gaussianity
+    new_track: pandas dataframe similar to input track.  All missing frames of
+        individual trajectories are filled in with NaNs, and two new columns, MSDs
+        and Gauss are added:
+        MSDs, calculated mean squared displacements using the formula MSD = <(x-x0)**2>
+        Gauss, calculated Gaussianity
 
     Examples
     ----------
-    >>> d = {'Frame': [1, 2, 3, 4, 5],
-             'X': [5, 6, 7, 8, 9],
-             'Y': [6, 7, 8, 9, 10]}
-    >>> df = pd.DataFrame(data=d)
-    >>> msd_calc(df)
-    (array([  0.,   2.,   8.,  18.,  32.]),
-     array([ 0.  ,  0.25,  0.25,  0.25,  0.25]))
+    >>>> d = {'Frame': [1, 2, 3, 4, 5],
+         'X': [5, 6, 7, 8, 9],
+         'Y': [6, 7, 8, 9, 10]}
+    >>>> df = pd.DataFrame(data=d)
+    >>>> new_track = msd.msd_calc(df, 5)
+
+    >>>> d = {'Frame': [1, 2, 3, 4, 5],
+         'X': [5, 6, 7, 8, 9],
+         'Y': [6, 7, 8, 9, 10]}
+    >>>> df = pd.DataFrame(data=d)
+    >>>> new_track = msd.msd_calc(df)
     """
 
     #assert type(track['Frame']) == pd.core.series.Series, "track must contain column 'Frame'"
@@ -144,8 +173,10 @@ def msd_calc(track, length=10):
         x = np.square(nth_diff(new_track['X'], n=frame+1))
         y = np.square(nth_diff(new_track['Y'], n=frame+1))
 
-        MSD[frame+1] = np.nanmean(x + y)
-        gauss[frame+1] = np.nanmean(x**2 + y**2)/(2*(MSD[frame+1]**2))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            MSD[frame+1] = np.nanmean(x + y)
+            gauss[frame+1] = np.nanmean(x**2 + y**2)/(2*(MSD[frame+1]**2))
 
     new_track['MSDs'] = pd.Series(MSD, index=new_track.index)
     new_track['Gauss'] = pd.Series(gauss, index=new_track.index)
@@ -160,12 +191,16 @@ def all_msds(data):
     Parameters
     ----------
     data : pandas dataframe containing, at a minimum a 'Frame', 'Track_ID', 'X', and
-           'Y' column.
+           'Y' column. Note: it is assumed that frames begins at 1, not 0 with this
+           function. Adjust before feeding into function.
 
     Returns
     ----------
-    msd : numpy array the same length as data containing the calculated MSDs using the
-          formula MSD = <(x-x0)**2>
+    new_data: pandas dataframe similar to input data.  All missing frames of
+        individual trajectories are filled in with NaNs, and two new columns, MSDs
+        and Gauss are added:
+        MSDs, calculated mean squared displacements using the formula MSD = <(x-x0)**2>
+        Gauss, calculated Gaussianity
 
     Examples
     ----------
@@ -191,7 +226,7 @@ def all_msds(data):
     partcount = trackids.shape[0]
     data['MSDs'] = np.zeros(data.shape[0])
     data['Gauss'] = np.zeros(data.shape[0])
-    length = int(max(data['Frame'])) + 1
+    length = int(max(data['Frame']))
 
     new_length = partcount*(length)
     new_frame = np.zeros(new_length)
@@ -232,10 +267,70 @@ def all_msds(data):
 
 
 def make_xyarray(data, length=651):
+    """
+    Rearranges xy data from input pandas dataframe into 2D numpy array.
     
+    Parameters
+    ----------
+    data : pandas dataframe containing, at a minimum a 'Frame', 'Track_ID', 'X', and
+           'Y' column.
+    length: desired length or number of frames to which to extend trajectories.
+        Any trajectories shorter than the input length will have the extra space
+        filled in with NaNs.
+    
+    Returns
+    ----------
+    f_array: numpy array of floats of size length x particles
+        Contains frames data
+    t_array: numpy array of floats of size length x particles
+        Contains trajectory ID data
+    x_array: numpy array of floats of size length x particles
+        Contains x coordinate data
+    y_array: numpy array of floats of size length x particles
+        Contains y coordinate data
+    
+    Examples
+    -----------
+    >>>> d = {'Frame': [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],
+              'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+              'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+              'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
+    >>>> df = pd.DataFrame(data=d)
+    >>>> length = max(df['Frame']) + 1
+    >>>> f_array, t_array, x_array, y_array = msd.make_xyarray(df, length=length)
+    
+    (array([[0., 0.],
+        [1., 1.],
+        [2., 2.],
+        [3., 3.],
+        [4., 4.],
+        [5., 5.],
+        [6., 6.]]),
+        array([[1., 2.],
+        [1., 2.],
+        [1., 2.],
+        [1., 2.],
+        [1., 2.],
+        [1., 2.],
+        [1., 2.]]),
+        array([[ 5., nan],
+        [ 6., nan],
+        [ 7.,  1.],
+        [ 8.,  2.],
+        [ 9.,  3.],
+        [nan,  4.],
+        [nan,  5.]]),
+        array([[ 6., nan],
+        [ 7., nan],
+        [ 8.,  2.],
+        [ 9.,  3.],
+        [10.,  4.],
+        [nan,  5.],
+        [nan,  6.]]))
+    """
     #Initial values
     first_p = int(min(data['Track_ID']))
-    particles = int(max(data['Track_ID'])) - first_p
+    particles = int(max(data['Track_ID'])) - first_p + 1
     x_array = np.zeros((length, particles))
     y_array = np.zeros((length, particles))
     f_array = np.zeros((length, particles))
@@ -244,9 +339,9 @@ def make_xyarray(data, length=651):
     track = data[data['Track_ID']==first_p].sort_values(['Track_ID', 'Frame'], ascending=[1, 1]).reset_index(drop=True)
     new_frame = np.linspace(0, length-1, length)
 
-    old_frame = track['Frame']
-    old_x = track['X']
-    old_y = track['Y']
+    old_frame = track['Frame'].as_matrix().astype(float)
+    old_x = track['X'].as_matrix()
+    old_y = track['Y'].as_matrix()
     fx = interpolate.interp1d(old_frame, old_x, bounds_error = False, fill_value = np.nan)
     fy = interpolate.interp1d(old_frame, old_y, bounds_error = False, fill_value = np.nan)
 
@@ -280,7 +375,33 @@ def make_xyarray(data, length=651):
 
 
 def all_msds2(data, frames=651):
-    
+    """
+    Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.
+
+    Parameters
+    ----------
+    data : pandas dataframe containing, at a minimum a 'Frame', 'Track_ID', 'X', and
+           'Y' column. Note: it is assumed that frames begins at 0.
+
+    Returns
+    ----------
+    new_data: pandas dataframe similar to input data.  All missing frames of
+        individual trajectories are filled in with NaNs, and two new columns, MSDs
+        and Gauss are added:
+        MSDs, calculated mean squared displacements using the formula MSD = <(x-x0)**2>
+        Gauss, calculated Gaussianity
+
+    Examples
+    ----------
+    >>>> d = {'Frame': [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
+             'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+             'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+             'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
+    >>>> df = pd.DataFrame(data=d)
+    >>>> cols = ['Frame', 'Track_ID', 'X', 'Y', 'MSDs', 'Gauss']
+    >>>> length = max(df['Frame']) + 1
+    >>>> msd.all_msds2(df, frames=length)[cols]
+    """    
     if data.shape[0]>2:
         try:
             f_array, t_array, x_array, y_array = make_xyarray(data, length=frames)
@@ -295,8 +416,10 @@ def all_msds2(data, frames=651):
                 x = np.square(nth_diff(x_array, n=frame+1))
                 y = np.square(nth_diff(y_array, n=frame+1))
 
-                MSD[frame+1, :] = np.nanmean(x + y, axis=0)
-                gauss[frame+1, :] = np.nanmean(x**2 + y**2, axis=0)/(2*(MSD[frame+1]**2))
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", category=RuntimeWarning)
+                    MSD[frame+1, :] = np.nanmean(x + y, axis=0)
+                    gauss[frame+1, :] = np.nanmean(x**2 + y**2, axis=0)/(2*(MSD[frame+1]**2))
 
             d = {'Frame': f_array.flatten('F'),
                  'Track_ID': t_array.flatten('F'),

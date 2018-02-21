@@ -7,8 +7,8 @@ import math
 import struct
 import sys
 
-from diff_classifier.utils import csv_to_pd
-from diff_classifier.msd import nth_diff, msd_calc, all_msds
+import diff_classifier.utils as ut
+import diff_classifier.msd as msd
 
 
 def unmask_track(track):
@@ -531,9 +531,9 @@ def boundedness(track, framerate=1):
         distance = np.zeros((length, length))
 
         for frame in range(0, length-1):
-            distance[frame, 0:length-frame-1] = (np.sqrt(nth_diff(df['X'], frame+1)**2 + nth_diff(df['Y'], frame+1)**2).values)
+            distance[frame, 0:length-frame-1] = (np.sqrt(msd.nth_diff(df['X'], frame+1)**2 + msd.nth_diff(df['Y'], frame+1)**2).values)
 
-        L = np.sum((np.sqrt(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2).values))
+        L = np.sum((np.sqrt(msd.nth_diff(df['X'], 1)**2 + msd.nth_diff(df['Y'], 1)**2).values))
         r = np.max(distance)/2
         N = df['Frame'][df['Frame'].shape[0]-1]
         f = N*framerate
@@ -594,11 +594,11 @@ def efficiency(track):
 
     df = track
     length = df.shape[0]
-    num = (nth_diff(df['X'], length-1)**2 + nth_diff(df['Y'], length-1)**2)[0]
+    num = (msd.nth_diff(df['X'], length-1)**2 + msd.nth_diff(df['Y'], length-1)**2)[0]
     num2 = np.sqrt(num)
 
-    den = np.sum(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2)
-    den2 = np.sum(np.sqrt(nth_diff(df['X'], 1)**2 + nth_diff(df['Y'], 1)**2))
+    den = np.sum(msd.nth_diff(df['X'], 1)**2 + msd.nth_diff(df['Y'], 1)**2)
+    den2 = np.sum(np.sqrt(msd.nth_diff(df['X'], 1)**2 + msd.nth_diff(df['Y'], 1)**2))
 
     eff = num/den
     strait = num2/den2

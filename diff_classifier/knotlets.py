@@ -165,7 +165,11 @@ def download_split_track_msds(prefix):
             to_add = ut.csv_to_pd(local_name)
             to_add['X'] = to_add['X'] + ires*row
             to_add['Y'] = to_add['Y'] + ires*col
-            to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID'])
+            try:
+                to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID'])
+            except:
+                to_add['Track_ID'] = to_add['Track_ID']
+            
             merged = merged.append(msd.all_msds2(to_add, frames=frames))
         counter = counter + 1
         
