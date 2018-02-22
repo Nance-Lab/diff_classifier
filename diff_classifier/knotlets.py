@@ -103,7 +103,6 @@ def download_split_track_msds(prefix):
     import numpy.ma as ma
     import pandas as pd
     import boto3
-    import skimage.io as sio
     
     #Splitting section
     ###############################################################################################
@@ -148,8 +147,7 @@ def download_split_track_msds(prefix):
             try:
                 aws.download_s3(op.join(remote_folder, outfile), outfile)
             except:
-                test_image = sio.imread(local_im)
-                test_intensity = np.mean(test_image[0, :, :])
+                test_intensity = ij.mean_intensity(local_im)
                 if test_intensity > 500:
                     quality = 245
                 else:
