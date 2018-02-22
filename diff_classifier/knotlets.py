@@ -180,10 +180,7 @@ def download_split_track_msds(prefix):
         else:
             counter = 0
             for name in names:
-                row = int(name.split('.')[0].split('_')[4])
-                col = int(name.split('.')[0].split('_')[5])
-
-                filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
+                filename = 'Traj_' + name.split('.')[0] + '.csv'
                 local_name = op.join(local_folder, filename)
 
                 if counter == 0:
