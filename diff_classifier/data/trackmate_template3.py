@@ -80,6 +80,10 @@ settings.addSpotAnalyzerFactory(SpotIntensityAnalyzerFactory())
 settings.addSpotAnalyzerFactory(SpotContrastAndSNRAnalyzerFactory())
 
 filter2 = FeatureFilter('QUALITY', {quality}, True)
+filter3 = FeatureFilter('X', 1, False)
+filter4 = FeatureFilter('X', {x}, True)
+filter5 = FeatureFilter('Y', 1, False)
+filter6 = FeatureFilter('Y', {y}, True)
 settings.addSpotFilter(filter2)
 
 #filter3 = FeatureFilter('MEDIAN_INTENSITY', {median_intensity}, False)
