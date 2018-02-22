@@ -358,8 +358,8 @@ def make_xyarray(data, length=651):
         track = data[data['Track_ID']==part].sort_values(['Track_ID', 'Frame'], ascending=[1, 1]).reset_index(drop=True)
 
         old_frame = track['Frame']
-        old_x = track['X']
-        old_y = track['Y']
+        old_x = track['X'].as_matrix()
+        old_y = track['Y'].as_matrix()
         fx = interpolate.interp1d(old_frame, old_x, bounds_error = False, fill_value = np.nan)
         fy = interpolate.interp1d(old_frame, old_y, bounds_error = False, fill_value = np.nan)
 
@@ -406,8 +406,8 @@ def all_msds2(data, frames=651):
         try:
             f_array, t_array, x_array, y_array = make_xyarray(data, length=frames)
 
-            length = int(x_array.shape[0])
-            particles = int(x_array.shape[1])
+            length = x_array.shape[0]
+            particles = x_array.shape[1]
 
             MSD = np.zeros((length, particles))
             gauss = np.zeros((length, particles))
