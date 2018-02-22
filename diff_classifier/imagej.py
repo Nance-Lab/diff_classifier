@@ -46,6 +46,13 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
     return names
 
 
+def mean_intensity(local_im):
+    test_image = sio.imread(local_im)
+    test_intensity = np.mean(test_image[0, :, :])
+    
+    return test_intensity
+
+
 def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=5., 
           do_median_filtering=False, quality=30.0, x=511, y=511, median_intensity=55000.0, snr=0.0, 
           linking_max_distance=10.0, gap_closing_max_distance=10.0, max_frame_gap=3,
