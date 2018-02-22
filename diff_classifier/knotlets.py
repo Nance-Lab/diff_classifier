@@ -133,12 +133,11 @@ def download_split_track_msds(prefix):
             for name in names:
                 aws.download_s3(op.join(remote_folder, name), name)
         except:
-            except:
-                aws.download_s3(remote_name, local_name)
-                names = ij.partition_im(local_name)
-                for name in names:
-                    aws.upload_s3(name, op.join(remote_folder, name))
-                    print("Done with splitting.  Should output file of name {}".format(op.join(remote_folder, name)))
+            aws.download_s3(remote_name, local_name)
+            names = ij.partition_im(local_name)
+            for name in names:
+                aws.upload_s3(name, op.join(remote_folder, name))
+                print("Done with splitting.  Should output file of name {}".format(op.join(remote_folder, name)))
 
         #Tracking section
         ################################################################################################
@@ -167,30 +166,44 @@ def download_split_track_msds(prefix):
 
         #MSD and features section
         #################################################################################################
-        counter = 0
+        files_to_big = False
+        size_limit = 10
+        
         for name in names:
-            row = int(name.split('.')[0].split('_')[4])
-            col = int(name.split('.')[0].split('_')[5])
+            outfile = 'Traj_' + name.split('.')[0] + '.csv'
+            local_im = op.join(local_folder, name)
+            file_size_MB = op.getsize(local_im)/1000000
+            if file_size_MB > size_limit:
+                file_to_big = True
 
-            filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
-            local_name = op.join(local_folder, filename)
+        if files_to_big:
+            print('One or more of the {} trajectory files exceeds {}MB in size.  Will not continue with MSD calculations.'.format(
+                  prefix, size_limit))
+        else:
+            counter = 0
+            for name in names:
+                row = int(name.split('.')[0].split('_')[4])
+                col = int(name.split('.')[0].split('_')[5])
 
-            if counter == 0:
-                merged = msd.all_msds2(ut.csv_to_pd(local_name), frames=frames)
-            else: 
-                to_add = ut.csv_to_pd(local_name)
-                to_add['X'] = to_add['X'] + ires*row
-                to_add['Y'] = to_add['Y'] + ires*col
-                try:
-                    to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID'])
-                except:
-                    to_add['Track_ID'] = to_add['Track_ID']
+                filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
+                local_name = op.join(local_folder, filename)
 
-                merged = merged.append(msd.all_msds2(to_add, frames=frames))
-            counter = counter + 1
+                if counter == 0:
+                    merged = msd.all_msds2(ut.csv_to_pd(local_name), frames=frames)
+                else: 
+                    to_add = ut.csv_to_pd(local_name)
+                    to_add['X'] = to_add['X'] + ires*row
+                    to_add['Y'] = to_add['Y'] + ires*col
+                    try:
+                        to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID'])
+                    except:
+                        to_add['Track_ID'] = to_add['Track_ID']
 
-            merged.to_csv(msd_file)
-            aws.upload_s3(msd_file, op.join(remote_folder, msd_file))
+                    merged = merged.append(msd.all_msds2(to_add, frames=frames))
+                counter = counter + 1
+
+                merged.to_csv(msd_file)
+                aws.upload_s3(msd_file, op.join(remote_folder, msd_file))
             merged_ft = ft.calculate_features(merged)
             merged_ft.to_csv(ft_file)
             aws.upload_s3(ft_file, op.join(remote_folder, ft_file))
