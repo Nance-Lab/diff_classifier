@@ -19,8 +19,8 @@ def download_and_split(filename):
             aws.download_s3(filename, local_name)
             names = ij.partition_im(local_name)
             for name in names:
-                aws.upload_s3(name, op.join(op.split(filename)[0], name))
-    print("Done with splitting.  Should output file of name {}".format(op.join(op.split(filename)[0], name)))
+                aws.upload_s3(name, op.split(filename)[0]+'/'+name)
+    print("Done with splitting.  Should output file of name {}".format(op.split(filename)[0]+'/'+name))
 
 
 def download_and_track(filename):
@@ -34,15 +34,15 @@ def download_and_track(filename):
     aws.download_s3(filename, op.split(filename)[1])
     
     outfile = 'Traj_' + op.split(filename)[1].split('.')[0] + '.csv'
-    local_im = op.join(os.getcwd(), op.split(filename)[1])
+    local_im = op.split(filename)[1]
     if not op.isfile(outfile):
         ij.track(local_im, outfile, template=None, fiji_bin=None, radius=4.5, threshold=0., 
               do_median_filtering=True, quality=4.5, median_intensity=300.0, snr=0.0, 
               linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
               track_displacement=10.0)
 
-        aws.upload_s3(outfile, op.join(op.split(filename)[0], outfile))
-    print("Done with tracking.  Should output file of name {}".format(op.join(op.split(filename)[0], outfile)))
+        aws.upload_s3(outfile, op.split(filename)[0]+'/'+outfile)
+    print("Done with tracking.  Should output file of name {}".format(op.split(filename)[0]+'/'+outfile))
 
 
 def download_and_calc_MSDs(prefix):
@@ -64,8 +64,8 @@ def download_and_calc_MSDs(prefix):
     for row in range(0, 4):
         for col in range(0, 4):
             filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
-            to_download = op.join(remote_folder, filename)
-            local_name = op.join(local_folder, filename)
+            to_download = remote_folder+'/'+filename
+            local_name = local_folder+'/'+filename
             aws.download_s3(to_download, local_name)
             if row==0 and col==0:
                 merged = msd.all_msds(ut.csv_to_pd(local_name))
@@ -111,8 +111,8 @@ def download_split_track_msds(prefix):
     ires = 512
     frames = 651
     filename = '{}.tif'.format(prefix)
-    remote_name = op.join(remote_folder, filename)
-    local_name = op.join(local_folder, filename)
+    remote_name = remote_folder+'/'+filename
+    local_name = local_folder+'/'+filename
     
     msd_file = 'msd_{}.csv'.format(prefix)
     ft_file = 'features_{}.csv'.format(prefix)
@@ -125,27 +125,27 @@ def download_split_track_msds(prefix):
             names.append('{}_{}_{}.tif'.format(prefix, i, j))
     
     try:
-        obj = s3.head_object(Bucket='ccurtis7.pup', Key=op.join(remote_name, ft_file))
+        obj = s3.head_object(Bucket='ccurtis7.pup', Key=remote_name+'/'+ft_file)
     except:
 
         try:
             for name in names:
-                aws.download_s3(op.join(remote_folder, name), name)
+                aws.download_s3(remote_folder+'/'+name, name)
         except:
             aws.download_s3(remote_name, local_name)
             names = ij.partition_im(local_name)
             for name in names:
-                aws.upload_s3(name, op.join(remote_folder, name))
-                print("Done with splitting.  Should output file of name {}".format(op.join(remote_folder, name)))
+                aws.upload_s3(name, remote_folder+'/'+name)
+                print("Done with splitting.  Should output file of name {}".format(remote_folder+'/'+name))
 
         #Tracking section
         ################################################################################################
         for name in names:
             outfile = 'Traj_' + name.split('.')[0] + '.csv'
-            local_im = op.join(local_folder, name)
+            local_im = name
 
             try:
-                aws.download_s3(op.join(remote_folder, outfile), outfile)
+                aws.download_s3(remote_folder+'/'+outfile, outfile)
             except:
                 test_intensity = ij.mean_intensity(local_im)
                 if test_intensity > 500:
@@ -158,8 +158,8 @@ def download_split_track_msds(prefix):
                       linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
                       track_displacement=10.0)
 
-                aws.upload_s3(outfile, op.join(remote_folder, outfile))
-            print("Done with tracking.  Should output file of name {}".format(op.join(remote_folder, outfile)))
+                aws.upload_s3(outfile, remote_folder+'/'+outfile)
+            print("Done with tracking.  Should output file of name {}".format(remote_folder+'/'+outfile))
 
 
         #MSD and features section
@@ -169,7 +169,7 @@ def download_split_track_msds(prefix):
         
         for name in names:
             outfile = 'Traj_' + name.split('.')[0] + '.csv'
-            local_im = op.join(local_folder, name)
+            local_im = name
             file_size_MB = op.getsize(local_im)/1000000
             if file_size_MB > size_limit:
                 file_to_big = True
@@ -184,7 +184,7 @@ def download_split_track_msds(prefix):
                 col = int(name.split('.')[0].split('_')[5])
 
                 filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
-                local_name = op.join(local_folder, filename)
+                local_name = local_folder+'/'+filename
 
                 if counter == 0:
                     merged = msd.all_msds2(ut.csv_to_pd(local_name), frames=frames)
@@ -201,7 +201,7 @@ def download_split_track_msds(prefix):
                 counter = counter + 1
 
                 merged.to_csv(msd_file)
-                aws.upload_s3(msd_file, op.join(remote_folder, msd_file))
+                aws.upload_s3(msd_file, remote_folder+'/'+msd_file)
             merged_ft = ft.calculate_features(merged)
             merged_ft.to_csv(ft_file)
-            aws.upload_s3(ft_file, op.join(remote_folder, ft_file))
+            aws.upload_s3(ft_file, remote_folder+'/'+ft_file)
