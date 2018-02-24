@@ -96,8 +96,8 @@ settings.addSpotFilter(filter2)
 settings.addTrackAnalyzer(TrackSpeedStatisticsAnalyzer())
 settings.addTrackAnalyzer(TrackDurationAnalyzer())
 
-#filter5 = FeatureFilter('TRACK_DISPLACEMENT', {track_displacement}, True)
-#settings.addTrackFilter(filter5)
+filter7 = FeatureFilter('TRACK_DISPLACEMENT', {track_displacement}, True)
+settings.addTrackFilter(filter7)
 
 settings.initialSpotFilterValue = 1
 

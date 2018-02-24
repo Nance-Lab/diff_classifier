@@ -189,19 +189,24 @@ def download_split_track_msds(prefix):
                 if counter == 0:
                     merged = msd.all_msds2(ut.csv_to_pd(local_name), frames=frames)
                 else: 
-                    to_add = ut.csv_to_pd(local_name)
-                    to_add['X'] = to_add['X'] + ires*row
-                    to_add['Y'] = to_add['Y'] + ires*col
+                    
                     try:
-                        to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID'])
+                        to_add = ut.csv_to_pd(local_name)
+                        to_add['X'] = to_add['X'] + ires*row
+                        to_add['Y'] = to_add['Y'] + ires*col
+                        to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID']) + 1
                     except:
-                        to_add['Track_ID'] = to_add['Track_ID']
+                        d = {'Frame': [],
+                             'Track_ID': [],
+                             'X': [],
+                             'Y': []}
+                        to_add = pd.DataFrame(data=d)
 
                     merged = merged.append(msd.all_msds2(to_add, frames=frames))
                 counter = counter + 1
 
-                merged.to_csv(msd_file)
-                aws.upload_s3(msd_file, remote_folder+'/'+msd_file)
+            merged.to_csv(msd_file)
+            aws.upload_s3(msd_file, remote_folder+'/'+msd_file)
             merged_ft = ft.calculate_features(merged)
             merged_ft.to_csv(ft_file)
             aws.upload_s3(ft_file, remote_folder+'/'+ft_file)
