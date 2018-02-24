@@ -34,4 +34,10 @@ def csv_to_pd(csvfname):
     data = pd.read_csv(csvfname, skiprows=counter)
     data.sort_values(['Track_ID', 'Frame'], ascending=[1, 1])
 
+    part_IDs = data.Track_ID.unique()
+    counter = 0
+    for ID in part_IDs:
+        data.loc[data.Track_ID == ID, 'Track_ID'] = counter
+        counter = counter + 1
+
     return data
