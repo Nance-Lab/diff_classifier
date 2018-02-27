@@ -92,6 +92,8 @@ def download_split_track_msds(prefix):
     4. Regardless, tracks, calculates MSDs and features. 
     """
     
+    import matplotlib as mpl
+    mpl.use('Agg')
     import diff_classifier.aws as aws
     import diff_classifier.utils as ut
     import diff_classifier.msd as msd
@@ -103,7 +105,6 @@ def download_split_track_msds(prefix):
     import scipy.stats as stats
     from shapely.geometry import Point
     from shapely.geometry.polygon import Polygon
-    import matplotlib as mpl
     import matplotlib.cm as cm
     import os
     import os.path as op
