@@ -98,8 +98,13 @@ def download_split_track_msds(prefix):
     import diff_classifier.features as ft
     import diff_classifier.imagej as ij
     import diff_classifier.heatmaps as hm
-    import matplotlib.pyplot as plt
+
+    from scipy.spatial import Voronoi
     import scipy.stats as stats
+    from shapely.geometry import Point
+    from shapely.geometry.polygon import Polygon
+    import matplotlib as mpl
+    import matplotlib.cm as cm
     import os
     import os.path as op
     import numpy as np
