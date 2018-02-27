@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.spatial import Voronoi
+import scipy.stats as stats
 import os
 import os.path as op
 from shapely.geometry import Point
@@ -9,6 +10,7 @@ from shapely.geometry.polygon import Polygon
 import numpy.ma as ma
 import matplotlib as mpl
 import matplotlib.cm as cm
+import diff_classifier.aws as aws
 
 
 def voronoi_finite_polygons_2d(vor, radius=None):
@@ -99,7 +101,8 @@ def voronoi_finite_polygons_2d(vor, radius=None):
     return new_regions, np.asarray(new_vertices)
 
 
-def plot_heatmap(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, rows=4, cols=4):
+def plot_heatmap(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, rows=4, cols=4,
+                upload=True):
     
     #Inputs
     #----------
@@ -158,10 +161,15 @@ def plot_heatmap(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, r
     plt.ylim(0, ires*rows)
 
     print('Plotted {} heatmap successfully.'.format(prefix))
-    fig.savefig('heatmap_{}.png'.format(prefix), bbox_inches='tight')
+    outfile = 'hm_{}_{}.png'.format(feature, prefix)
+    remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
+    fig.savefig(outfile, bbox_inches='tight')
+    if upload==True:
+        aws.upload_s3(outfile, remote_folder+'/'+outfile)
     
     
-def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, rows=4, cols=4):
+def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, rows=4, cols=4,
+                     upload=True):
     
     #Inputs
     #----------
@@ -191,10 +199,14 @@ def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=51
     plt.ylim(0, ires*rows)
     
     print('Plotted {} scatterplot successfully.'.format(prefix))
-    fig.savefig('scatter_{}.png'.format(prefix), bbox_inches='tight')
+    outfile = 'scatter_{}.png'.format(prefix)
+    remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
+    fig.savefig(outfile, bbox_inches='tight')
+    if upload==True:
+        aws.upload_s3(outfile, remote_folder+'/'+outfile)
     
 
-def plot_trajectories(prefix, resolution=512, rows=4, cols=4):
+def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True):
     
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
     particles = int(max(merged['Track_ID']))
@@ -210,12 +222,16 @@ def plot_trajectories(prefix, resolution=512, rows=4, cols=4):
     plt.ylim(0, ires*rows)
     
     print('Plotted {} trajectories successfully.'.format(prefix))
-    fig.savefig('traj_{}.png'.format(prefix), bbox_inches='tight')
+    outfile = 'traj_{}.png'.format(prefix)
+    remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
+    fig.savefig(outfile, bbox_inches='tight')
+    if upload==True:
+        aws.upload_s3(outfile, remote_folder+'/'+outfile)
 
     
 def plot_histogram(prefix, xlabel='Log Diffusion Coefficient Dist', ylabel='Trajectory Count',
                    fps=100.02, umppx=0.16, frames=651, y_range=100, frame_interval=20, frame_range=100,
-                   analysis='log', theta='D'):
+                   analysis='log', theta='D', upload=True):
     
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
     data = merged
@@ -275,10 +291,14 @@ def plot_histogram(prefix, xlabel='Log Diffusion Coefficient Dist', ylabel='Traj
             plt.gca().set_xlim([0, x_range])
 
         plt.legend(fontsize=20, frameon=False)
-    plt.savefig('hist_{}.png'.format(prefix), bbox_inches='tight')
+    outfile = 'hist_{}.png'.format(prefix)
+    remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
+    fig.savefig(outfile, bbox_inches='tight')
+    if upload==True:
+        aws.upload_s3(outfile, remote_folder+'/'+outfile)
     
     
-def plot_particles_in_frame(prefix, x_range=600, y_range=2000):
+def plot_particles_in_frame(prefix, x_range=600, y_range=2000, upload=True):
     
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
     frames = int(max(merged['Frame']))
@@ -294,4 +314,43 @@ def plot_particles_in_frame(prefix, x_range=600, y_range=2000):
     plt.xlabel('Frames', fontsize=20)
     plt.ylabel('Particles', fontsize=20)
     
-    plt.savefig('in_frame_{}.png'.format(prefix), bbox_inches='tight')
+    outfile = 'in_frame_{}.png'.format(prefix)
+    remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
+    fig.savefig(outfile, bbox_inches='tight')
+    if upload==True:
+        aws.upload_s3(outfile, remote_folder+'/'+outfile)
+    
+    
+def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, alpha=0.01, upload=True):
+    
+    merged = pd.read_csv('msd_{}.csv'.format(prefix))
+
+    fig = plt.figure(figsize=(10, 10))
+    particles = int(max(merged['Track_ID']))
+    frames = int(max(merged['Frame']))
+    y = np.zeros((particles+1, frames+1))
+    for i in range(0, particles+1):
+        y[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
+        x = merged.loc[merged.Track_ID == i, 'Frame']
+        plt.plot(x, y[i, :], 'k', alpha=alpha)
+
+    geo_mean = np.nanmean(np.log(y), axis=0)
+    geo_SEM = stats.sem(np.log(y), axis=0, nan_policy='omit')
+    plt.plot(x, np.exp(geo_mean), 'k', linewidth=4)
+    plt.plot(x, np.exp(geo_mean-geo_SEM), 'k--', linewidth=2)
+    plt.plot(x, np.exp(geo_mean+geo_SEM), 'k--', linewidth=2)
+    plt.xlim(0, 100)
+    plt.ylim(0, 20)
+    
+    outfile = 'msds_{}.png'.format(prefix)
+    outfile2 = 'geomean_{}.csv'.format(prefix)
+    outfile3 = 'geoSEM_{}.csv'.format(prefix)
+    remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
+    fig.savefig(outfile, bbox_inches='tight')
+    np.savetxt(outfile2, geo_mean, delimiter=",")
+    np.savetxt(outfile3, geo_SEM, delimiter=",")
+    if upload==True:
+        aws.upload_s3(outfile, remote_folder+'/'+outfile)
+        aws.upload_s3(outfile2, remote_folder+'/'+outfile2)
+        aws.upload_s3(outfile3, remote_folder+'/'+outfile3)
+    return geo_mean, geo_SEM

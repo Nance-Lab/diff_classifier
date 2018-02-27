@@ -54,7 +54,7 @@ def mean_intensity(local_im):
 
 
 def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=5., 
-          do_median_filtering=False, quality=30.0, x=511, y=511, median_intensity=55000.0, snr=0.0, 
+          do_median_filtering=False, quality=30.0, x=511, y=511, ylo=1, median_intensity=55000.0, snr=0.0, 
           linking_max_distance=10.0, gap_closing_max_distance=10.0, max_frame_gap=3,
           track_displacement=0.0):
     """
@@ -85,7 +85,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=
     fid = open(tf.name, 'w')
     fid.write(script.format(target_file=target, radius=str(radius), threshold=str(threshold),
                             do_median_filtering=str(do_median_filtering), quality=str(quality),
-                            x = str(x), y = str(y),
+                            x = str(x), y = str(y), ylo = str(ylo),
                             median_intensity=str(median_intensity), snr=str(snr),
                             linking_max_distance=str(linking_max_distance),
                             gap_closing_max_distance=str(gap_closing_max_distance),
