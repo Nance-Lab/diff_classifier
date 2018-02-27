@@ -1,3 +1,5 @@
+import matplotlib as mpl
+mpl.use('Agg')
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,7 +10,6 @@ import os.path as op
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import numpy.ma as ma
-import matplotlib as mpl
 import matplotlib.cm as cm
 import diff_classifier.aws as aws
 
