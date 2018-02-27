@@ -9,3 +9,4 @@ diff_classifier/tests/__pycache__
 *.egg-info
 notebooks/cloudknot_docker*
 *.swp
+*.png
