@@ -159,6 +159,7 @@ def plot_heatmap(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, r
     plt.colorbar(mapper)
     plt.xlim(0, ires*cols)
     plt.ylim(0, ires*rows)
+    plt.axis('off')
 
     print('Plotted {} heatmap successfully.'.format(prefix))
     outfile = 'hm_{}_{}.png'.format(feature, prefix)
@@ -197,6 +198,7 @@ def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=51
     plt.colorbar(mapper)
     plt.xlim(0, ires*cols)
     plt.ylim(0, ires*rows)
+    plt.axis('off')
     
     print('Plotted {} scatterplot successfully.'.format(prefix))
     outfile = 'scatter_{}.png'.format(prefix)
@@ -220,6 +222,7 @@ def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True):
 
     plt.xlim(0, ires*cols)
     plt.ylim(0, ires*rows)
+    plt.axis('off')
     
     print('Plotted {} trajectories successfully.'.format(prefix))
     outfile = 'traj_{}.png'.format(prefix)
@@ -321,7 +324,7 @@ def plot_particles_in_frame(prefix, x_range=600, y_range=2000, upload=True):
         aws.upload_s3(outfile, remote_folder+'/'+outfile)
     
     
-def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, alpha=0.01, upload=True):
+def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps = 100.02, alpha=0.01, upload=True):
     
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
 
@@ -331,7 +334,7 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, alpha=0.01
     y = np.zeros((particles+1, frames+1))
     for i in range(0, particles+1):
         y[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
-        x = merged.loc[merged.Track_ID == i, 'Frame']
+        x = merged.loc[merged.Track_ID == i, 'Frame']/fps
         plt.plot(x, y[i, :], 'k', alpha=alpha)
 
     geo_mean = np.nanmean(np.log(y), axis=0)
@@ -339,8 +342,10 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, alpha=0.01
     plt.plot(x, np.exp(geo_mean), 'k', linewidth=4)
     plt.plot(x, np.exp(geo_mean-geo_SEM), 'k--', linewidth=2)
     plt.plot(x, np.exp(geo_mean+geo_SEM), 'k--', linewidth=2)
-    plt.xlim(0, 100)
+    plt.xlim(0, 1)
     plt.ylim(0, 20)
+    plt.xlabel('Tau (s)', fontsize=25)
+    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
     
     outfile = 'msds_{}.png'.format(prefix)
     outfile2 = 'geomean_{}.csv'.format(prefix)

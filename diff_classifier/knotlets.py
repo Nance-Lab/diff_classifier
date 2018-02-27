@@ -97,6 +97,9 @@ def download_split_track_msds(prefix):
     import diff_classifier.msd as msd
     import diff_classifier.features as ft
     import diff_classifier.imagej as ij
+    import diff_classifier.heatmaps as hm
+    import matplotlib.pyplot as plt
+    import scipy.stats as stats
     import os
     import os.path as op
     import numpy as np
@@ -152,11 +155,16 @@ def download_split_track_msds(prefix):
                     quality = 245
                 else:
                     quality = 4.5
+                
+                if row==3:
+                    y = 500
+                else:
+                    y = 511
 
                 ij.track(local_im, outfile, template=None, fiji_bin=None, radius=4.5, threshold=0., 
-                      do_median_filtering=True, quality=quality, x=511, y=511, median_intensity=300.0, snr=0.0, 
-                      linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
-                      track_displacement=10.0)
+                         do_median_filtering=True, quality=quality, x=511, y=y, ylo=1, median_intensity=300.0, snr=0.0, 
+                         linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
+                         track_displacement=10.0) 
 
                 aws.upload_s3(outfile, remote_folder+'/'+outfile)
             print("Done with tracking.  Should output file of name {}".format(remote_folder+'/'+outfile))
@@ -187,20 +195,22 @@ def download_split_track_msds(prefix):
                 local_name = local_folder+'/'+filename
 
                 if counter == 0:
-                    merged = msd.all_msds2(ut.csv_to_pd(local_name), frames=frames)
+                    to_add = ut.csv_to_pd(local_name)
+                    to_add['X'] = to_add['X'] + ires*col
+                    to_add['Y'] = ires - to_add['Y'] + ires*(3-row)
+                    merged = msd.all_msds2(to_add, frames=frames)
                 else: 
-                    
-                    try:
+
+                    if merged.shape[0] > 0:
                         to_add = ut.csv_to_pd(local_name)
-                        to_add['X'] = to_add['X'] + ires*row
-                        to_add['Y'] = to_add['Y'] + ires*col
+                        to_add['X'] = to_add['X'] + ires*col
+                        to_add['Y'] = ires - to_add['Y'] + ires*(3-row)
                         to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID']) + 1
-                    except:
-                        d = {'Frame': [],
-                             'Track_ID': [],
-                             'X': [],
-                             'Y': []}
-                        to_add = pd.DataFrame(data=d)
+                    else:
+                        to_add = ut.csv_to_pd(local_name)
+                        to_add['X'] = to_add['X'] + ires*col
+                        to_add['Y'] = ires - to_add['Y'] + ires*(3-row)
+                        to_add['Track_ID'] = to_add['Track_ID']
 
                     merged = merged.append(msd.all_msds2(to_add, frames=frames))
                 counter = counter + 1
@@ -209,4 +219,24 @@ def download_split_track_msds(prefix):
             aws.upload_s3(msd_file, remote_folder+'/'+msd_file)
             merged_ft = ft.calculate_features(merged)
             merged_ft.to_csv(ft_file)
+         
             aws.upload_s3(ft_file, remote_folder+'/'+ft_file)
+            
+            #Plots          
+            features = ('AR', 'D_fit', 'alpha', 'MSD_ratio', 'Track_ID', 'X', 'Y', 'asymmetry1', 'asymmetry2', 'asymmetry3',
+                        'boundedness', 'efficiency', 'elongation', 'fractal_dim', 'frames', 'kurtosis', 'straightness', 'trappedness')
+            vmin = (1.36, 0.015, 0.72, -0.09, 0, 0, 0, 0.5, 0.049, 0.089, 0.0069, 0.65, 0.26, 1.28, 0, 1.66, 0.087, -0.225)
+            vmax = (3.98, 2.6, 2.3, 0.015, max(merged_ft['Track_ID']), 2048, 2048, 0.99, 0.415, 0.53,
+                    0.062, 3.44, 0.75, 1.79, 650, 3.33, 0.52, -0.208)
+            die = {'features': features,
+                   'vmin': vmin,
+                   'vmax': vmax}
+            di = pd.DataFrame(data=die) 
+            for i in range(0, di.shape[0]):
+                hm.plot_heatmap(prefix, feature=di['features'][i], vmin=di['vmin'][i], vmax=di['vmax'][i])
+                hm.plot_scatterplot(prefix, feature=di['features'][i], vmin=di['vmin'][i], vmax=di['vmax'][i])
+            
+            hm.plot_trajectories(prefix)
+            hm.plot_histogram(prefix)
+            hm.plot_particles_in_frame(prefix)
+            gmean1, gSEM1 = hm.plot_individual_msds(prefix, alpha=0.05)
