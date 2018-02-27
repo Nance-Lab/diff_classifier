@@ -134,7 +134,7 @@ def download_split_track_msds(prefix):
             names.append('{}_{}_{}.tif'.format(prefix, i, j))
     
     try:
-        obj = s3.head_object(Bucket='ccurtis7.pup', Key=remote_name+'/'+ft_file)
+        obj = s3.head_object(Bucket='ccurtis7.pup', Key=remote_folder+'/'+ft_file)
     except:
 
         try:
@@ -166,7 +166,7 @@ def download_split_track_msds(prefix):
                     quality = 4.5
                 
                 if row==3:
-                    y = 500
+                    y = 485
                 else:
                     y = 511
 
@@ -246,6 +246,9 @@ def download_split_track_msds(prefix):
                 hm.plot_scatterplot(prefix, feature=di['features'][i], vmin=di['vmin'][i], vmax=di['vmax'][i])
             
             hm.plot_trajectories(prefix)
-            hm.plot_histogram(prefix)
+            try:
+                hm.plot_histogram(prefix)
+            except ValueError:
+                print("Couldn't plot histogram.")
             hm.plot_particles_in_frame(prefix)
             gmean1, gSEM1 = hm.plot_individual_msds(prefix, alpha=0.05)
