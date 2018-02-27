@@ -151,6 +151,9 @@ def download_split_track_msds(prefix):
         for name in names:
             outfile = 'Traj_' + name.split('.')[0] + '.csv'
             local_im = name
+            
+            row = int(name.split('.')[0].split('_')[4])
+            col = int(name.split('.')[0].split('_')[5])
 
             try:
                 aws.download_s3(remote_folder+'/'+outfile, outfile)
