@@ -151,7 +151,7 @@ def download_split_track_msds(prefix):
         ################################################################################################
         for name in names:
             outfile = 'Traj_' + name.split('.')[0] + '.csv'
-            local_im = name
+            local_im = op.join(local_folder, name)
             
             row = int(name.split('.')[0].split('_')[4])
             col = int(name.split('.')[0].split('_')[5])
@@ -222,6 +222,7 @@ def download_split_track_msds(prefix):
                         to_add['Track_ID'] = to_add['Track_ID']
 
                     merged = merged.append(msd.all_msds2(to_add, frames=frames))
+                    print('Done calculating MSDs for row {} and col {}'.format(row, col))
                 counter = counter + 1
 
             merged.to_csv(msd_file)
