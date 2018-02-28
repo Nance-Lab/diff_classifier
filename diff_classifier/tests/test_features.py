@@ -282,3 +282,28 @@ def test_calculate_features():
     dfi = pd.DataFrame(data=d)
     
     pdt.assert_frame_equal(dfi, feat)
+
+def test_unmask_track():
+    size = 10
+    ID = np.ones(size)
+    frame = np.linspace(5, size-1+5, size)
+    x = frame + 1
+    y = frame + 3
+
+    d = {'Frame': frame,
+         'Track_ID': ID,
+         'X': x,
+         'Y': y}
+    di = pd.DataFrame(data=d)
+    track = msd.all_msds2(di, frames=20)
+    output = ft.unmask_track(track)
+
+    d2 = {'Frame': frame-5,
+         'Track_ID': ID,
+         'X': x,
+         'Y': y,
+         'MSDs': np.array((0, 2, 8, 18, 32, 50, 72, 98, 128, 162)).astype('float64'),
+         'Gauss': np.array((0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25))}
+    check = pd.DataFrame(data=d2)
+
+    pdt.assert_frame_equal(output, check)

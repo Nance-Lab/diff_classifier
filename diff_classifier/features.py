@@ -12,6 +12,24 @@ import diff_classifier.msd as msd
 
 
 def unmask_track(track):
+    """
+    Removes empty frames from a track in an MSD pandas dataframe.
+    
+    Parameters
+    ----------
+    track : pandas Dataframe
+        At a minimum, must contain a Frame, Track_ID, X, Y, MSDs, and
+        Gauss column.
+    
+    Returns
+    ----------
+    comp_track : pandas Dataframe
+        Similar to track, but has all masked components removed.
+    
+    Examples
+    ----------
+    
+    """
     x = ma.masked_invalid(track['X'])
     msd = ma.masked_invalid(track['MSDs'])
     x_mask = ma.getmask(x)
@@ -655,7 +673,31 @@ def msd_ratio(track, n1=3, n2=100):
 
 
 def calculate_features(df, framerate=1):
-
+    """
+    Calculates multiple features from input MSD dataset and stores in pandas dataframe.
+    
+    Parameters
+    ----------
+    df : pandas dataframe
+        Output from msd.all_msds2.  Must have at a minimum the following columns:
+        Track_ID, Frame, X, Y, and MSDs.
+    framerate : int or float64
+        Framerate of the input videos from which trajectories were calculated.  Required
+        for accurate calculation of some features.  Default is 1.  Possibly not required.
+        Ignore if performing all calcuations without units.
+    
+    Returns
+    ----------
+    di: pandas dataframe
+        Contains a row for each trajectory in df.  Holds the following features of each
+        trajetory: Track_ID, alpha, D_fit, kurtosis, asymmetry1, asymmetry2, asymmetry3,
+        aspect ratio (AR), elongation, boundedness, fractal dimension (fractal_dim),
+        trappedness, efficiency, straightness, MSD ratio, frames, X, and Y.
+    
+    Examples
+    ----------
+    See example outputs from individual feature functions.
+    """
     # Skeleton of Trajectory features metadata table.
     # Builds entry for each unique Track ID.
     holder = df.Track_ID.unique().astype(float)
