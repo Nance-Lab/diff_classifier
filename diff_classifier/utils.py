@@ -24,20 +24,36 @@ def csv_to_pd(csvfname):
 
     """
     csvfile = open(csvfname)
+    
+    try:
+        line = 'test'
+        counter = 0
+        while line != 'Data starts here.\n':
+            line = csvfile.readline()
+            counter = counter + 1
+            if counter > 2000:
+                break
 
-    line = 'test'
-    counter = 0
-    while line != 'Data starts here.\n':
-        line = csvfile.readline()
-        counter = counter + 1
+        data = pd.read_csv(csvfname, skiprows=counter)
+        data.sort_values(['Track_ID', 'Frame'], ascending=[1, 1])
 
-    data = pd.read_csv(csvfname, skiprows=counter)
-    data.sort_values(['Track_ID', 'Frame'], ascending=[1, 1])
-
-    part_IDs = data.Track_ID.unique()
-    counter = 0
-    for ID in part_IDs:
-        data.loc[data.Track_ID == ID, 'Track_ID'] = counter
-        counter = counter + 1
+        part_IDs = data.Track_ID.unique()
+        counter = 0
+        for ID in part_IDs:
+            data.loc[data.Track_ID == ID, 'Track_ID'] = counter
+            counter = counter + 1
+    except:
+        print('No data in csv file.')
+        d = {'Track_ID': [],
+             'Spot_ID': [],
+             'Frame': [],
+             'X': [],
+             'Y': [],
+             'Quality': [],
+             'SN_Ratio': [],
+             'Mean_Intensity': []}
+        cols = ['Track_ID', 'Spot_ID', 'Frame', 'X', 'Y', 'Quality', 'SN_Ratio', 'Mean_Intensity']
+        data = pd.DataFrame(data=d)
+        data = data[cols]
 
     return data
