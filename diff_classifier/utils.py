@@ -36,6 +36,7 @@ def csv_to_pd(csvfname):
 
         data = pd.read_csv(csvfname, skiprows=counter)
         data.sort_values(['Track_ID', 'Frame'], ascending=[1, 1])
+        data = data.astype('float64')
 
         part_IDs = data.Track_ID.unique()
         counter = 0
@@ -53,7 +54,8 @@ def csv_to_pd(csvfname):
              'SN_Ratio': [],
              'Mean_Intensity': []}
         cols = ['Track_ID', 'Spot_ID', 'Frame', 'X', 'Y', 'Quality', 'SN_Ratio', 'Mean_Intensity']
-        data = pd.DataFrame(data=d)
+        data = pd.DataFrame(data=d, index=[])
         data = data[cols]
+        data = data.astype('float64')
 
     return data
