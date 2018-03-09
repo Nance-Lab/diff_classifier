@@ -324,9 +324,9 @@ def plot_particles_in_frame(prefix, x_range=600, y_range=2000, upload=True):
         aws.upload_s3(outfile, remote_folder+'/'+outfile)
     
     
-def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps = 100.02, alpha=0.01, upload=True):
+def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps = 100.02, alpha=0.01, upload=True, folder='.'):
     
-    merged = pd.read_csv('msd_{}.csv'.format(prefix))
+    merged = pd.read_csv('{}/msd_{}.csv'.format(folder, prefix))
 
     fig = plt.figure(figsize=(10, 10))
     particles = int(max(merged['Track_ID']))
@@ -337,8 +337,8 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps = 100.
         x = merged.loc[merged.Track_ID == i, 'Frame']/fps
         plt.plot(x, y[i, :], 'k', alpha=alpha)
 
-    geo_mean = np.nanmean(np.log(y), axis=0)
-    geo_SEM = stats.sem(np.log(y), axis=0, nan_policy='omit')
+    geo_mean = np.nanmean(ma.log(y), axis=0)
+    geo_SEM = stats.sem(ma.log(y), axis=0, nan_policy='omit')
     plt.plot(x, np.exp(geo_mean), 'k', linewidth=4)
     plt.plot(x, np.exp(geo_mean-geo_SEM), 'k--', linewidth=2)
     plt.plot(x, np.exp(geo_mean+geo_SEM), 'k--', linewidth=2)
@@ -347,9 +347,9 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps = 100.
     plt.xlabel('Tau (s)', fontsize=25)
     plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
     
-    outfile = 'msds_{}.png'.format(prefix)
-    outfile2 = 'geomean_{}.csv'.format(prefix)
-    outfile3 = 'geoSEM_{}.csv'.format(prefix)
+    outfile = '{}/msds_{}.png'.format(folder, prefix)
+    outfile2 = '{}/geomean_{}.csv'.format(folder, prefix)
+    outfile3 = '{}/geoSEM_{}.csv'.format(folder, prefix)
     remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
     fig.savefig(outfile, bbox_inches='tight')
     np.savetxt(outfile2, geo_mean, delimiter=",")
