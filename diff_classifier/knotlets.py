@@ -258,7 +258,7 @@ def download_split_track_msds(prefix):
 def sensitivity_it(counter):
     
     import matplotlib as mpl
-    #mpl.use('Agg')
+    mpl.use('Agg')
     import matplotlib.pyplot as plt
     import diff_classifier.aws as aws
     import diff_classifier.utils as ut
