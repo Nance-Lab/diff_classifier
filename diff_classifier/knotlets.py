@@ -299,7 +299,7 @@ def sensitivity_it(counter):
     s3 = boto3.client('s3')
 
     folder = '01_18_Experiment'
-    s_folder = '{}/sensitivity'
+    s_folder = '{}/sensitivity'.format(folder)
     local_folder = '.'
     prefix = "P1_S1_R_0001_2_2"
     name = "{}.tif".format(prefix)
