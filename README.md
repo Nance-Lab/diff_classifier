@@ -1,21 +1,11 @@
-# diff-classifier
-This project aims to take existing analyses of nanoparticle diffusion that I have worked on previously and expand the analysis to additional features.  This project was done in conjunction with the eScience Institute at the University of Washington.
+## diff_classifier
+[![Build Status](https://travis-ci.org/ccurtis7/diff_classifier.svg?branch=master)](https://travis-ci.org/ccurtis7/diff_classifier)
 
-# Objective 1
+Diff_classifier is a python package for analyzing and visualizing 2D
+nanoparticle trajectory data from multi-particle tracking analysis.  The package
+utilizes the ImageJ package Trackmate for tracking analysis, and Cloudknot for
+parallelization on AWS.
 
-Develop a package to extract trajectory features from high-speed video of
-nanoparticles in the brain and to classify trajectories based on their
-diffusive behavior.  This package will be implemented primarily with Python,
-but will call on ImageJ packages including TrackMate and TrajClassifier.  We
-will use this package to analyze existing datasets of nanoparticle diffusion in
-the healthy developing brain.  We will automate this process to minimize
-computation time and increase reproducibility, and we will implement a data
-storage protocol for datasets in the future.
-
-# Objective 2
-
-Create regional maps of diffusive behavior based on the trajectory features.  
-Features calculated in Objective 1, including efficiency, asymmetry, kurtosis,
-and trappedness, will be visualized spatially to examine regional differences
-in tissue structure.  Differences will be analyze between regions in the brain
-including the cortex, hippocampus, and hypothalamus.  
+This is the diff_classifier development site.  You can view the source code and
+file new issues. If you are just getting started, you should look at the
+[diff_classifier documentation](https://ccurtis7.github.io/diff_classifier/)
