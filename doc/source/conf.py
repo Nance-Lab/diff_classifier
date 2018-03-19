@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # diff_classifier documentation build configuration file, created by
-# sphinx-quickstart on Thu Mar  8 09:49:42 2018.
+# sphinx-quickstart on Wed Mar 14 08:29:02 2018.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -15,30 +15,51 @@
 
 import sys
 import os
-import shlex
+import alabaster
+
+# General information about the project.
+project = u'diff_classifier'
+copyright = u'2018, Chad Curtis, Ariel Rokem'
+author = u'Chad Curtis'
+
+currentdir = os.path.abspath(os.path.dirname(__file__))
+ver_file = os.path.join(currentdir, '../..', project, 'version.py')
+with open(ver_file) as f:
+    exec(f.read())
+source_version = __version__
+
+currentdir = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.join(currentdir, 'tools'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
+# sys.path.append('/c/Users/koolk/Desktop/brain_diffusion/brain_diffusion')
+sys.path.append(os.path.join(os.path.dirname(__name__), '..'))
 
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+sys.path.append(os.path.abspath('sphinxext'))
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.napoleon',
+    'alabaster',
+    'github'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,14 +76,31 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
-# General information about the project.
-project = 'diff_classifier'
-copyright = '2018, Chad Curtis, Ariel Rokem'
-author = 'Chad Curtis, Ariel Rokem'
+# --- Sphinx GAllery ---
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs': '../../diff_classifier/notebooks',
+    # path where to save gallery generated examples_dirs
+    'gallery_dirs': 'auto_examples',
+    # To auto-generate example sections in the API
+    'doc_module': ('brain_diffusion',),
+    # Auto-generated mini-galleries go here
+    'backreferences_dir': 'gen_api'
+}
+
+# Automatically generate stub pages for API
+autoclass_content = "both"
+autodoc_default_flags = ['members', 'inherited-members']
+autosummary_generate = True
+
+# Napoleon settings (other than default)
+napoleon_google_docstring = False
+napoleon_use_rtype = False
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
+
 #
 # The short X.Y version.
 version = '0.1'
@@ -123,10 +161,17 @@ html_theme = 'alabaster'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+html_theme_options = {
+    'description': 'Analyze and visualize trajectory data from ImageJ',
+    'github_user': 'ccurtis7',
+    'github_repo': 'diff_classifier',
+    'github_type': 'star',
+    'show_powered_by': True,
+    # 'fixed_sidebar': True
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = [alabaster.get_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -163,14 +208,14 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {'**': ['about.html', 'navigation.html', 'searchbox.html']}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
 #html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_domain_indices = True
+html_domain_indices = False
 
 # If false, no index is generated.
 #html_use_index = True
@@ -233,7 +278,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'diff_classifier.tex', 'diff\\_classifier Documentation',
-   'Chad Curtis, Ariel Rokem', 'manual'),
+   'Chad Curtis', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
