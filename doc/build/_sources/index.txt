@@ -49,6 +49,11 @@ is the primary tool for tracking analysis of nanoparticles in the brain in the
 `Nance research group <https://www.nancelab.com/>`_ at the University of
 Washington.
 
+.. figure:: _static/summary.png
+  :align: center
+
+  Sample output from diff_classifier visualization tools.
+
 Installation and getting started
 --------------------------------
 
@@ -107,15 +112,15 @@ Acknowledgements
 Diff_classifier development is supported by ....
 
 .. toctree::
-:maxdepth: 2
-:caption: User Documentation
+  :maxdepth: 2
+  :caption: User Documentation
 
-getting_started
-tracking
-features_analysis
-interacting_with_s3
-cloudknot_parallelization
-api/index
-examples <https://github.com/ccurtis7/diff_classifier/tree/master/notebooks>
-code <https://github.com/ccurtis7/diff_classifier>
-bugs <https://github.com/ccurtis7/diff_classifier/issues>
+  getting_started
+  tracking
+  features_analysis
+  interacting_with_s3
+  cloudknot_parallelization
+  api/index
+  examples <https://github.com/ccurtis7/diff_classifier/tree/master/notebooks>
+  code <https://github.com/ccurtis7/diff_classifier>
+  bugs <https://github.com/ccurtis7/diff_classifier/issues>

@@ -1,7 +1,7 @@
 .. _tracking-label:
 
-Tracking particles with diff_classifier
-==========================================
+Tracking particles
+==================
 
 The "track" function in diff_classifier operates by creating a temporary script
 files in the TEMP directory and generating a command send through the shell
@@ -13,8 +13,8 @@ that Trackmate offers, but will be expanded in the future.  The parameters that
 are currently implemented are:
 
 * radius: estimated radius of spots in videos.  In general, should be slightly
-larger than the average particle size in the videos.  Note that the GUI
-interface uses diameter rather than radius.
+  larger than the average particle size in the videos.  Note that the GUI
+  interface uses diameter rather than radius.
 * threshold: not currently in use.
 * do_median_filtering: If set to True, filters the image before performing
   tracking to minimize noise.
