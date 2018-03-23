@@ -1,6 +1,7 @@
 ## diff_classifier
 [![Build Status](https://travis-ci.org/ccurtis7/diff_classifier.svg?branch=master)](https://travis-ci.org/ccurtis7/diff_classifier)
-[![Coverage Status](https://img.shields.io/coveralls/ccurtis7/diff_classifier/master.svg)](https://coveralls.io/r/ccurtis7/diff_classifier) [![Scrutinizer Code Quality](https://img.shields.io/github/issues/ccurtis7/diff_classifier.svg)](https://scrutinizer-ci.com/g/ccurtis7/diff_classifier/?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/ccurtis7/diff_classifier/badge.svg?branch=master)](https://coveralls.io/github/ccurtis7/diff_classifier?branch=master)
+ [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/ccurtis7/diff_classifier.svg)](https://scrutinizer-ci.com/g/ccurtis7/diff_classifier/?branch=master)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/ccurtis7/diff_classifier.svg)](http://isitmaintained.com/project/ccurtis7/diff_classifier "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/ccurtis7/diff_classifier.svg)](http://isitmaintained.com/project/ccurtis7/diff_classifier "Percentage of issues still open")
 [![GitHub license](
