@@ -1,6 +1,8 @@
 Welcome to diff_classifier
 ===========================================
 
+.. automodule:: diff_classifier
+
 The diff_classifier package is complete particle tracking package implemented
 using the ImageJ plugin `Trackmate <http://imagej.net/Getting_started_with_TrackMate>`_.
 
@@ -33,92 +35,87 @@ Usage
 
   hm.plot_trajectories(prefix)
 
-  Motivation
-  ----------
+Motivation
+----------
 
-  Multi-particle tracking software packages abound (see for example this `Nature
-  methods paper <http://www.nature.com/articles/nmeth.2808>`_ comparing the
-  results of 14 different teams).  But researchers are often on their own when
-  it comes to scale up, analysis, and visualization.  Diff_classifier seeks to
-  provide these tools in a centralized package, including MSD and trajectory
-  feature analysis tools, MSD and heatmap plots of output data, and
-  parallelization tools implemented using Amazon Web Services.  This package
-  is the primary tool for tracking analysis of nanoparticles in the brain in the
-  `Nance research group <https://www.nancelab.com/>`_ at the University of
-  Washington.
+Multi-particle tracking software packages abound (see for example this `Nature
+methods paper <http://www.nature.com/articles/nmeth.2808>`_ comparing the
+results of 14 different teams).  But researchers are often on their own when
+it comes to scale up, analysis, and visualization.  Diff_classifier seeks to
+provide these tools in a centralized package, including MSD and trajectory
+feature analysis tools, MSD and heatmap plots of output data, and
+parallelization tools implemented using Amazon Web Services.  This package
+is the primary tool for tracking analysis of nanoparticles in the brain in the
+`Nance research group <https://www.nancelab.com/>`_ at the University of
+Washington.
 
-  Installation and getting started
-  --------------------------------
+Installation and getting started
+--------------------------------
 
-  To install diff_classifier and begin analyzing your data, visit :ref:
-  `getting-started-label`.
+To install diff_classifier and begin analyzing your data, visit :ref:
+`getting-started-label`.
 
-  Particle tracking
-  -----------------
+Particle tracking
+-----------------
 
-  For instructions scripting Trackmate for particle tracking analysis, visit
-  `Scripting Trackmate <https://imagej.net/Scripting_TrackMate>`_ as well as the
-  instructions using the diff_classifier pre-built functions
-  (:ref: `tracking-label`).
+For instructions scripting Trackmate for particle tracking analysis, visit
+`Scripting Trackmate <https://imagej.net/Scripting_TrackMate>`_ as well as the
+instructions using the diff_classifier pre-built functions
+(:ref: `tracking-label`).
 
-  Features analysis
-  -----------------
+Features analysis
+-----------------
 
-  Trajectory features calculations are based off the
-  `TrajClassifier <https://imagej.net/TraJClassifier>`_ package developed by
-  Thorsten Wagner.  The calculations can be found at the
-  `Traj wiki <https://github.com/thorstenwagner/TraJ/wiki#features>`_.
-  Instructions using the diff_classifier implementation can be found at
-  :ref: `features-analysis-label`.
+Trajectory features calculations are based off the
+`TrajClassifier <https://imagej.net/TraJClassifier>`_ package developed by
+Thorsten Wagner.  The calculations can be found at the
+`Traj wiki <https://github.com/thorstenwagner/TraJ/wiki#features>`_.
+Instructions using the diff_classifier implementation can be found at
+:ref: `features-analysis-label`.
 
-  Interacting with s3
-  -------------------
+Interacting with s3
+-------------------
 
-  Diff_classifier provides functions for interacting with buckets on AWS S3.
-  Instructions on implementing uploading to/downloading from s3 can be found at
-  :ref: `interacting-with-s3-label`.
+Diff_classifier provides functions for interacting with buckets on AWS S3.
+Instructions on implementing uploading to/downloading from s3 can be found at
+:ref: `interacting-with-s3-label`.
 
-  Cloudknot parallelization
-  -------------------------
+Cloudknot parallelization
+-------------------------
 
-  Diff_classifier includes `Cloudknot <https://github.com/richford/cloudknot>`_
-  parallelization functions for complete tracking, analysis, and visualization
-  of large tracking experiments.  In general, these are only templates, and will
-  have to be modified by the user for their own experimental implementations.
-  Instructions can be found at :ref: 'cloudknot-parallelization-label'.
+Diff_classifier includes `Cloudknot <https://github.com/richford/cloudknot>`_
+parallelization functions for complete tracking, analysis, and visualization
+of large tracking experiments.  In general, these are only templates, and will
+have to be modified by the user for their own experimental implementations.
+Instructions can be found at :ref: 'cloudknot-parallelization-label'.
 
-  Bugs and issues
-  ---------------
+Bugs and issues
+---------------
 
-  If you are having issues, please let us know by
-  `opening a new issue <https://github.com/ccurtis7/diff_classifier/issues>`_.
-  Please tag your issues with the "bug" or "question" label.
+If you are having issues, please let us know by
+`opening a new issue <https://github.com/ccurtis7/diff_classifier/issues>`_.
+Please tag your issues with the "bug" or "question" label.
 
-  License
-  -------
+License
+-------
 
-  This project is licensed under the
-  `MIT License <https://github.com/ccurtis7/diff_classifier/blob/master/LICENSE>`_.
+This project is licensed under the
+`MIT License <https://github.com/ccurtis7/diff_classifier/blob/master/LICENSE>`_.
 
-  Acknowledgements
-  ----------------
-  Diff_classifier development is supported by ....
+Acknowledgements
+----------------
+Diff_classifier development is supported by ....
 
 .. toctree::
-   :hidden:
+:maxdepth: 2
+:caption: User Documentation
 
-   getting started <getting_started>
-   tracking <tracking>
-   features_analysis <features_analysis>
-   interacting with s3 <interacting_with_s3>
-   cloudknot_parallelization <cloudknot_parallelization>
-   examples <https://github.com/ccurtis7/diff_classifier/tree/master/notebooks>
-   code <https://github.com/ccurtis7/diff_classifier>
-   bugs <https://github.com/ccurtis7/diff_classifier/issues>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+getting_started
+tracking
+features_analysis
+interacting_with_s3
+cloudknot_parallelization
+api/index
+examples <https://github.com/ccurtis7/diff_classifier/tree/master/notebooks>
+code <https://github.com/ccurtis7/diff_classifier>
+bugs <https://github.com/ccurtis7/diff_classifier/issues>

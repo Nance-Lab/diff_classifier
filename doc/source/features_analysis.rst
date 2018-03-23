@@ -28,4 +28,5 @@ mean squared displacement ratio: 0 for Brownian motion, <0 for restricted motion
 >0 for directed motion.
 
 .. code-block:: python
+
   calculate_features(df, framerate=1)
