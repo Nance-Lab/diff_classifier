@@ -28,7 +28,7 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
         Output images are of size ires x ires pixels.
 
     Examples
-    ----------
+    --------
     >>> partition_im('your/sample/image.tif', irows=8, icols=8, ires=256)
 
     """
@@ -106,6 +106,29 @@ def regress_sys(all_videos, y, training_size, have_output=True):
     """
     Uses regression techniques to select the best tracking parameters.
     Regression again intensities of input images.
+
+    Parameters
+    ----------
+    all_videos: list
+        Contains prefixes of video filenames of entire video set to be
+        tracked.  Training dataset will be some subset of these videos.
+    y: numpy array
+        Contains manually acquired quality levels using Trackmate for the
+        files contained in the training dataset.
+    training_size: int
+        Number of files in training dataset.
+    have_output: boolean
+        If you have already acquired the quality values (y) for the
+        training dataset, set to True.  If False, it will output the files
+        the user will need to acquire quality values for.
+
+    Returns
+    -------
+    regress_object: list of sklearn regression objects.
+        Contains list of regression objects assembled from the training
+        datasets.  Uses the mean, 10th percentile, 90th percentile, and
+        standard deviation intensities to predict the quality parameter
+        in Trackmate.
     """
 
     tprefix = []
@@ -144,7 +167,7 @@ def regress_sys(all_videos, y, training_size, have_output=True):
         for item in classifiers:
             clf = item
             regress_object.append(clf.fit(X, y))
-        
+
         return regress_object
 
 
@@ -152,8 +175,24 @@ def regress_tracking_params(regress_object, to_track, regmethod='LinearRegressio
     """
     Uses the regress object from regress_sys to predict tracking
     parameters for TrackMate.
+
+    Parameters
+    ----------
+    regress_object: list of regression objects
+        Obtained from regress_sys
+    to_track: string
+        Prefix of video files to be tracked.
+    regmethod: string
+        Desired regression method (LinearRegression, SVR, SGDRegressor,
+        BayesianRidge, LassoLars, ARDRegression, PassiveAggressiveRegressor,
+        TheilSenRegressor)
+
+    Returns
+    -------
+    quality: float64
+        Predicted quality factor used in TrackMate analysis.
     """
-    
+
     local_im = to_track + '.tif'
     pX = np.zeros((1, 4))
     test_image = sio.imread(local_im)
@@ -161,11 +200,11 @@ def regress_tracking_params(regress_object, to_track, regmethod='LinearRegressio
     pX[0, 1] = np.std(test_image[0, :, :])
     pX[0, 2] = np.percentile(test_image[0, :, :], 10)
     pX[0, 3] = np.percentile(test_image[0:, :, :], 90)
-    
+
     quality = []
     for item in regress_object:
         quality.append(item.predict(pX)[0])
-    
+
     if regmethod == 'SVR':
         return quality[0]
     elif regmethod == 'SGDRegressor':

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tracking particles with diff_classifier &mdash; diff_classifier 0.1 documentation</title>
+  <title>Tracking particles &mdash; diff_classifier 0.1 documentation</title>
   
 
   
@@ -30,7 +30,9 @@
   
 
   
-    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/> 
+    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Calculating features" href="features_analysis.html"/>
+        <link rel="prev" title="Getting started with diff_classifier" href="getting_started.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -75,7 +77,20 @@
           
             
             
-                <ul class="simple">
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Tracking particles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#selecting-trajectory-parameters">Selecting trajectory parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-regression-to-predict-quality">Using regression to predict quality</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
 </ul>
 
             
@@ -106,7 +121,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Tracking particles with diff_classifier</li>
+    <li>Tracking particles</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -120,8 +135,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tracking-particles-with-diff-classifier">
-<span id="tracking-label"></span><h1>Tracking particles with diff_classifier<a class="headerlink" href="#tracking-particles-with-diff-classifier" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="tracking-particles">
+<span id="tracking-label"></span><h1>Tracking particles<a class="headerlink" href="#tracking-particles" title="Permalink to this headline">¶</a></h1>
 <p>The &#8220;track&#8221; function in diff_classifier operates by creating a temporary script
 files in the TEMP directory and generating a command send through the shell
 to ImageJ.  User inputs include tracking parameters and spot and track filter
@@ -130,15 +145,12 @@ cutoffs.</p>
 that Trackmate offers, but will be expanded in the future.  The parameters that
 are currently implemented are:</p>
 <ul class="simple">
-<li>radius: estimated radius of spots in videos.  In general, should be slightly</li>
-</ul>
-<p>larger than the average particle size in the videos.  Note that the GUI
-interface uses diameter rather than radius.
-* threshold: not currently in use.
-* do_median_filtering: If set to True, filters the image before performing</p>
-<blockquote>
-<div>tracking to minimize noise.</div></blockquote>
-<ul class="simple">
+<li>radius: estimated radius of spots in videos.  In general, should be slightly
+larger than the average particle size in the videos.  Note that the GUI
+interface uses diameter rather than radius.</li>
+<li>threshold: not currently in use.</li>
+<li>do_median_filtering: If set to True, filters the image before performing
+tracking to minimize noise.</li>
 <li>quality: Lower threshold on spot quality filter. Usually varies anywhere between
 1 to 300.</li>
 <li>x: Upper threshold on x coordinate spot filter.</li>
@@ -195,6 +207,15 @@ regression technique to predict the quality.</p>
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="features_analysis.html" class="btn btn-neutral float-right" title="Calculating features" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral" title="Getting started with diff_classifier" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

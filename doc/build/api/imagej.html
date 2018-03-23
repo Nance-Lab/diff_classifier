@@ -30,7 +30,10 @@
   
 
   
-    <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/> 
+    <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="index.html"/>
+        <link rel="next" title="diff_classifier.features" href="features.html"/>
+        <link rel="prev" title="diff_classifier.msd" href="msd.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -75,7 +78,28 @@
           
             
             
-                <ul class="simple">
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="msd.html"><code class="docutils literal"><span class="pre">diff_classifier.msd</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="features.html"><code class="docutils literal"><span class="pre">diff_classifier.features</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws.html"><code class="docutils literal"><span class="pre">diff_classifier.aws</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="heatmaps.html"><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="knotlets.html"><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
 </ul>
 
             
@@ -105,6 +129,8 @@
 <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">API</a> &raquo;</li>
       
     <li><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></li>
       <li class="wy-breadcrumbs-aside">
@@ -149,10 +175,52 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="diff_classifier.imagej.regress_tracking_params">
-<code class="descclassname">diff_classifier.imagej.</code><code class="descname">regress_tracking_params</code><span class="sig-paren">(</span><em>all_videos</em>, <em>y</em>, <em>training_size</em>, <em>have_output=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#regress_tracking_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.regress_tracking_params" title="Permalink to this definition">¶</a></dt>
+<dt id="diff_classifier.imagej.regress_sys">
+<code class="descclassname">diff_classifier.imagej.</code><code class="descname">regress_sys</code><span class="sig-paren">(</span><em>all_videos</em>, <em>y</em>, <em>training_size</em>, <em>have_output=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#regress_sys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.regress_sys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses regression techniques to select the best tracking parameters.
 Regression again intensities of input images.</p>
+<dl class="docutils">
+<dt>all_videos: list</dt>
+<dd>Contains prefixes of video filenames of entire video set to be
+tracked.  Training dataset will be some subset of these videos.</dd>
+<dt>y: numpy array</dt>
+<dd>Contains manually acquired quality levels using Trackmate for the
+files contained in the training dataset.</dd>
+<dt>training_size: int</dt>
+<dd>Number of files in training dataset.</dd>
+<dt>have_output: boolean</dt>
+<dd>If you have already acquired the quality values (y) for the
+training dataset, set to True.  If False, it will output the files
+the user will need to acquire quality values for.</dd>
+</dl>
+<dl class="docutils">
+<dt>regress_object: list of sklearn regression objects.</dt>
+<dd>Contains list of regression objects assembled from the training
+datasets.  Uses the mean, 10th percentile, 90th percentile, and
+standard deviation intensities to predict the quality parameter
+in Trackmate.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.imagej.regress_tracking_params">
+<code class="descclassname">diff_classifier.imagej.</code><code class="descname">regress_tracking_params</code><span class="sig-paren">(</span><em>regress_object</em>, <em>to_track</em>, <em>regmethod='LinearRegression'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#regress_tracking_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.regress_tracking_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the regress object from regress_sys to predict tracking
+parameters for TrackMate.</p>
+<dl class="docutils">
+<dt>regress_object: list of regression objects</dt>
+<dd>Obtained from regress_sys</dd>
+<dt>to_track: string</dt>
+<dd>Prefix of video files to be tracked.</dd>
+<dt>regmethod: string</dt>
+<dd>Desired regression method (LinearRegression, SVR, SGDRegressor,
+BayesianRidge, LassoLars, ARDRegression, PassiveAggressiveRegressor,
+TheilSenRegressor)</dd>
+</dl>
+<dl class="docutils">
+<dt>quality: float64</dt>
+<dd>Predicted quality factor used in TrackMate analysis.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -177,6 +245,15 @@ Can also be a URL (e.g., &#8216;<a class="reference external" href="http://fiji.
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="features.html" class="btn btn-neutral float-right" title="diff_classifier.features" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="msd.html" class="btn btn-neutral" title="diff_classifier.msd" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

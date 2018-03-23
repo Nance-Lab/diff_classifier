@@ -23,12 +23,12 @@ def nth_diff(dataframe, n=1, ax=0):
         input must be a pandas series.  If 1, input must be a numpy array.
 
     Returns
-    ----------
+    -------
     diff : pandas column
         Pandas column of size N - n, where N is the original size of dataframe.
 
     Examples
-    ----------
+    --------
     >>>> d = {'col1': [1, 2, 3, 4, 5]}
     >>>> df = pd.DataFrame(data=d)
     >>>> nth_diff(df)
@@ -99,7 +99,7 @@ def msd_calc(track, length=10):
         Contains, at a minimum a 'Frame', 'X', and 'Y' column
 
     Returns
-    ----------
+    -------
     new_track: pandas dataframe
         Similar to input track.  All missing frames of individual trajectories
         are filled in with NaNs, and two new columns, MSDs and Gauss are added:
@@ -107,7 +107,7 @@ def msd_calc(track, length=10):
         Gauss, calculated Gaussianity
 
     Examples
-    ----------
+    --------
     >>>> d = {'Frame': [1, 2, 3, 4, 5],
          'X': [5, 6, 7, 8, 9],
          'Y': [6, 7, 8, 9, 10]}
@@ -198,7 +198,7 @@ def all_msds(data):
         function. Adjust before feeding into function.
 
     Returns
-    ----------
+    -------
     new_data: pandas dataframe
         Similar to input data.  All missing frames of individual trajectories
         are filled in with NaNs, and two new columns, MSDs and Gauss are added:
@@ -206,7 +206,7 @@ def all_msds(data):
         Gauss, calculated Gaussianity
 
     Examples
-    ----------
+    --------
     >>> d = {'Frame': [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
              'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
              'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
@@ -284,7 +284,7 @@ def make_xyarray(data, length=651):
         filled in with NaNs.
 
     Returns
-    ----------
+    -------
     f_array: numpy array of floats of size length x particles
         Contains frames data
     t_array: numpy array of floats of size length x particles
@@ -295,7 +295,7 @@ def make_xyarray(data, length=651):
         Contains y coordinate data
 
     Examples
-    -----------
+    --------
     >>>> d = {'Frame': [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],
               'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
               'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
@@ -390,7 +390,7 @@ def all_msds2(data, frames=651):
         'Y' column. Note: it is assumed that frames begins at 0.
 
     Returns
-    ----------
+    -------
     new_data: pandas dataframe
         Similar to input data.  All missing frames of individual trajectories
         are filled in with NaNs, and two new columns, MSDs and Gauss are added:
@@ -398,7 +398,7 @@ def all_msds2(data, frames=651):
         Gauss, calculated Gaussianity
 
     Examples
-    ----------
+    --------
     >>>> d = {'Frame': [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
              'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
              'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],

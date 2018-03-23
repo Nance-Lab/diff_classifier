@@ -14,21 +14,21 @@ import diff_classifier.msd as msd
 def unmask_track(track):
     """
     Removes empty frames from a track in an MSD pandas dataframe.
-    
+
     Parameters
     ----------
     track : pandas Dataframe
         At a minimum, must contain a Frame, Track_ID, X, Y, MSDs, and
         Gauss column.
-    
+
     Returns
-    ----------
+    -------
     comp_track : pandas Dataframe
         Similar to track, but has all masked components removed.
-    
+
     Examples
-    ----------
-    
+    --------
+
     """
     x = ma.masked_invalid(track['X'])
     msd = ma.masked_invalid(track['MSDs'])
@@ -41,13 +41,13 @@ def unmask_track(track):
     comp_msd = ma.compressed(ma.masked_where(msd_mask, track['MSDs']))
     comp_gauss = ma.compressed(ma.masked_where(msd_mask, track['Gauss']))
 
-
     d = {'Frame': comp_frame,
-             'Track_ID': comp_ID,
-             'X': comp_x,
-             'Y': comp_y,
-             'MSDs': comp_msd,
-             'Gauss': comp_gauss}
+         'Track_ID': comp_ID,
+         'X': comp_x,
+         'Y': comp_y,
+         'MSDs': comp_msd,
+         'Gauss': comp_gauss
+         }
     comp_track = pd.DataFrame(data=d)
     return comp_track
 
@@ -63,7 +63,7 @@ def alpha_calc(track):
         msd_calc can be used to generate the correctly formatted pd dataframe.
 
     Returns
-    ----------
+    -------
     a : numpy.float64
         The anomalous exponent derived by fitting MSD values to the function,
         <r**2(n)> = 4*D*(n*delt)**a
@@ -72,7 +72,7 @@ def alpha_calc(track):
         function above.
 
     Examples
-    ----------
+    --------
     >>> frames = 5
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -92,10 +92,10 @@ def alpha_calc(track):
     (0.023690002018364065, 0.5144436515510022)
     """
 
-    #assert type(track) == pd.core.frame.DataFrame, "track must be a pandas dataframe."
-    #assert type(track['MSDs']) == pd.core.series.Series, "track must contain MSDs column."
-    #assert type(track['Frame']) == pd.core.series.Series, "track must contain Frame column."
-    #assert track.shape[0] > 0, "track must not be empty."
+    # assert type(track) == pd.core.frame.DataFrame, "track must be a pandas dataframe."
+    # assert type(track['MSDs']) == pd.core.series.Series, "track must contain MSDs column."
+    # assert type(track['Frame']) == pd.core.series.Series, "track must contain Frame column."
+    # assert track.shape[0] > 0, "track must not be empty."
 
     y = track['MSDs']
     x = track['Frame']
@@ -126,7 +126,7 @@ def gyration_tensor(track):
         msd_calc can be used to generate the correctly formatted pd dataframe.
 
     Returns
-    ----------
+    -------
     l1 : numpy.float64
         Dominant eigenvalue of the gyration tensor.
     l2 : numpy.float64
@@ -137,7 +137,7 @@ def gyration_tensor(track):
         Secondary eigenvector of the gyration tensor.
 
     Examples
-    ----------
+    --------
     >>> frames = 5
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -194,13 +194,13 @@ def kurtosis(track):
         msd_calc can be used to generate the correctly formatted pd dataframe.
 
     Returns
-    ----------
+    -------
     kurt : numpy.float64
         Kurtosis of the input track.  Calculation based on projected 2D positions
         on the dominant eigenvector of the radius of gyration tensor.
 
     Examples
-    ----------
+    --------
     >>> frames = 5
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -245,7 +245,7 @@ def asymmetry(track):
         msd_calc can be used to generate the correctly formatted pd dataframe.
 
     Returns
-    ----------
+    -------
     l1 : numpy.float64
         Dominant eigenvalue of the gyration tensor.
     l2 : numpy.float64
@@ -260,7 +260,7 @@ def asymmetry(track):
         alternate definition of asymmetry.
 
     Examples
-    ----------
+    --------
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -308,7 +308,7 @@ def minBoundingRect(df):
         msd_calc can be used to generate the correctly formatted pd dataframe.
 
     Returns
-    ----------
+    -------
     rot_angle : numpy.float64
         Angle of rotation of the bounding box.
     area : numpy.float64
@@ -323,7 +323,7 @@ def minBoundingRect(df):
         Corner points of the bounding box.
 
     Examples
-    ----------
+    --------
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -359,7 +359,7 @@ def minBoundingRect(df):
            [ 3.08772466,  4.32568917]]))
 
     Notes
-    ----------
+    -----
     Based off of code from the following repo:
     https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/python/min_bounding_rect.py
     """
@@ -440,7 +440,7 @@ def aspectratio(track):
         msd_calc can be used to generate the correctly formatted pd dataframe.
 
     Returns
-    ----------
+    -------
     ar : numpy.float64
         aspect ratio of the trajectory.  Always >= 1.
     elong : numpy.float64
@@ -448,7 +448,7 @@ def aspectratio(track):
         by 1 - ar**-1.
 
     Examples
-    ----------
+    --------
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -498,7 +498,7 @@ def boundedness(track, framerate=1):
         why did I include this. Default is 1.
 
     Returns
-    ----------
+    -------
     B : numpy.float64
         Boundedness of the input track.  Quantifies how much a particle with
         diffusion coefficient D is restricted by a circular confinement of radius
@@ -517,7 +517,7 @@ def boundedness(track, framerate=1):
         the maximum distance between any two positions.
 
     Examples
-    ----------
+    --------
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -541,9 +541,9 @@ def boundedness(track, framerate=1):
     assert type(track['MSDs']) == pd.core.series.Series, "track must contain MSDs column."
     assert type(track['Frame']) == pd.core.series.Series, "track must contain Frame column."
     assert track.shape[0] > 0, "track must not be empty."
-    
+
     df = track
-    
+
     if df.shape[0] > 2:
         length = df.shape[0]
         distance = np.zeros((length, length))
@@ -579,7 +579,7 @@ def efficiency(track):
         msd_calc can be used to generate the correctly formatted pd dataframe.
 
     Returns
-    ----------
+    -------
     eff : numpy.float64
         Efficiency of the input track.  Relates the sum of squared step
         lengths.  Based on Helmuth et al. (2007) and defined as:
@@ -590,7 +590,7 @@ def efficiency(track):
         S = |x(N-1)-x(0)|/SUM(|x(i) - x(i-1)|
 
     Examples
-    ----------
+    --------
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
                    'X': np.linspace(1, frames, frames)+5,
@@ -638,7 +638,7 @@ def msd_ratio(track, n1=3, n2=100):
         Last frame at which to calculate the MSD ratio.
 
     Returns
-    ----------
+    -------
     ratio: numpy.float64
         MSD ratio as defined by
         [MSD(n1)/MSD(n2)] - [n1/n2]
@@ -646,7 +646,7 @@ def msd_ratio(track, n1=3, n2=100):
         is < 0.  For directed motion it is > 0.
 
     Examples
-    ----------
+    --------
     >>> frames = 10
     >>> d = {'Frame': np.linspace(1, frames, frames),
              'X': np.linspace(1, frames, frames)+5,
@@ -675,7 +675,7 @@ def msd_ratio(track, n1=3, n2=100):
 def calculate_features(df, framerate=1):
     """
     Calculates multiple features from input MSD dataset and stores in pandas dataframe.
-    
+
     Parameters
     ----------
     df : pandas dataframe
@@ -685,17 +685,17 @@ def calculate_features(df, framerate=1):
         Framerate of the input videos from which trajectories were calculated.  Required
         for accurate calculation of some features.  Default is 1.  Possibly not required.
         Ignore if performing all calcuations without units.
-    
+
     Returns
-    ----------
+    -------
     di: pandas dataframe
         Contains a row for each trajectory in df.  Holds the following features of each
         trajetory: Track_ID, alpha, D_fit, kurtosis, asymmetry1, asymmetry2, asymmetry3,
         aspect ratio (AR), elongation, boundedness, fractal dimension (fractal_dim),
         trappedness, efficiency, straightness, MSD ratio, frames, X, and Y.
-    
+
     Examples
-    ----------
+    --------
     See example outputs from individual feature functions.
     """
     # Skeleton of Trajectory features metadata table.
@@ -719,7 +719,7 @@ def calculate_features(df, framerate=1):
            'frames': holder,
            'X': holder,
            'Y': holder}
-    
+
     di = pd.DataFrame(data=die)
 
     trackids = df.Track_ID.unique()
@@ -727,7 +727,7 @@ def calculate_features(df, framerate=1):
 
     for particle in range(0, partcount):
         single_track_masked = df.loc[df['Track_ID'] == trackids[particle]].sort_values(['Track_ID', 'Frame'],
-                                                                                ascending=[1, 1]).reset_index(drop=True)
+                                     ascending=[1, 1]).reset_index(drop=True)
         single_track = unmask_track(single_track_masked)
         di['alpha'][particle], di['D_fit'][particle] = alpha_calc(single_track)
         di['kurtosis'][particle] = kurtosis(single_track)

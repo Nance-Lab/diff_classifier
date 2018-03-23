@@ -76,7 +76,16 @@
           
             
             
-                <ul class="simple">
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
 </ul>
 
             
@@ -138,21 +147,21 @@
 <div class="viewcode-block" id="unmask_track"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.unmask_track">[docs]</a><span class="k">def</span> <span class="nf">unmask_track</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes empty frames from a track in an MSD pandas dataframe.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    track : pandas Dataframe</span>
 <span class="sd">        At a minimum, must contain a Frame, Track_ID, X, Y, MSDs, and</span>
 <span class="sd">        Gauss column.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    comp_track : pandas Dataframe</span>
 <span class="sd">        Similar to track, but has all masked components removed.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
-<span class="sd">    </span>
+<span class="sd">    --------</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span>
     <span class="n">msd</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">])</span>
@@ -165,13 +174,13 @@
     <span class="n">comp_msd</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">msd_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">]))</span>
     <span class="n">comp_gauss</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">msd_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]))</span>
 
-
     <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">comp_frame</span><span class="p">,</span>
-             <span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="n">comp_ID</span><span class="p">,</span>
-             <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">comp_x</span><span class="p">,</span>
-             <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">comp_y</span><span class="p">,</span>
-             <span class="s1">&#39;MSDs&#39;</span><span class="p">:</span> <span class="n">comp_msd</span><span class="p">,</span>
-             <span class="s1">&#39;Gauss&#39;</span><span class="p">:</span> <span class="n">comp_gauss</span><span class="p">}</span>
+         <span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="n">comp_ID</span><span class="p">,</span>
+         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">comp_x</span><span class="p">,</span>
+         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">comp_y</span><span class="p">,</span>
+         <span class="s1">&#39;MSDs&#39;</span><span class="p">:</span> <span class="n">comp_msd</span><span class="p">,</span>
+         <span class="s1">&#39;Gauss&#39;</span><span class="p">:</span> <span class="n">comp_gauss</span>
+         <span class="p">}</span>
     <span class="n">comp_track</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">comp_track</span>
 
@@ -187,7 +196,7 @@
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    a : numpy.float64</span>
 <span class="sd">        The anomalous exponent derived by fitting MSD values to the function,</span>
 <span class="sd">        &lt;r**2(n)&gt; = 4*D*(n*delt)**a</span>
@@ -196,7 +205,7 @@
 <span class="sd">        function above.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 5</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -216,10 +225,10 @@
 <span class="sd">    (0.023690002018364065, 0.5144436515510022)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1">#assert type(track) == pd.core.frame.DataFrame, &quot;track must be a pandas dataframe.&quot;</span>
-    <span class="c1">#assert type(track[&#39;MSDs&#39;]) == pd.core.series.Series, &quot;track must contain MSDs column.&quot;</span>
-    <span class="c1">#assert type(track[&#39;Frame&#39;]) == pd.core.series.Series, &quot;track must contain Frame column.&quot;</span>
-    <span class="c1">#assert track.shape[0] &gt; 0, &quot;track must not be empty.&quot;</span>
+    <span class="c1"># assert type(track) == pd.core.frame.DataFrame, &quot;track must be a pandas dataframe.&quot;</span>
+    <span class="c1"># assert type(track[&#39;MSDs&#39;]) == pd.core.series.Series, &quot;track must contain MSDs column.&quot;</span>
+    <span class="c1"># assert type(track[&#39;Frame&#39;]) == pd.core.series.Series, &quot;track must contain Frame column.&quot;</span>
+    <span class="c1"># assert track.shape[0] &gt; 0, &quot;track must not be empty.&quot;</span>
 
     <span class="n">y</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">]</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span>
@@ -250,7 +259,7 @@
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    l1 : numpy.float64</span>
 <span class="sd">        Dominant eigenvalue of the gyration tensor.</span>
 <span class="sd">    l2 : numpy.float64</span>
@@ -261,7 +270,7 @@
 <span class="sd">        Secondary eigenvector of the gyration tensor.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 5</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -318,13 +327,13 @@
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    kurt : numpy.float64</span>
 <span class="sd">        Kurtosis of the input track.  Calculation based on projected 2D positions</span>
 <span class="sd">        on the dominant eigenvector of the radius of gyration tensor.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 5</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -369,7 +378,7 @@
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    l1 : numpy.float64</span>
 <span class="sd">        Dominant eigenvalue of the gyration tensor.</span>
 <span class="sd">    l2 : numpy.float64</span>
@@ -384,7 +393,7 @@
 <span class="sd">        alternate definition of asymmetry.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -432,7 +441,7 @@
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    rot_angle : numpy.float64</span>
 <span class="sd">        Angle of rotation of the bounding box.</span>
 <span class="sd">    area : numpy.float64</span>
@@ -447,7 +456,7 @@
 <span class="sd">        Corner points of the bounding box.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -483,7 +492,7 @@
 <span class="sd">           [ 3.08772466,  4.32568917]]))</span>
 
 <span class="sd">    Notes</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -----</span>
 <span class="sd">    Based off of code from the following repo:</span>
 <span class="sd">    https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/python/min_bounding_rect.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -564,7 +573,7 @@
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    ar : numpy.float64</span>
 <span class="sd">        aspect ratio of the trajectory.  Always &gt;= 1.</span>
 <span class="sd">    elong : numpy.float64</span>
@@ -572,7 +581,7 @@
 <span class="sd">        by 1 - ar**-1.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -622,7 +631,7 @@
 <span class="sd">        why did I include this. Default is 1.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    B : numpy.float64</span>
 <span class="sd">        Boundedness of the input track.  Quantifies how much a particle with</span>
 <span class="sd">        diffusion coefficient D is restricted by a circular confinement of radius</span>
@@ -641,7 +650,7 @@
 <span class="sd">        the maximum distance between any two positions.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -665,9 +674,9 @@
     <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain MSDs column.&quot;</span>
     <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain Frame column.&quot;</span>
     <span class="k">assert</span> <span class="n">track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
-    
+
     <span class="n">df</span> <span class="o">=</span> <span class="n">track</span>
-    
+
     <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="n">length</span><span class="p">))</span>
@@ -703,7 +712,7 @@
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    eff : numpy.float64</span>
 <span class="sd">        Efficiency of the input track.  Relates the sum of squared step</span>
 <span class="sd">        lengths.  Based on Helmuth et al. (2007) and defined as:</span>
@@ -714,7 +723,7 @@
 <span class="sd">        S = |x(N-1)-x(0)|/SUM(|x(i) - x(i-1)|</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">                   &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -762,7 +771,7 @@
 <span class="sd">        Last frame at which to calculate the MSD ratio.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    ratio: numpy.float64</span>
 <span class="sd">        MSD ratio as defined by</span>
 <span class="sd">        [MSD(n1)/MSD(n2)] - [n1/n2]</span>
@@ -770,7 +779,7 @@
 <span class="sd">        is &lt; 0.  For directed motion it is &gt; 0.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
 <span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
@@ -799,7 +808,7 @@
 <div class="viewcode-block" id="calculate_features"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.calculate_features">[docs]</a><span class="k">def</span> <span class="nf">calculate_features</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates multiple features from input MSD dataset and stores in pandas dataframe.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    df : pandas dataframe</span>
@@ -809,17 +818,17 @@
 <span class="sd">        Framerate of the input videos from which trajectories were calculated.  Required</span>
 <span class="sd">        for accurate calculation of some features.  Default is 1.  Possibly not required.</span>
 <span class="sd">        Ignore if performing all calcuations without units.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    di: pandas dataframe</span>
 <span class="sd">        Contains a row for each trajectory in df.  Holds the following features of each</span>
 <span class="sd">        trajetory: Track_ID, alpha, D_fit, kurtosis, asymmetry1, asymmetry2, asymmetry3,</span>
 <span class="sd">        aspect ratio (AR), elongation, boundedness, fractal dimension (fractal_dim),</span>
 <span class="sd">        trappedness, efficiency, straightness, MSD ratio, frames, X, and Y.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    See example outputs from individual feature functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Skeleton of Trajectory features metadata table.</span>
@@ -843,7 +852,7 @@
            <span class="s1">&#39;frames&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
            <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
            <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">}</span>
-    
+
     <span class="n">di</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">die</span><span class="p">)</span>
 
     <span class="n">trackids</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Track_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
@@ -851,7 +860,7 @@
 
     <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">partcount</span><span class="p">):</span>
         <span class="n">single_track_masked</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">trackids</span><span class="p">[</span><span class="n">particle</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span>
-                                                                                <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                                     <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">single_track</span> <span class="o">=</span> <span class="n">unmask_track</span><span class="p">(</span><span class="n">single_track_masked</span><span class="p">)</span>
         <span class="n">di</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;D_fit&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha_calc</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
         <span class="n">di</span><span class="p">[</span><span class="s1">&#39;kurtosis&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">kurtosis</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
