@@ -13,6 +13,9 @@ nanoparticle trajectory data from multi-particle tracking analysis.  The package
 utilizes the ImageJ package Trackmate for tracking analysis, and Cloudknot for
 parallelization on AWS.
 
+<p align="center"><img src="doc/source/_static/summary.png" alt="diff_classifier" title="diff_classifier"/></p>
+
+
 This is the diff_classifier development site.  You can view the source code and
 file new issues. If you are just getting started, you should look at the
 [diff_classifier documentation](https://ccurtis7.github.io/diff_classifier/)
