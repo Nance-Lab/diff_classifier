@@ -1,17 +1,9 @@
 language: python
 sudo: false
-cache:
-  pip: true
-  directories:
-  - ".venv"
 
 env:
   global:
   - PIP_DEPS="pytest coveralls pytest-cov flake8"
-
-before_install:
-- pip install pipenv
-- make doctor
 
 python:
 - '3.6'
@@ -22,14 +14,6 @@ install:
 - travis_retry pip install $PIP_DEPS
 - travis_retry pip install -r requirements.txt
 - travis_retry pip install -e .
-- make install
 
 script:
 - py.test --pyargs diff_classifier --cov-report term-missing --cov=diff_classifier
-- make check
-- make test
-
-after_success:
-- pip install coveralls scrutinizer-ocular
-- coveralls
-- ocular
