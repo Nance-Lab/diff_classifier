@@ -8,7 +8,7 @@
 https://img.shields.io/github/license/ccurtis7/diff_classifier.svg)](https://github.com/ccurtis7/diff_classifier/blob/master/LICENSE)
 
 
-Diff_classifier is a python package for analyzing and visualizing 2D
+diff_classifier is a python package for analyzing and visualizing 2D
 nanoparticle trajectory data from multi-particle tracking analysis.  The package
 utilizes the ImageJ package Trackmate for tracking analysis, and Cloudknot for
 parallelization on AWS.
