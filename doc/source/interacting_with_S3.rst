@@ -9,4 +9,5 @@ bucket_name.  Users must also have the correct permissions on their computer
 to download from or upload to the bucket of interest.
 
 .. code-block:: python
+
   download_s3(remote_fname, local_fname, bucket_name="ccurtis7.pup")

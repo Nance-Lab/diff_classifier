@@ -32,37 +32,37 @@ def nth_diff(dataframe, n=1, ax=0):
     >>>> d = {'col1': [1, 2, 3, 4, 5]}
     >>>> df = pd.DataFrame(data=d)
     >>>> nth_diff(df)
-    
+
     0    1
     1    1
     2    1
     3    1
     Name: col1, dtype: int64
 
-    
+
     #test2
     >>>> df = np.ones((5, 10))
     >>>> nth_diff(df)
-    
+
     array([[0., 0., 0., 0., 0., 0., 0., 0., 0.],
        [0., 0., 0., 0., 0., 0., 0., 0., 0.],
        [0., 0., 0., 0., 0., 0., 0., 0., 0.],
        [0., 0., 0., 0., 0., 0., 0., 0., 0.],
        [0., 0., 0., 0., 0., 0., 0., 0., 0.]])
-    
+
     >>>> df = np.ones((5, 10))
     >>>> nth_diff (df)
-    
+
     array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
-    
+
     """
 
-    #assert type(dataframe) == pd.core.series.Series, "dataframe must be a pandas dataframe."
+    # assert type(dataframe) == pd.core.series.Series, "dataframe must be a pandas dataframe."
     assert type(n) == int, "n must be an integer."
-   
+
     if dataframe.ndim == 1:
         length = dataframe.shape[0]
         if n <= length:
@@ -74,7 +74,7 @@ def nth_diff(dataframe, n=1, ax=0):
     else:
         length = dataframe.shape[0]
         if n <= length:
-            if ax==0:
+            if ax == 0:
                 test1 = dataframe[:-n, :]
                 test2 = dataframe[n:, :]
             else:
@@ -83,7 +83,7 @@ def nth_diff(dataframe, n=1, ax=0):
             diff = test2 - test1
         else:
             diff = np.array([np.nan, np.nan])
-      
+
     return diff
 
 
@@ -95,13 +95,14 @@ def msd_calc(track, length=10):
 
     Parameters
     ----------
-    track : pandas dataframe containing, at a minimum a 'Frame', 'X', and 'Y' column
+    track : pandas dataframe
+        Contains, at a minimum a 'Frame', 'X', and 'Y' column
 
     Returns
     ----------
-    new_track: pandas dataframe similar to input track.  All missing frames of
-        individual trajectories are filled in with NaNs, and two new columns, MSDs
-        and Gauss are added:
+    new_track: pandas dataframe
+        Similar to input track.  All missing frames of individual trajectories
+        are filled in with NaNs, and two new columns, MSDs and Gauss are added:
         MSDs, calculated mean squared displacements using the formula MSD = <(x-x0)**2>
         Gauss, calculated Gaussianity
 
@@ -120,13 +121,13 @@ def msd_calc(track, length=10):
     >>>> new_track = msd.msd_calc(df)
     """
 
-    #assert type(track['Frame']) == pd.core.series.Series, "track must contain column 'Frame'"
-    #assert type(track['X']) == pd.core.series.Series, "track must contain column 'X'"
-    #assert type(track['Y']) == pd.core.series.Series, "track must contain column 'Y'"
-    #assert track.shape[0] > 0, "track is empty"
-    #assert track['Frame'].dtype == np.int64 or np.float64, "Data in 'Frame' must be if type int64."
-    #assert track['X'].dtype == np.int64 or np.float64, "Data in 'X' must be if type int64."
-    #assert track['Y'].dtype == np.int64 or np.float64, "Data in 'Y' must be if type int64."
+    # assert type(track['Frame']) == pd.core.series.Series, "track must contain column 'Frame'"
+    # assert type(track['X']) == pd.core.series.Series, "track must contain column 'X'"
+    # assert type(track['Y']) == pd.core.series.Series, "track must contain column 'Y'"
+    # assert track.shape[0] > 0, "track is empty"
+    # assert track['Frame'].dtype == np.int64 or np.float64, "Data in 'Frame' must be if type int64."
+    # assert track['X'].dtype == np.int64 or np.float64, "Data in 'X' must be if type int64."
+    # assert track['Y'].dtype == np.int64 or np.float64, "Data in 'Y' must be if type int64."
 
     MSD = np.zeros(length)
     gauss = np.zeros(length)
@@ -156,19 +157,20 @@ def msd_calc(track, length=10):
     old_frame = track['Frame']
     old_x = track['X']
     old_y = track['Y']
-    fx = interpolate.interp1d(old_frame, old_x, bounds_error = False, fill_value = np.nan)
-    fy = interpolate.interp1d(old_frame, old_y, bounds_error = False, fill_value = np.nan)
+    fx = interpolate.interp1d(old_frame, old_x, bounds_error=False, fill_value=np.nan)
+    fy = interpolate.interp1d(old_frame, old_y, bounds_error=False, fill_value=np.nan)
 
     int_x = ma.masked_equal(fx(new_frame), np.nan)
     int_y = ma.masked_equal(fy(new_frame), np.nan)
     d = {'Frame': new_frame,
-                 'X': int_x,
-                 'Y': int_y}
+         'X': int_x,
+         'Y': int_y
+         }
     new_track = pd.DataFrame(data=d)
 
     for frame in range(0, length-1):
         # creates array to ignore when particles skip frames.
-        #inc = ma.masked_where(msd.nth_diff(track['Frame'], n=frame+1) != frame+1, msd.nth_diff(track['Frame'], n=frame+1))
+        # inc = ma.masked_where(msd.nth_diff(track['Frame'], n=frame+1) != frame+1, msd.nth_diff(track['Frame'], n=frame+1))
 
         x = np.square(nth_diff(new_track['X'], n=frame+1))
         y = np.square(nth_diff(new_track['Y'], n=frame+1))
@@ -190,15 +192,16 @@ def all_msds(data):
 
     Parameters
     ----------
-    data : pandas dataframe containing, at a minimum a 'Frame', 'Track_ID', 'X', and
-           'Y' column. Note: it is assumed that frames begins at 1, not 0 with this
-           function. Adjust before feeding into function.
+    data : pandas dataframe
+        Contains, at a minimum a 'Frame', 'Track_ID', 'X', and
+        'Y' column. Note: it is assumed that frames begins at 1, not 0 with this
+        function. Adjust before feeding into function.
 
     Returns
     ----------
-    new_data: pandas dataframe similar to input data.  All missing frames of
-        individual trajectories are filled in with NaNs, and two new columns, MSDs
-        and Gauss are added:
+    new_data: pandas dataframe
+        Similar to input data.  All missing frames of individual trajectories
+        are filled in with NaNs, and two new columns, MSDs and Gauss are added:
         MSDs, calculated mean squared displacements using the formula MSD = <(x-x0)**2>
         Gauss, calculated Gaussianity
 
@@ -212,15 +215,15 @@ def all_msds(data):
     >>> all_msds(df)
     """
 
-    #assert type(data['Frame']) == pd.core.series.Series, "data must contain column 'Frame'"
-    #assert type(data['Track_ID']) == pd.core.series.Series, "data must contain column 'Track_ID'"
-    #assert type(data['X']) == pd.core.series.Series, "data must contain column 'X'"
-    #assert type(data['Y']) == pd.core.series.Series, "data must contain column 'Y'"
-    #assert data.shape[0] > 0, "data is empty"
-    #assert data['Frame'].dtype == np.int64 or np.float64, "Data in 'Frame' must be if type int64."
-    #assert data['Track_ID'].dtype == np.int64 or np.float64, "Data in 'Track_ID' must be if type int64."
-    #assert data['X'].dtype == np.int64 or np.float64, "Data in 'X' must be if type int64."
-    #assert data['Y'].dtype == np.int64 or np.float64, "Data in 'Y' must be if type int64."
+    # assert type(data['Frame']) == pd.core.series.Series, "data must contain column 'Frame'"
+    # assert type(data['Track_ID']) == pd.core.series.Series, "data must contain column 'Track_ID'"
+    # assert type(data['X']) == pd.core.series.Series, "data must contain column 'X'"
+    # assert type(data['Y']) == pd.core.series.Series, "data must contain column 'Y'"
+    # assert data.shape[0] > 0, "data is empty"
+    # assert data['Frame'].dtype == np.int64 or np.float64, "Data in 'Frame' must be if type int64."
+    # assert data['Track_ID'].dtype == np.int64 or np.float64, "Data in 'Track_ID' must be if type int64."
+    # assert data['X'].dtype == np.int64 or np.float64, "Data in 'X' must be if type int64."
+    # assert data['Y'].dtype == np.int64 or np.float64, "Data in 'Y' must be if type int64."
 
     trackids = data.Track_ID.unique()
     partcount = trackids.shape[0]
@@ -245,9 +248,9 @@ def all_msds(data):
         else:
             index1 = index2
             index2 = index2 + length
-        #data['MSDs'][index1:index2], data['Gauss'][index1:index2] = msd_calc(single_track)
-        #data['Frame'][index1:index2] = data['Frame'][index1:index2] - (data['Frame'][index1] - 1)
-        new_single_track =  msd_calc(single_track, length=length)
+        # data['MSDs'][index1:index2], data['Gauss'][index1:index2] = msd_calc(single_track)
+        # data['Frame'][index1:index2] = data['Frame'][index1:index2] - (data['Frame'][index1] - 1)
+        new_single_track = msd_calc(single_track, length=length)
         new_frame[index1:index2] = np.linspace(1, length, length)
         new_ID[index1:index2] = particle+1
         new_x[index1:index2] = new_single_track['X']
@@ -262,22 +265,24 @@ def all_msds(data):
          'MSDs': MSD,
          'Gauss': gauss}
     new_data = pd.DataFrame(data=d)
-   
+
     return new_data
 
 
 def make_xyarray(data, length=651):
     """
     Rearranges xy data from input pandas dataframe into 2D numpy array.
-    
+
     Parameters
     ----------
-    data : pandas dataframe containing, at a minimum a 'Frame', 'Track_ID', 'X', and
-           'Y' column.
-    length: desired length or number of frames to which to extend trajectories.
+    data : pandas dataframe
+        Contains, at a minimum a 'Frame', 'Track_ID', 'X', and
+        'Y' column.
+    length: int
+        Desired length or number of frames to which to extend trajectories.
         Any trajectories shorter than the input length will have the extra space
         filled in with NaNs.
-    
+
     Returns
     ----------
     f_array: numpy array of floats of size length x particles
@@ -288,7 +293,7 @@ def make_xyarray(data, length=651):
         Contains x coordinate data
     y_array: numpy array of floats of size length x particles
         Contains y coordinate data
-    
+
     Examples
     -----------
     >>>> d = {'Frame': [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],
@@ -298,7 +303,7 @@ def make_xyarray(data, length=651):
     >>>> df = pd.DataFrame(data=d)
     >>>> length = max(df['Frame']) + 1
     >>>> f_array, t_array, x_array, y_array = msd.make_xyarray(df, length=length)
-    
+
     (array([[0., 0.],
         [1., 1.],
         [2., 2.],
@@ -328,7 +333,7 @@ def make_xyarray(data, length=651):
         [nan,  5.],
         [nan,  6.]]))
     """
-    #Initial values
+    # Initial values
     first_p = int(min(data['Track_ID']))
     particles = int(max(data['Track_ID'])) - first_p + 1
     x_array = np.zeros((length, particles))
@@ -336,32 +341,32 @@ def make_xyarray(data, length=651):
     f_array = np.zeros((length, particles))
     t_array = np.zeros((length, particles))
 
-    track = data[data['Track_ID']==first_p].sort_values(['Track_ID', 'Frame'], ascending=[1, 1]).reset_index(drop=True)
+    track = data[data['Track_ID'] == first_p].sort_values(['Track_ID', 'Frame'], ascending=[1, 1]).reset_index(drop=True)
     new_frame = np.linspace(0, length-1, length)
 
     old_frame = track['Frame'].as_matrix().astype(float)
     old_x = track['X'].as_matrix()
     old_y = track['Y'].as_matrix()
-    fx = interpolate.interp1d(old_frame, old_x, bounds_error = False, fill_value = np.nan)
-    fy = interpolate.interp1d(old_frame, old_y, bounds_error = False, fill_value = np.nan)
+    fx = interpolate.interp1d(old_frame, old_x, bounds_error=False, fill_value=np.nan)
+    fy = interpolate.interp1d(old_frame, old_y, bounds_error=False, fill_value=np.nan)
 
     int_x = fx(new_frame)
     int_y = fy(new_frame)
 
-    #Fill in entire array
+    # Fill in entire array
     x_array[:, 0] = int_x
     y_array[:, 0] = int_y
     f_array[:, 0] = new_frame
     t_array[:, 0] = first_p
 
     for part in range(first_p+1, first_p+particles):
-        track = data[data['Track_ID']==part].sort_values(['Track_ID', 'Frame'], ascending=[1, 1]).reset_index(drop=True)
+        track = data[data['Track_ID'] == part].sort_values(['Track_ID', 'Frame'], ascending=[1, 1]).reset_index(drop=True)
 
         old_frame = track['Frame']
         old_x = track['X'].as_matrix()
         old_y = track['Y'].as_matrix()
-        fx = interpolate.interp1d(old_frame, old_x, bounds_error = False, fill_value = np.nan)
-        fy = interpolate.interp1d(old_frame, old_y, bounds_error = False, fill_value = np.nan)
+        fx = interpolate.interp1d(old_frame, old_x, bounds_error=False, fill_value=np.nan)
+        fy = interpolate.interp1d(old_frame, old_y, bounds_error=False, fill_value=np.nan)
 
         int_x = fx(new_frame)
         int_y = fy(new_frame)
@@ -370,7 +375,7 @@ def make_xyarray(data, length=651):
         y_array[:, part-first_p] = int_y
         f_array[:, part-first_p] = new_frame
         t_array[:, part-first_p] = part
-    
+
     return f_array, t_array, x_array, y_array
 
 
@@ -380,14 +385,15 @@ def all_msds2(data, frames=651):
 
     Parameters
     ----------
-    data : pandas dataframe containing, at a minimum a 'Frame', 'Track_ID', 'X', and
-           'Y' column. Note: it is assumed that frames begins at 0.
+    data : pandas dataframe
+        Contains, at a minimum a 'Frame', 'Track_ID', 'X', and
+        'Y' column. Note: it is assumed that frames begins at 0.
 
     Returns
     ----------
-    new_data: pandas dataframe similar to input data.  All missing frames of
-        individual trajectories are filled in with NaNs, and two new columns, MSDs
-        and Gauss are added:
+    new_data: pandas dataframe
+        Similar to input data.  All missing frames of individual trajectories
+        are filled in with NaNs, and two new columns, MSDs and Gauss are added:
         MSDs, calculated mean squared displacements using the formula MSD = <(x-x0)**2>
         Gauss, calculated Gaussianity
 
@@ -401,8 +407,8 @@ def all_msds2(data, frames=651):
     >>>> cols = ['Frame', 'Track_ID', 'X', 'Y', 'MSDs', 'Gauss']
     >>>> length = max(df['Frame']) + 1
     >>>> msd.all_msds2(df, frames=length)[cols]
-    """    
-    if data.shape[0]>2:
+    """
+    if data.shape[0] > 2:
         try:
             f_array, t_array, x_array, y_array = make_xyarray(data, length=frames)
 
@@ -452,5 +458,5 @@ def all_msds2(data, frames=651):
              'MSDs': [],
              'Gauss': []}
         new_data = pd.DataFrame(data=d)
-    
+
     return new_data

@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>diff_classifier.imagej &mdash; diff_classifier 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/imagej.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="diff-classifier-imagej">
+<h1><a class="reference internal" href="#module-diff_classifier.imagej" title="diff_classifier.imagej"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.imagej</span></code></a><a class="headerlink" href="#diff-classifier-imagej" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-diff_classifier.imagej" title="diff_classifier.imagej"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.imagej</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-diff_classifier.imagej"></span><dl class="function">
+<dt id="diff_classifier.imagej.mean_intensity">
+<code class="descclassname">diff_classifier.imagej.</code><code class="descname">mean_intensity</code><span class="sig-paren">(</span><em>local_im</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#mean_intensity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.mean_intensity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.imagej.partition_im">
+<code class="descclassname">diff_classifier.imagej.</code><code class="descname">partition_im</code><span class="sig-paren">(</span><em>tiffname</em>, <em>irows=int</em>, <em>icols=int</em>, <em>ires=int</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#partition_im"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.partition_im" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partitions a 2048x2044 image into irows x icols images of size ires x ires and saved them.</p>
+<dl class="docutils">
+<dt>tiffname <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Location of input image to be partitioned.</dd>
+<dt>irows <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of rows of size ires pixels to be partitioned from source image.</dd>
+<dt>icols <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of columns of size ires pixels to be partitioned from source image.</dd>
+<dt>ires <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Output images are of size ires x ires pixels.</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">partition_im</span><span class="p">(</span><span class="s1">&#39;your/sample/image.tif&#39;</span><span class="p">,</span> <span class="n">irows</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">icols</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ires</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.imagej.regress_tracking_params">
+<code class="descclassname">diff_classifier.imagej.</code><code class="descname">regress_tracking_params</code><span class="sig-paren">(</span><em>all_videos</em>, <em>y</em>, <em>training_size</em>, <em>have_output=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#regress_tracking_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.regress_tracking_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses regression techniques to select the best tracking parameters.
+Regression again intensities of input images.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.imagej.track">
+<code class="descclassname">diff_classifier.imagej.</code><code class="descname">track</code><span class="sig-paren">(</span><em>target</em>, <em>out_file</em>, <em>template=None</em>, <em>fiji_bin=None</em>, <em>radius=2.5</em>, <em>threshold=5.0</em>, <em>do_median_filtering=False</em>, <em>quality=30.0</em>, <em>x=511</em>, <em>y=511</em>, <em>ylo=1</em>, <em>median_intensity=55000.0</em>, <em>snr=0.0</em>, <em>linking_max_distance=10.0</em>, <em>gap_closing_max_distance=10.0</em>, <em>max_frame_gap=3</em>, <em>track_displacement=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.track" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>target <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Full path to a tif file to do tracking on.
+Can also be a URL (e.g., &#8216;<a class="reference external" href="http://fiji.sc/samples/FakeTracks.tif">http://fiji.sc/samples/FakeTracks.tif</a>&#8216;)</dd>
+<dt>out_file <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Full path to a csv file to store the results.</dd>
+<dt>template <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>The full path of a template for tracking. Defaults to use
+<cite>data/trackmate_template.py</cite> stored in the diff_classifier source-code.</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
