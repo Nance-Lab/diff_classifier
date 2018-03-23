@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>diff_classifier.heatmaps &mdash; diff_classifier 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="index.html"/>
+        <link rel="next" title="diff_classifier.knotlets" href="knotlets.html"/>
+        <link rel="prev" title="diff_classifier.aws" href="aws.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="msd.html"><code class="docutils literal"><span class="pre">diff_classifier.msd</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="imagej.html"><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html"><code class="docutils literal"><span class="pre">diff_classifier.features</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws.html"><code class="docutils literal"><span class="pre">diff_classifier.aws</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="knotlets.html"><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">API</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/heatmaps.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="diff-classifier-heatmaps">
+<h1><a class="reference internal" href="#module-diff_classifier.heatmaps" title="diff_classifier.heatmaps"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a><a class="headerlink" href="#diff-classifier-heatmaps" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-diff_classifier.heatmaps" title="diff_classifier.heatmaps"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-diff_classifier.heatmaps"></span><dl class="function">
+<dt id="diff_classifier.heatmaps.plot_heatmap">
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_heatmap</code><span class="sig-paren">(</span><em>prefix</em>, <em>feature='asymmetry1'</em>, <em>vmin=0</em>, <em>vmax=1</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em>, <em>dpi=None</em>, <em>figsize=(12</em>, <em>10)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_heatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_heatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot heatmap of trajectories in video with colors corresponding to features.</p>
+<dl class="docutils">
+<dt>prefix: string</dt>
+<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
+<dt>feature: string</dt>
+<dd>Feature to be plotted.  See features_analysis.py</dd>
+<dt>vmin: float64</dt>
+<dd>Lower intensity bound for heatmap.</dd>
+<dt>vmax: float64</dt>
+<dd>Upper intensity bound for heatmap.</dd>
+<dt>resolution: int</dt>
+<dd>Resolution of base image.  Only needed to calculate bounds of image.</dd>
+<dt>rows: int</dt>
+<dd>Rows of base images used to build tiled image.</dd>
+<dt>cols: int</dt>
+<dd>Columns of base images used to build tiled images.</dd>
+<dt>upload: boolean</dt>
+<dd>True if you want to upload to s3.</dd>
+<dt>dpi: int</dt>
+<dd>Desired dpi of output image.</dd>
+<dt>figsize: list</dt>
+<dd>Desired dimensions of output image.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.heatmaps.plot_histogram">
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_histogram</code><span class="sig-paren">(</span><em>prefix</em>, <em>xlabel='Log Diffusion Coefficient Dist'</em>, <em>ylabel='Trajectory Count'</em>, <em>fps=100.02</em>, <em>umppx=0.16</em>, <em>frames=651</em>, <em>y_range=100</em>, <em>frame_interval=20</em>, <em>frame_range=100</em>, <em>analysis='log'</em>, <em>theta='D'</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot heatmap of trajectories in video with colors corresponding to features.</p>
+<dl class="docutils">
+<dt>prefix: string</dt>
+<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
+<dt>xlabel: string</dt>
+<dd>X axis label.</dd>
+<dt>ylabel: string</dt>
+<dd>Y axis label.</dd>
+<dt>fps: float64</dt>
+<dd>Frames per second of video.</dd>
+<dt>umppx: float64</dt>
+<dd>Resolution of video in microns per pixel.</dd>
+<dt>frames: int</dt>
+<dd>Number of frames in video.</dd>
+<dt>y_range: float64 or int</dt>
+<dd>Desire y range of graph.</dd>
+<dt>frame_interval: int</dt>
+<dd>Desired spacing between MSDs/Deffs to be plotted.</dd>
+<dt>analysis: string</dt>
+<dd>Desired output format.  If log, will plot log(MSDs/Deffs)</dd>
+<dt>theta: string</dt>
+<dd>Desired output.  D for diffusion coefficients.  Anything else, MSDs.</dd>
+<dt>upload: boolean</dt>
+<dd>True if you want to upload to s3.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.heatmaps.plot_individual_msds">
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_individual_msds</code><span class="sig-paren">(</span><em>prefix</em>, <em>x_range=100</em>, <em>y_range=20</em>, <em>umppx=0.16</em>, <em>fps=100.02</em>, <em>alpha=0.01</em>, <em>upload=True</em>, <em>folder='.'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_individual_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_individual_msds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot MSDs of trajectories and the geometric average.</p>
+<dl class="docutils">
+<dt>prefix: string</dt>
+<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
+<dt>x_range: float64 or int</dt>
+<dd>Desire x range of graph.</dd>
+<dt>y_range: float64 or int</dt>
+<dd>Desire y range of graph.</dd>
+<dt>fps: float64</dt>
+<dd>Frames per second of video.</dd>
+<dt>umppx: float64</dt>
+<dd>Resolution of video in microns per pixel.</dd>
+<dt>alpha: float64</dt>
+<dd>Transparency factor.  Between 0 and 1.</dd>
+<dt>upload: boolean</dt>
+<dd>True if you want to upload to s3.</dd>
+</dl>
+<dl class="docutils">
+<dt>geo_mean: numpy array</dt>
+<dd>Geometric mean of trajectory MSDs at all time points.</dd>
+<dt>geo_SEM: numpy array</dt>
+<dd>Geometric standard errot of trajectory MSDs at all time points.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.heatmaps.plot_particles_in_frame">
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_particles_in_frame</code><span class="sig-paren">(</span><em>prefix</em>, <em>x_range=600</em>, <em>y_range=2000</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_particles_in_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_particles_in_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot number of particles per frame as a function of time.</p>
+<dl class="docutils">
+<dt>prefix: string</dt>
+<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
+<dt>x_range: float64 or int</dt>
+<dd>Desire x range of graph.</dd>
+<dt>y_range: float64 or int</dt>
+<dd>Desire y range of graph.</dd>
+<dt>upload: boolean</dt>
+<dd>True if you want to upload to s3.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.heatmaps.plot_scatterplot">
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_scatterplot</code><span class="sig-paren">(</span><em>prefix</em>, <em>feature='asymmetry1'</em>, <em>vmin=0</em>, <em>vmax=1</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_scatterplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_scatterplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot scatterplot of trajectories in video with colors corresponding to features.</p>
+<dl class="docutils">
+<dt>prefix: string</dt>
+<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
+<dt>feature: string</dt>
+<dd>Feature to be plotted.  See features_analysis.py</dd>
+<dt>vmin: float64</dt>
+<dd>Lower intensity bound for heatmap.</dd>
+<dt>vmax: float64</dt>
+<dd>Upper intensity bound for heatmap.</dd>
+<dt>resolution: int</dt>
+<dd>Resolution of base image.  Only needed to calculate bounds of image.</dd>
+<dt>rows: int</dt>
+<dd>Rows of base images used to build tiled image.</dd>
+<dt>cols: int</dt>
+<dd>Columns of base images used to build tiled images.</dd>
+<dt>upload: boolean</dt>
+<dd>True if you want to upload to s3.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.heatmaps.plot_trajectories">
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_trajectories</code><span class="sig-paren">(</span><em>prefix</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_trajectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_trajectories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot trajectories in video.</p>
+<dl class="docutils">
+<dt>prefix: string</dt>
+<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
+<dt>resolution: int</dt>
+<dd>Resolution of base image.  Only needed to calculate bounds of image.</dd>
+<dt>rows: int</dt>
+<dd>Rows of base images used to build tiled image.</dd>
+<dt>cols: int</dt>
+<dd>Columns of base images used to build tiled images.</dd>
+<dt>upload: boolean</dt>
+<dd>True if you want to upload to s3.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.heatmaps.voronoi_finite_polygons_2d">
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">voronoi_finite_polygons_2d</code><span class="sig-paren">(</span><em>vor</em>, <em>radius=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#voronoi_finite_polygons_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.voronoi_finite_polygons_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct infinite voronoi regions in a 2D diagram to finite
+regions.</p>
+<dl class="docutils">
+<dt>vor <span class="classifier-delimiter">:</span> <span class="classifier">Voronoi</span></dt>
+<dd>Input diagram</dd>
+<dt>radius <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd>Distance to &#8216;points at infinity&#8217;.</dd>
+</dl>
+<dl class="docutils">
+<dt>regions <span class="classifier-delimiter">:</span> <span class="classifier">list of tuples</span></dt>
+<dd>Indices of vertices in each revised Voronoi regions.</dd>
+<dt>vertices <span class="classifier-delimiter">:</span> <span class="classifier">list of tuples</span></dt>
+<dd>Coordinates for revised Voronoi vertices. Same as coordinates
+of input vertices, with &#8216;points at infinity&#8217; appended to the
+end.</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="knotlets.html" class="btn btn-neutral float-right" title="diff_classifier.knotlets" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="aws.html" class="btn btn-neutral" title="diff_classifier.aws" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

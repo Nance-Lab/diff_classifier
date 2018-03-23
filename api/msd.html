@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>diff_classifier.msd &mdash; diff_classifier 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="index.html"/>
+        <link rel="next" title="diff_classifier.imagej" href="imagej.html"/>
+        <link rel="prev" title="diff_classifier.utils" href="utils.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">diff_classifier.msd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal"><span class="pre">diff_classifier.msd</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="imagej.html"><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html"><code class="docutils literal"><span class="pre">diff_classifier.features</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws.html"><code class="docutils literal"><span class="pre">diff_classifier.aws</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="heatmaps.html"><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="knotlets.html"><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">API</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">diff_classifier.msd</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/msd.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="diff-classifier-msd">
+<h1><a class="reference internal" href="#module-diff_classifier.msd" title="diff_classifier.msd"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.msd</span></code></a><a class="headerlink" href="#diff-classifier-msd" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-diff_classifier.msd" title="diff_classifier.msd"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.msd</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-diff_classifier.msd"></span><dl class="function">
+<dt id="diff_classifier.msd.all_msds">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">all_msds</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#all_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.all_msds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.</p>
+<dl class="docutils">
+<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
+<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
+&#8216;Y&#8217; column. Note: it is assumed that frames begins at 1, not 0 with this
+function. Adjust before feeding into function.</dd>
+</dl>
+<dl class="docutils">
+<dt>new_data: pandas dataframe</dt>
+<dd>Similar to input data.  All missing frames of individual trajectories
+are filled in with NaNs, and two new columns, MSDs and Gauss are added:
+MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
+Gauss, calculated Gaussianity</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="go">         &#39;Track_ID&#39;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],</span>
+<span class="go">         &#39;X&#39;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],</span>
+<span class="go">         &#39;Y&#39;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_msds</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.all_msds2">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">all_msds2</code><span class="sig-paren">(</span><em>data</em>, <em>frames=651</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#all_msds2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.all_msds2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.</p>
+<dl class="docutils">
+<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
+<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
+&#8216;Y&#8217; column. Note: it is assumed that frames begins at 0.</dd>
+</dl>
+<dl class="docutils">
+<dt>new_data: pandas dataframe</dt>
+<dd>Similar to input data.  All missing frames of individual trajectories
+are filled in with NaNs, and two new columns, MSDs and Gauss are added:
+MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
+Gauss, calculated Gaussianity</dd>
+</dl>
+<dl class="docutils">
+<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],</dt>
+<dd>&#8216;Track_ID&#8217;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+&#8216;X&#8217;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+&#8216;Y&#8217;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</dd>
+</dl>
+<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
+&gt;&gt;&gt;&gt; cols = [&#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, &#8216;Y&#8217;, &#8216;MSDs&#8217;, &#8216;Gauss&#8217;]
+&gt;&gt;&gt;&gt; length = max(df[&#8216;Frame&#8217;]) + 1
+&gt;&gt;&gt;&gt; msd.all_msds2(df, frames=length)[cols]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.make_xyarray">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">make_xyarray</code><span class="sig-paren">(</span><em>data</em>, <em>length=651</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#make_xyarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.make_xyarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rearranges xy data from input pandas dataframe into 2D numpy array.</p>
+<dl class="docutils">
+<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
+<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
+&#8216;Y&#8217; column.</dd>
+<dt>length: int</dt>
+<dd>Desired length or number of frames to which to extend trajectories.
+Any trajectories shorter than the input length will have the extra space
+filled in with NaNs.</dd>
+</dl>
+<dl class="docutils">
+<dt>f_array: numpy array of floats of size length x particles</dt>
+<dd>Contains frames data</dd>
+<dt>t_array: numpy array of floats of size length x particles</dt>
+<dd>Contains trajectory ID data</dd>
+<dt>x_array: numpy array of floats of size length x particles</dt>
+<dd>Contains x coordinate data</dd>
+<dt>y_array: numpy array of floats of size length x particles</dt>
+<dd>Contains y coordinate data</dd>
+</dl>
+<dl class="docutils">
+<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],</dt>
+<dd>&#8216;Track_ID&#8217;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+&#8216;X&#8217;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+&#8216;Y&#8217;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</dd>
+</dl>
+<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
+&gt;&gt;&gt;&gt; length = max(df[&#8216;Frame&#8217;]) + 1
+&gt;&gt;&gt;&gt; f_array, t_array, x_array, y_array = msd.make_xyarray(df, length=length)</p>
+<dl class="docutils">
+<dt>(array([[0., 0.],</dt>
+<dd>[1., 1.],
+[2., 2.],
+[3., 3.],
+[4., 4.],
+[5., 5.],
+[6., 6.]]),
+array([[1., 2.],
+[1., 2.],
+[1., 2.],
+[1., 2.],
+[1., 2.],
+[1., 2.],
+[1., 2.]]),
+array([[ 5., nan],
+[ 6., nan],
+[ 7.,  1.],
+[ 8.,  2.],
+[ 9.,  3.],
+[nan,  4.],
+[nan,  5.]]),
+array([[ 6., nan],
+[ 7., nan],
+[ 8.,  2.],
+[ 9.,  3.],
+[10.,  4.],
+[nan,  5.],
+[nan,  6.]]))</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.msd_calc">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">msd_calc</code><span class="sig-paren">(</span><em>track</em>, <em>length=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#msd_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.msd_calc" title="Permalink to this definition">¶</a></dt>
+<dd><p>msdcalc(track = pdarray)</p>
+<p>Returns numpy array containing MSD data calculated from an individual track.</p>
+<dl class="docutils">
+<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
+<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;X&#8217;, and &#8216;Y&#8217; column</dd>
+</dl>
+<dl class="docutils">
+<dt>new_track: pandas dataframe</dt>
+<dd>Similar to input track.  All missing frames of individual trajectories
+are filled in with NaNs, and two new columns, MSDs and Gauss are added:
+MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
+Gauss, calculated Gaussianity</dd>
+</dl>
+<dl class="docutils">
+<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [1, 2, 3, 4, 5],</dt>
+<dd>&#8216;X&#8217;: [5, 6, 7, 8, 9],
+&#8216;Y&#8217;: [6, 7, 8, 9, 10]}</dd>
+</dl>
+<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
+&gt;&gt;&gt;&gt; new_track = msd.msd_calc(df, 5)</p>
+<dl class="docutils">
+<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [1, 2, 3, 4, 5],</dt>
+<dd>&#8216;X&#8217;: [5, 6, 7, 8, 9],
+&#8216;Y&#8217;: [6, 7, 8, 9, 10]}</dd>
+</dl>
+<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
+&gt;&gt;&gt;&gt; new_track = msd.msd_calc(df)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.nth_diff">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">nth_diff</code><span class="sig-paren">(</span><em>dataframe</em>, <em>n=int</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#nth_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.nth_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new vector of size N - n containing the nth difference between vector elements.</p>
+<dl class="docutils">
+<dt>dataframe <span class="classifier-delimiter">:</span> <span class="classifier">pandas column of floats or ints</span></dt>
+<dd>input data on which differences are to be calculated.</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int, default is 1</span></dt>
+<dd>Function calculated x(i) - x(i - n) for all values in pandas column</dd>
+<dt>ax <span class="classifier-delimiter">:</span> <span class="classifier">int, 0 or 1</span></dt>
+<dd>Axis along which differences are to be calculated.  Default is 0.  If 0,
+input must be a pandas series.  If 1, input must be a numpy array.</dd>
+</dl>
+<dl class="docutils">
+<dt>diff <span class="classifier-delimiter">:</span> <span class="classifier">pandas column</span></dt>
+<dd>Pandas column of size N - n, where N is the original size of dataframe.</dd>
+</dl>
+<p>&gt;&gt;&gt;&gt; d = {&#8216;col1&#8217;: [1, 2, 3, 4, 5]}
+&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
+&gt;&gt;&gt;&gt; nth_diff(df)</p>
+<p>0    1
+1    1
+2    1
+3    1
+Name: col1, dtype: int64</p>
+<p>#test2
+&gt;&gt;&gt;&gt; df = np.ones((5, 10))
+&gt;&gt;&gt;&gt; nth_diff(df)</p>
+<dl class="docutils">
+<dt>array([[0., 0., 0., 0., 0., 0., 0., 0., 0.],</dt>
+<dd>[0., 0., 0., 0., 0., 0., 0., 0., 0.],
+[0., 0., 0., 0., 0., 0., 0., 0., 0.],
+[0., 0., 0., 0., 0., 0., 0., 0., 0.],
+[0., 0., 0., 0., 0., 0., 0., 0., 0.]])</dd>
+</dl>
+<p>&gt;&gt;&gt;&gt; df = np.ones((5, 10))
+&gt;&gt;&gt;&gt; nth_diff (df)</p>
+<dl class="docutils">
+<dt>array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],</dt>
+<dd>[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="imagej.html" class="btn btn-neutral float-right" title="diff_classifier.imagej" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="utils.html" class="btn btn-neutral" title="diff_classifier.utils" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

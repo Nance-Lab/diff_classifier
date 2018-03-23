@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Calculating features &mdash; diff_classifier 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Cloudknot parallelization" href="cloudknot_parallelization.html"/>
+        <link rel="prev" title="Tracking particles" href="tracking.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking particles</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Calculating features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Calculating features</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/features_analysis.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="calculating-features">
+<span id="features-analysis-label"></span><h1>Calculating features<a class="headerlink" href="#calculating-features" title="Permalink to this headline">¶</a></h1>
+<p>The features package in diff_classifier calculates geometric features from the
+xy data of each trajectory and assembles them into a pandas dataframe.  The
+current features that are calculated include:</p>
+<ul class="simple">
+<li>alpha: anomalous diffusion exponent.</li>
+<li>asymmetry (1, 2, 3): various expressions of the manitude of asymmetry of a
+trajectory.</li>
+<li>aspect ratio: the ratio of the long and short side of the minimum bounding
+rectangle.</li>
+<li>elongation: a transform of the aspect ratio, one minus the inverse of the
+aspect ratio.</li>
+<li>boundedness: quantifies how much a particle with diffusion coefficient D is
+restricted by a circular confinement of radius r when it diffuses for time t.</li>
+<li>trappedness: expresses the boundedness in terms of a probability.</li>
+<li>efficiency: relates the squared net displacement to the sum of squared step
+lengths.</li>
+<li>straightness: similar to the efficiency, relates the net displacement to the
+sum of step lengths.</li>
+<li>fractal dimension: 1 for directed trajectories, 2-3 for confined or subdiffusion.</li>
+<li>Gaussianity: 0 for normal diffusion, deviates from 0 for other types.
+kurtosis:</li>
+<li>mean squared displacement ratio: 0 for Brownian motion, &lt;0 for restricted motion,
+&gt;0 for directed motion.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">calculate_features</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
+<p>Diff_classifier includes a module of standard image outputs from MSD and features
+calculations.  These include:</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/trajectories.png" src="_images/trajectories.png" />
+<p class="caption"><span class="caption-text">Trajectory plot of tracked particles in target video.</span></p>
+</div>
+<div class="figure align-center" id="id2">
+<img alt="_images/msds.png" src="_images/msds.png" />
+<p class="caption"><span class="caption-text">Mean squared displacements of trajectories in target video.</span></p>
+</div>
+<div class="figure align-center" id="id3">
+<img alt="_images/heatmap.png" src="_images/heatmap.png" />
+<p class="caption"><span class="caption-text">Heatmaps of trajectory features associated with trajectories in target video.</span></p>
+</div>
+<div class="figure align-center" id="id4">
+<img alt="_images/scatterplot.png" src="_images/scatterplot.png" />
+<p class="caption"><span class="caption-text">Scatterplots of trajectories also colored according to calculated features.</span></p>
+</div>
+<div class="figure align-center" id="id5">
+<img alt="_images/frames.png" src="_images/frames.png" />
+<p class="caption"><span class="caption-text">Number of detected particles per frame.</span></p>
+</div>
+<div class="figure align-center" id="id6">
+<img alt="_images/histogram.png" src="_images/histogram.png" />
+<p class="caption"><span class="caption-text">Histogram of mean squared displacements and diffusion coefficients of
+trajectories in target video.</span></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cloudknot_parallelization.html" class="btn btn-neutral float-right" title="Cloudknot parallelization" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tracking.html" class="btn btn-neutral" title="Tracking particles" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
