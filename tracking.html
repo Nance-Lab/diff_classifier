@@ -1,42 +1,124 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Tracking particles with diff_classifier &mdash; diff_classifier 0.1 documentation</title>
-    
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html" />
-    <link rel="next" title="Calculating features with diff_classifier" href="features_analysis.html" />
-    <link rel="prev" title="Getting started with diff_classifier" href="getting_started.html" />
-   
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tracking particles with diff_classifier &mdash; diff_classifier 0.1 documentation</title>
+  
 
-  </head>
-  <body role="document">  
+  
+  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Tracking particles with diff_classifier</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tracking.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="tracking-particles-with-diff-classifier">
 <span id="tracking-label"></span><h1>Tracking particles with diff_classifier<a class="headerlink" href="#tracking-particles-with-diff-classifier" title="Permalink to this headline">¶</a></h1>
@@ -48,12 +130,17 @@ cutoffs.</p>
 that Trackmate offers, but will be expanded in the future.  The parameters that
 are currently implemented are:</p>
 <ul class="simple">
-<li>radius: estimated radius of spots in videos.  In general, should be slightly
-larger than the average particle size in the videos.  Note that the GUI
-interface uses diameter rather than radius.</li>
-<li>threshold: Not used atm.</li>
-<li>do_median_filtering: If set to True, filters the image before performing tracking to minimize noise.</li>
-<li>quality: Lower threshold on spot quality filter. Usually varies anywhere between 1 to 300.</li>
+<li>radius: estimated radius of spots in videos.  In general, should be slightly</li>
+</ul>
+<p>larger than the average particle size in the videos.  Note that the GUI
+interface uses diameter rather than radius.
+* threshold: not currently in use.
+* do_median_filtering: If set to True, filters the image before performing</p>
+<blockquote>
+<div>tracking to minimize noise.</div></blockquote>
+<ul class="simple">
+<li>quality: Lower threshold on spot quality filter. Usually varies anywhere between
+1 to 300.</li>
 <li>x: Upper threshold on x coordinate spot filter.</li>
 <li>y: Upper threshold on y coordinate spot filter.</li>
 <li>ylo: Lower threshold on y coordinate spot filter.</li>
@@ -102,126 +189,66 @@ regression technique to predict the quality.</p>
 <p>An example of such an implementation can be found
 <a class="reference external" href="https://github.com/ccurtis7/diff_classifier/blob/master/notebooks/03_07_18_knn_implementation.ipynb">here</a>.</p>
 </div>
-<div class="section" id="imagej-module">
-<h2>Imagej module<a class="headerlink" href="#imagej-module" title="Permalink to this headline">¶</a></h2>
-<div class="toggle container">
-<div class="header container">
-diff_classifier.imagej</div>
-<div class="autoclass-content container">
-<span class="target" id="module-diff_classifier.imagej"></span><dl class="function">
-<dt id="diff_classifier.imagej.partition_im">
-<code class="descclassname">diff_classifier.imagej.</code><code class="descname">partition_im</code><span class="sig-paren">(</span><em>tiffname</em>, <em>irows=int</em>, <em>icols=int</em>, <em>ires=int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/imagej.html#partition_im"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.partition_im" title="Permalink to this definition">¶</a></dt>
-<dd><p>Partitions a 2048x2044 image into irows x icols images of size ires x ires and saved them.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>tiffname</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v3.6)"><em>string</em></a>) &#8211; Location of input image to be partitioned.</li>
-<li><strong>irows</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Number of rows of size ires pixels to be partitioned from source image.</li>
-<li><strong>icols</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Number of columns of size ires pixels to be partitioned from source image.</li>
-<li><strong>ires</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Output images are of size ires x ires pixels.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>partition_im('your/sample/image.tif', irows=8, icols=8, ires=256)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.imagej.track">
-<code class="descclassname">diff_classifier.imagej.</code><code class="descname">track</code><span class="sig-paren">(</span><em>target</em>, <em>out_file</em>, <em>template=None</em>, <em>fiji_bin=None</em>, <em>radius=2.5</em>, <em>threshold=5.0</em>, <em>do_median_filtering=False</em>, <em>quality=30.0</em>, <em>x=511</em>, <em>y=511</em>, <em>ylo=1</em>, <em>median_intensity=55000.0</em>, <em>snr=0.0</em>, <em>linking_max_distance=10.0</em>, <em>gap_closing_max_distance=10.0</em>, <em>max_frame_gap=3</em>, <em>track_displacement=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/imagej.html#track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.track" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>target <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>Full path to a tif file to do tracking on.
-Can also be a URL (e.g., &#8216;<a class="reference external" href="http://fiji.sc/samples/FakeTracks.tif">http://fiji.sc/samples/FakeTracks.tif</a>&#8216;)</dd>
-<dt>out_file <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>Full path to a csv file to store the results.</dd>
-<dt>template <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd>The full path of a template for tracking. Defaults to use
-<cite>data/trackmate_template.py</cite> stored in the diff_classifier source-code.</dd>
-</dl>
-</dd></dl>
-
-</div>
-</div>
-</div>
 </div>
 
 
+           </div>
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">diff_classifier</a></h1>
+          <footer>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
 
-<p class="blurb">Analyze and visualize trajectory data from ImageJ</p>
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=ccurtis7&repo=diff_classifier&type=star&count=true&size=large"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">getting started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">tracking</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#selecting-trajectory-parameters">Selecting trajectory parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#using-regression-to-predict-quality">Using regression to predict quality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imagej-module">Imagej module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="features_analysis.html">features_analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interacting_with_s3.html">interacting with s3</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cloudknot_parallelization.html">cloudknot_parallelization</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
-</ul>
-
-
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
     </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Chad Curtis, Ariel Rokem.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
-      
-      |
-      <a href="_sources/tracking.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
-    
-  </body>
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

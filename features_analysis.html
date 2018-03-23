@@ -1,828 +1,218 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Calculating features with diff_classifier &mdash; diff_classifier 0.1 documentation</title>
-    
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html" />
-    <link rel="next" title="Uploading and download with s3" href="interacting_with_s3.html" />
-    <link rel="prev" title="Tracking particles with diff_classifier" href="tracking.html" />
-   
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Calculating features with diff_classifier &mdash; diff_classifier 0.1 documentation</title>
+  
 
-  </head>
-  <body role="document">  
+  
+  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Calculating features with diff_classifier</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/features_analysis.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="calculating-features-with-diff-classifier">
 <span id="features-analysis-label"></span><h1>Calculating features with diff_classifier<a class="headerlink" href="#calculating-features-with-diff-classifier" title="Permalink to this headline">¶</a></h1>
 <p>The features package in diff_classifier calculates geometric features from the
 xy data of each trajectory and assembles them into a pandas dataframe.  The
 current features that are calculated include:</p>
-<ul class="simple">
-<li>alpha: anomalous diffusion exponent.</li>
-<li>asymmetry (1, 2, 3): various expressions of the manitude of asymmetry of a
-trajectory.</li>
-<li>aspect ratio: the ratio of the long and short side of the minimum bounding
-rectangle.</li>
-<li>elongation: a transform of the aspect ratio, one minus the inverse of the
-aspect ratio.</li>
-<li>boundedness: quantifies how much a particle with diffusion coefficient D is
-restricted by a circular confinement of radius r when it diffuses for time t.</li>
-<li>trappedness: expresses the boundedness in terms of a probability.</li>
-<li>efficiency: relates the squared net displacement to the sum of squared step
-lengths.</li>
-<li>straightness: similar to the efficiency, relates the net displacement to the
-sum of step lengths.</li>
-<li>fractal dimension: 1 for directed trajectories, 2-3 for confined or subdiffusion.</li>
-<li>Gaussianity: 0 for normal diffusion, deviates from 0 for other types.</li>
-<li>kurtosis: see TrajWiki</li>
-<li>mean squared displacement ratio: 0 for Brownian motion, &lt;0 for restricted motion,
-&gt;0 for directed motion.</li>
-</ul>
+<p>alpha: anomalous diffusion exponent.
+asymmetry (1, 2, 3): various expressions of the manitude of asymmetry of a</p>
+<blockquote>
+<div>trajectory.</div></blockquote>
+<dl class="docutils">
+<dt>aspect ratio: the ratio of the long and short side of the minimum bounding</dt>
+<dd>rectangle.</dd>
+<dt>elongation: a transform of the aspect ratio, one minus the inverse of the</dt>
+<dd>aspect ratio.</dd>
+<dt>boundedness: quantifies how much a particle with diffusion coefficient D is</dt>
+<dd>restricted by a circular confinement of radius r when it diffuses for time t.</dd>
+</dl>
+<p>trappedness: expresses the boundedness in terms of a probability.
+efficiency: relates the squared net displacement to the sum of squared step</p>
+<blockquote>
+<div>lengths.</div></blockquote>
+<dl class="docutils">
+<dt>straightness: similar to the efficiency, relates the net displacement to the</dt>
+<dd>sum of step lengths.</dd>
+</dl>
+<p>fractal dimension: 1 for directed trajectories, 2-3 for confined or subdiffusion.
+Gaussianity: 0 for normal diffusion, deviates from 0 for other types.
+kurtosis:
+mean squared displacement ratio: 0 for Brownian motion, &lt;0 for restricted motion,
+&gt;0 for directed motion.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">calculate_features</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="msd-module">
-<h2>MSD module<a class="headerlink" href="#msd-module" title="Permalink to this headline">¶</a></h2>
-<div class="toggle container">
-<div class="header container">
-diff_classifier.msd</div>
-<div class="autoclass-content container">
-<span class="target" id="module-diff_classifier.msd"></span><dl class="function">
-<dt id="diff_classifier.msd.all_msds">
-<code class="descclassname">diff_classifier.msd.</code><code class="descname">all_msds</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/msd.html#all_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.all_msds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>pandas dataframe containing, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and</em>) &#8211; &#8216;Y&#8217; column. Note: it is assumed that frames begins at 1, not 0 with this
-function. Adjust before feeding into function.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>new_data</strong> (<em>pandas dataframe similar to input data.  All missing frames of</em>) &#8211; individual trajectories are filled in with NaNs, and two new columns, MSDs
-and Gauss are added:
-MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
-Gauss, calculated Gaussianity</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;Track_ID&#8217;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-&#8216;X&#8217;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>all_msds(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.msd.all_msds2">
-<code class="descclassname">diff_classifier.msd.</code><code class="descname">all_msds2</code><span class="sig-paren">(</span><em>data</em>, <em>frames=651</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/msd.html#all_msds2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.all_msds2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>pandas dataframe containing, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and</em>) &#8211; &#8216;Y&#8217; column. Note: it is assumed that frames begins at 0.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>new_data</strong> (<em>pandas dataframe similar to input data.  All missing frames of</em>) &#8211; individual trajectories are filled in with NaNs, and two new columns, MSDs
-and Gauss are added:
-MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
-Gauss, calculated Gaussianity</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; &#8216;Track_ID&#8217;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-&#8216;X&#8217;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>cols = ['Frame', 'Track_ID', 'X', 'Y', 'MSDs', 'Gauss']</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>length = max(df['Frame']) + 1</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>msd.all_msds2(df, frames=length)[cols]</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.msd.make_xyarray">
-<code class="descclassname">diff_classifier.msd.</code><code class="descname">make_xyarray</code><span class="sig-paren">(</span><em>data</em>, <em>length=651</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/msd.html#make_xyarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.make_xyarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rearranges xy data from input pandas dataframe into 2D numpy array.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>pandas dataframe containing, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and</em>) &#8211; &#8216;Y&#8217; column.</li>
-<li><strong>length</strong> (<em>desired length or number of frames to which to extend trajectories.</em>) &#8211; Any trajectories shorter than the input length will have the extra space
-filled in with NaNs.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>f_array</strong> (<em>numpy array of floats of size length x particles</em>) &#8211; Contains frames data</li>
-<li><strong>t_array</strong> (<em>numpy array of floats of size length x particles</em>) &#8211; Contains trajectory ID data</li>
-<li><strong>x_array</strong> (<em>numpy array of floats of size length x particles</em>) &#8211; Contains x coordinate data</li>
-<li><strong>y_array</strong> (<em>numpy array of floats of size length x particles</em>) &#8211; Contains y coordinate data</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>-----------</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; &#8216;Track_ID&#8217;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-&#8216;X&#8217;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>length = max(df['Frame']) + 1</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>f_array, t_array, x_array, y_array = msd.make_xyarray(df, length=length)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>0.],</strong> (<em>(array([[0.,</em>) &#8211; [1., 1.],
-[2., 2.],
-[3., 3.],
-[4., 4.],
-[5., 5.],
-[6., 6.]]),
-array([[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.]]),
-array([[ 5., nan],
-[ 6., nan],
-[ 7.,  1.],
-[ 8.,  2.],
-[ 9.,  3.],
-[nan,  4.],
-[nan,  5.]]),
-array([[ 6., nan],
-[ 7., nan],
-[ 8.,  2.],
-[ 9.,  3.],
-[10.,  4.],
-[nan,  5.],
-[nan,  6.]]))</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.msd.msd_calc">
-<code class="descclassname">diff_classifier.msd.</code><code class="descname">msd_calc</code><span class="sig-paren">(</span><em>track</em>, <em>length=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/msd.html#msd_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.msd_calc" title="Permalink to this definition">¶</a></dt>
-<dd><p>msdcalc(track = pdarray)</p>
-<p>Returns numpy array containing MSD data calculated from an individual track.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas dataframe containing, at a minimum a &#8216;Frame&#8217;, &#8216;X&#8217;, and &#8216;Y&#8217; column</em>) &#8211; </li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>new_track</strong> (<em>pandas dataframe similar to input track.  All missing frames of</em>) &#8211; individual trajectories are filled in with NaNs, and two new columns, MSDs
-and Gauss are added:
-MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
-Gauss, calculated Gaussianity</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: [5, 6, 7, 8, 9],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10]}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>new_track = msd.msd_calc(df, 5)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: [5, 6, 7, 8, 9],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10]}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>new_track = msd.msd_calc(df)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.msd.nth_diff">
-<code class="descclassname">diff_classifier.msd.</code><code class="descname">nth_diff</code><span class="sig-paren">(</span><em>dataframe</em>, <em>n=int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/msd.html#nth_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.nth_diff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new vector of size N - n containing the nth difference between vector elements.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dataframe</strong> (<em>pandas column of floats or ints</em>) &#8211; input data on which differences are to be calculated.</li>
-<li><strong>n</strong> (<em>int, default is 1</em>) &#8211; Function calculated x(i) - x(i - n) for all values in pandas column</li>
-<li><strong>ax</strong> (<em>int, 0 or 1</em>) &#8211; Axis along which differences are to be calculated.  Default is 0.  If 0,
-input must be a pandas series.  If 1, input must be a numpy array.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>diff</strong> (<em>pandas column</em>) &#8211; Pandas column of size N - n, where N is the original size of dataframe.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>d = {'col1'</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>nth_diff(df)</strong> (<em>&gt;&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>1</strong> (<em>3</em>) &#8211; </li>
-<li><strong>1</strong> &#8211; </li>
-<li><strong>1</strong> &#8211; </li>
-<li><strong>1</strong> &#8211; </li>
-<li><strong>Name</strong> (<em>col1, dtype: int64</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>#test2
-&gt;&gt;&gt;&gt; df = np.ones((5, 10))
-&gt;&gt;&gt;&gt; nth_diff(df)</p>
-<dl class="docutils">
-<dt>array([[0., 0., 0., 0., 0., 0., 0., 0., 0.],</dt>
-<dd>[0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0.]])</dd>
-</dl>
-<p>&gt;&gt;&gt;&gt; df = np.ones((5, 10))
-&gt;&gt;&gt;&gt; nth_diff (df)</p>
-<dl class="docutils">
-<dt>array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],</dt>
-<dd>[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])</dd>
-</dl>
-</dd></dl>
-
-</div>
-</div>
-</div>
-<div class="section" id="features-module">
-<h2>Features module<a class="headerlink" href="#features-module" title="Permalink to this headline">¶</a></h2>
-<div class="toggle container">
-<div class="header container">
-diff_classifier.features</div>
-<div class="autoclass-content container">
-<span class="target" id="module-diff_classifier.features"></span><dl class="function">
-<dt id="diff_classifier.features.alpha_calc">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">alpha_calc</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#alpha_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.alpha_calc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the parameter alpha by fitting track MSD data to a function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>a</strong> (<em>numpy.float64</em>) &#8211; The anomalous exponent derived by fitting MSD values to the function,
-&lt;r**2(n)&gt; = 4*D*(n*delt)**a</li>
-<li><strong>D</strong> (<em>numpy.float64</em>) &#8211; The fitted diffusion coefficient derived by fitting MSD values to the
-function above.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 5</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>alpha_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>0.4999999999999999)</strong> (<em>(2.0000000000000004,</em>) &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames)+3),
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames)+3)}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>alpha_calc(df)</strong> &#8211; </li>
-<li><strong>0.5144436515510022)</strong> (<em>(0.023690002018364065,</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.aspectratio">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">aspectratio</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#aspectratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.aspectratio" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the aspect ratio of the rectangle containing the input track.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>ar</strong> (<em>numpy.float64</em>) &#8211; aspect ratio of the trajectory.  Always &gt;= 1.</li>
-<li><strong>elong</strong> (<em>numpy.float64</em>) &#8211; elongation of the trajectory.  A transformation of the aspect ratio given
-by 1 - ar**-1.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>aspectratio(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>0.99999999999999978)</strong> (<em>(5732146505273195.0,</em>) &#8211; </li>
-<li><strong>frames = 10</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames))+3,
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames))+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>aspectratio(df)</strong> &#8211; </li>
-<li><strong>0.090702573174318291)</strong> (<em>(1.0997501702946164,</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.asymmetry">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">asymmetry</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#asymmetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.asymmetry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the asymmetry of the trajectory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>l1</strong> (<em>numpy.float64</em>) &#8211; Dominant eigenvalue of the gyration tensor.</li>
-<li><strong>l2</strong> (<em>numpy.float64</em>) &#8211; Secondary eigenvalue of the gyration tensor.</li>
-<li><strong>a1</strong> (<em>numpy.float64</em>) &#8211; asymmetry of the input track.  Equal to 0 for circularly symmetric tracks,
-and 1 for linear tracks.</li>
-<li><strong>a2</strong> (<em>numpy.float64</em>) &#8211; alternate definition of asymmetry.  Equal to 1 for circularly
-symmetric tracks, and 0 for linear tracks.</li>
-<li><strong>a3</strong> (<em>numpy.float64</em>) &#8211; alternate definition of asymmetry.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>asymmetry(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>0.0, 1.0, 0.0, 0.69314718055994529)</strong> (<em>(16.5,</em>) &#8211; </li>
-<li><strong>frames = 10</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames)+3),
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames)+3)}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>asymmetry(df)</strong> &#8211; </li>
-<li><strong>(0.53232560128104522,</strong> &#8211; </li>
-<li><strong>0.42766829138901619,</strong> &#8211; </li>
-<li><strong>0.046430119259539708,</strong> &#8211; </li>
-<li><strong>0.80339606128247354,</strong> &#8211; </li>
-<li><strong>0.0059602683290953052)</strong> &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.boundedness">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">boundedness</code><span class="sig-paren">(</span><em>track</em>, <em>framerate=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#boundedness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.boundedness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the boundedness, fractal dimension, and trappedness of the input track.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>framerate</strong> (<em>framrate of the video being analyzed.  Actually cancels out. So</em>) &#8211; why did I include this. Default is 1.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>B</strong> (<em>numpy.float64</em>) &#8211; Boundedness of the input track.  Quantifies how much a particle with
-diffusion coefficient D is restricted by a circular confinement of radius
-r when it diffuses for a time duration N*delt.  Defined as B = D*N*delt/r**2.
-For this case, D is the short time diffusion coefficient (after 2 frames),
-and r is half the maximum distance between any two positions.</li>
-<li><strong>Df</strong> (<em>numpy.float64</em>) &#8211; The fractal path dimension defined as Df = log(N)/log(N*d*l**-1) where L
-is the total length (sum over all steplengths), N is the number of steps,
-and d is the largest distance between any two positions.</li>
-<li><strong>pf</strong> (<em>numpy.float64</em>) &#8211; The probability that a particle with diffusion coefficient D and traced
-for a period of time N*delt is trapped in region r0.  Given by
-pt = 1 - exp(0.2048 - 0.25117*(D*N*delt/r0**2))
-For this case, D is the short time diffusion coefficient, and r0 is half
-the maximum distance between any two positions.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>boundedness(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>1.0000000000000002, 0.045311337970735499)</strong> (<em>(1.0,</em>) &#8211; </li>
-<li><strong>frames = 10</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames)+3),
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames)+3)}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>boundedness(df)</strong> &#8211; </li>
-<li><strong>2.9989749477908401, 0.03576118370932313)</strong> (<em>(0.96037058689895005,</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.calculate_features">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">calculate_features</code><span class="sig-paren">(</span><em>df</em>, <em>framerate=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#calculate_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.calculate_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates multiple features from input MSD dataset and stores in pandas dataframe.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>df</strong> (<em>pandas dataframe</em>) &#8211; Output from msd.all_msds2.  Must have at a minimum the following columns:
-Track_ID, Frame, X, Y, and MSDs.</li>
-<li><strong>framerate</strong> (<em>int or float64</em>) &#8211; Framerate of the input videos from which trajectories were calculated.  Required
-for accurate calculation of some features.  Default is 1.  Possibly not required.
-Ignore if performing all calcuations without units.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>di</strong> (<em>pandas dataframe</em>) &#8211; Contains a row for each trajectory in df.  Holds the following features of each
-trajetory: Track_ID, alpha, D_fit, kurtosis, asymmetry1, asymmetry2, asymmetry3,
-aspect ratio (AR), elongation, boundedness, fractal dimension (fractal_dim),
-trappedness, efficiency, straightness, MSD ratio, frames, X, and Y.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>example outputs from individual feature functions.</strong> (<em>See</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.efficiency">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">efficiency</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#efficiency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.efficiency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the efficiency and straitness of the input track</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>eff</strong> (<em>numpy.float64</em>) &#8211; Efficiency of the input track.  Relates the sum of squared step
-lengths.  Based on Helmuth et al. (2007) and defined as:
-E = <a href="#id1"><span class="problematic" id="id2">|</span></a>x(N-1)-x(0)|**2/SUM(<a href="#id3"><span class="problematic" id="id4">|</span></a>x(i) - x(i-1)|**2</li>
-<li><strong>strait</strong> (<em>numpy.float64</em>) &#8211; Relates the net displacement L to teh sum of step lengths and is
-defined as:
-S = <a href="#id5"><span class="problematic" id="id6">|x(N-1)-x(0)|</span></a>/SUM(<a href="#id7"><span class="problematic" id="id8">|x(i) - x(i-1)|</span></a></li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>ft.efficiency(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>0.9999999999999999)</strong> (<em>(9.0,</em>) &#8211; </li>
-<li><strong>frames = 10</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames))+3,
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames))+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>ft.efficiency(df)</strong> &#8211; </li>
-<li><strong>0.22655125514290225)</strong> (<em>(0.46192924086141945,</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.gyration_tensor">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">gyration_tensor</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#gyration_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.gyration_tensor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the eigenvalues and eigenvectors of the gyration tensor of the
-input trajectory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>l1</strong> (<em>numpy.float64</em>) &#8211; Dominant eigenvalue of the gyration tensor.</li>
-<li><strong>l2</strong> (<em>numpy.float64</em>) &#8211; Secondary eigenvalue of the gyration tensor.</li>
-<li><strong>v1</strong> (<em>2 x 1 numpy.ndarray of numpy.float64 objects</em>) &#8211; Dominant eigenvector of the gyration tensor.</li>
-<li><strong>v2</strong> (<em>2 x 1 numpy.ndarray of numpy.float64 objects</em>) &#8211; Secondary eigenvector of the gyration tensor.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 5</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>gyration_tensor(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>(4.0,</strong> &#8211; </li>
-<li><strong>4.4408920985006262e-16,</strong> &#8211; </li>
-<li><strong>0.70710678, -0.70710678]),</strong> (<em>array([</em>) &#8211; </li>
-<li><strong>0.70710678,  0.70710678]))</strong> (<em>array([</em>) &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames)+3),
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames)+3)}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>gyration_tensor(df)</strong> &#8211; </li>
-<li><strong>(0.53232560128104522,</strong> &#8211; </li>
-<li><strong>0.42766829138901619,</strong> &#8211; </li>
-<li><strong>0.6020119 , -0.79848711]),</strong> (<em>array([</em>) &#8211; </li>
-<li><strong>-0.6020119 ]))</strong> (<em>array([-0.79848711,</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.kurtosis">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">kurtosis</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#kurtosis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.kurtosis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the kurtosis of input track.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>kurt</strong> (<em>numpy.float64</em>) &#8211; Kurtosis of the input track.  Calculation based on projected 2D positions
-on the dominant eigenvector of the radius of gyration tensor.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 5</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>kurtosis(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>2.5147928994082829</strong> &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames)+3),
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames)+3)}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>kurtosis(df)</strong> &#8211; </li>
-<li><strong>1.8515139698652476</strong> &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.minBoundingRect">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">minBoundingRect</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#minBoundingRect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.minBoundingRect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the minimum bounding rectangle of an input trajectory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>df</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>rot_angle</strong> (<em>numpy.float64</em>) &#8211; Angle of rotation of the bounding box.</li>
-<li><strong>area</strong> (<em>numpy.float64</em>) &#8211; Area of the bounding box.</li>
-<li><strong>width</strong> (<em>numpy.float64</em>) &#8211; Width of the bounding box.</li>
-<li><strong>height</strong> (<em>numpy.float64</em>) &#8211; Height of the bounding box.</li>
-<li><strong>center_point</strong> (<em>2 x 1 numpy.ndarray of numpy.float64 objects</em>) &#8211; Center point of the bounding box.</li>
-<li><strong>corner_points</strong> (<em>4 x 2 numpy.ndarray of numpy.float64 objects</em>) &#8211; Corner points of the bounding box.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>minBoundingRect(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>(-2.3561944901923448,</strong> &#8211; </li>
-<li><strong>2.8261664256307952e-14,</strong> &#8211; </li>
-<li><strong>12.727922061357855,</strong> &#8211; </li>
-<li><strong>2.2204460492503131e-15,</strong> &#8211; </li>
-<li><strong>10.5,   8.5]),</strong> (<em>array([</em>) &#8211; </li>
-<li><strong>6.,   4.],</strong> (<em>array([[</em>) &#8211; [ 15.,  13.],
-[ 15.,  13.],
-[  6.,   4.]]))</li>
-<li><strong>frames = 10</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames))+3,
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames))+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>minBoundingRect(df)</strong> &#8211; </li>
-<li><strong>(0.78318530717958657,</strong> &#8211; </li>
-<li><strong>3.6189901131223992,</strong> &#8211; </li>
-<li><strong>1.9949899732081091,</strong> &#8211; </li>
-<li><strong>1.8140392491811692,</strong> &#8211; </li>
-<li><strong>3.02076903,  2.97913884]),</strong> (<em>array([</em>) &#8211; </li>
-<li><strong>4.3676025 ,  3.04013439],</strong> (<em>array([[</em>) &#8211; [ 2.95381341,  1.63258851],
-[ 1.67393557,  2.9181433 ],
-[ 3.08772466,  4.32568917]]))</li>
-<li><strong>Notes</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>off of code from the following repo</strong> (<em>Based</em>) &#8211; </li>
-<li><strong>https</strong> (<em>//github.com/dbworth/minimum-area-bounding-rectangle/blob/master/python/min_bounding_rect.py</em>) &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.msd_ratio">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">msd_ratio</code><span class="sig-paren">(</span><em>track</em>, <em>n1=3</em>, <em>n2=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#msd_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.msd_ratio" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the MSD ratio of the input track at the specified frames.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas DataFrame</em>) &#8211; At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</li>
-<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; First frame at which to calculate the MSD ratio.</li>
-<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) &#8211; Last frame at which to calculate the MSD ratio.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>ratio</strong> (<em>numpy.float64</em>) &#8211; MSD ratio as defined by
-[MSD(n1)/MSD(n2)] - [n1/n2]
-where n1 &lt; n2.  For Brownian motion, it is 0; for restricted motion it
-is &lt; 0.  For directed motion it is &gt; 0.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>frames = 10</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>d = {'Frame'</strong> (<em>&gt;&gt;&gt;</em>) &#8211; &#8216;X&#8217;: np.linspace(1, frames, frames)+5,
-&#8216;Y&#8217;: np.linspace(1, frames, frames)+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>ft.msd_ratio(df, 1, 9)</strong> (<em>&gt;&gt;&gt;</em>) &#8211; </li>
-<li><strong>-0.18765432098765433</strong> &#8211; </li>
-<li><strong>frames = 10</strong> &#8211; </li>
-<li><strong>d = {'Frame'</strong> &#8211; &#8216;X&#8217;: np.sin(np.linspace(1, frames, frames))+3,
-&#8216;Y&#8217;: np.cos(np.linspace(1, frames, frames))+3}</li>
-<li><strong>df = pd.DataFrame(data=d)</strong> &#8211; </li>
-<li><strong>df['MSDs'], df['Gauss'] = msd_calc(df)</strong> &#8211; </li>
-<li><strong>ft.msd_ratio(df, 1, 9)</strong> &#8211; </li>
-<li><strong>0.04053708075268797</strong> &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="diff_classifier.features.unmask_track">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">unmask_track</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diff_classifier/features.html#unmask_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.unmask_track" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes empty frames from a track in an MSD pandas dataframe.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>track</strong> (<em>pandas Dataframe</em>) &#8211; At a minimum, must contain a Frame, Track_ID, X, Y, MSDs, and
-Gauss column.</li>
-<li><strong>Returns</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-<li><strong>comp_track</strong> (<em>pandas Dataframe</em>) &#8211; Similar to track, but has all masked components removed.</li>
-<li><strong>Examples</strong> &#8211; </li>
-<li><strong>----------</strong> &#8211; </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</div>
-</div>
-</div>
 </div>
 
 
+           </div>
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">diff_classifier</a></h1>
+          <footer>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
 
-<p class="blurb">Analyze and visualize trajectory data from ImageJ</p>
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=ccurtis7&repo=diff_classifier&type=star&count=true&size=large"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tracking.html">tracking</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">features_analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#msd-module">MSD module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#features-module">Features module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="interacting_with_s3.html">interacting with s3</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cloudknot_parallelization.html">cloudknot_parallelization</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
-</ul>
-
-
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
     </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Chad Curtis, Ariel Rokem.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
-      
-      |
-      <a href="_sources/features_analysis.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
-    
-  </body>
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>
