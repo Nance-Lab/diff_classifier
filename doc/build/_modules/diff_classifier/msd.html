@@ -76,7 +76,16 @@
           
             
             
-                <ul class="simple">
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
 </ul>
 
             
@@ -147,12 +156,12 @@
 <span class="sd">        input must be a pandas series.  If 1, input must be a numpy array.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    diff : pandas column</span>
 <span class="sd">        Pandas column of size N - n, where N is the original size of dataframe.</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt;&gt; d = {&#39;col1&#39;: [1, 2, 3, 4, 5]}</span>
 <span class="sd">    &gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
 <span class="sd">    &gt;&gt;&gt;&gt; nth_diff(df)</span>
@@ -223,7 +232,7 @@
 <span class="sd">        Contains, at a minimum a &#39;Frame&#39;, &#39;X&#39;, and &#39;Y&#39; column</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    new_track: pandas dataframe</span>
 <span class="sd">        Similar to input track.  All missing frames of individual trajectories</span>
 <span class="sd">        are filled in with NaNs, and two new columns, MSDs and Gauss are added:</span>
@@ -231,7 +240,7 @@
 <span class="sd">        Gauss, calculated Gaussianity</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt;&gt; d = {&#39;Frame&#39;: [1, 2, 3, 4, 5],</span>
 <span class="sd">         &#39;X&#39;: [5, 6, 7, 8, 9],</span>
 <span class="sd">         &#39;Y&#39;: [6, 7, 8, 9, 10]}</span>
@@ -322,7 +331,7 @@
 <span class="sd">        function. Adjust before feeding into function.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    new_data: pandas dataframe</span>
 <span class="sd">        Similar to input data.  All missing frames of individual trajectories</span>
 <span class="sd">        are filled in with NaNs, and two new columns, MSDs and Gauss are added:</span>
@@ -330,7 +339,7 @@
 <span class="sd">        Gauss, calculated Gaussianity</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],</span>
 <span class="sd">             &#39;Track_ID&#39;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],</span>
 <span class="sd">             &#39;X&#39;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],</span>
@@ -408,7 +417,7 @@
 <span class="sd">        filled in with NaNs.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    f_array: numpy array of floats of size length x particles</span>
 <span class="sd">        Contains frames data</span>
 <span class="sd">    t_array: numpy array of floats of size length x particles</span>
@@ -419,7 +428,7 @@
 <span class="sd">        Contains y coordinate data</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    -----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt;&gt; d = {&#39;Frame&#39;: [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],</span>
 <span class="sd">              &#39;Track_ID&#39;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],</span>
 <span class="sd">              &#39;X&#39;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],</span>
@@ -514,7 +523,7 @@
 <span class="sd">        &#39;Y&#39; column. Note: it is assumed that frames begins at 0.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    new_data: pandas dataframe</span>
 <span class="sd">        Similar to input data.  All missing frames of individual trajectories</span>
 <span class="sd">        are filled in with NaNs, and two new columns, MSDs and Gauss are added:</span>
@@ -522,7 +531,7 @@
 <span class="sd">        Gauss, calculated Gaussianity</span>
 
 <span class="sd">    Examples</span>
-<span class="sd">    ----------</span>
+<span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt;&gt; d = {&#39;Frame&#39;: [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],</span>
 <span class="sd">             &#39;Track_ID&#39;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],</span>
 <span class="sd">             &#39;X&#39;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],</span>
