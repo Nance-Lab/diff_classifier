@@ -102,7 +102,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=
     fid.close()
 
 
-def regress_tracking_params(all_videos, y, training_size, have_output=True):
+def regress_sys(all_videos, y, training_size, have_output=True):
     """
     Uses regression techniques to select the best tracking parameters.
     Regression again intensities of input images.
@@ -111,7 +111,7 @@ def regress_tracking_params(all_videos, y, training_size, have_output=True):
     tprefix = []
     for i in range(0, tnum):
         random.seed(i+1)
-        tprefix.append(to_track[random.randint(0, len(to_track))])
+        tprefix.append(all_videos[random.randint(0, len(all_videos))])
         if have_output is False:
             print("Get parameters for: {}".format(tprefix[i]))
 
@@ -139,3 +139,46 @@ def regress_tracking_params(all_videos, y, training_size, have_output=True):
             linear_model.PassiveAggressiveRegressor(),
             linear_model.TheilSenRegressor(),
             linear_model.LinearRegression()]
+
+        regress_object = []
+        for item in classifiers:
+            clf = item
+            regress_object.append(clf.fit(X, y))
+        
+        return regress_object
+
+
+def regress_tracking_params(regress_object, to_track, regmethod='LinearRegression'):
+    """
+    Uses the regress object from regress_sys to predict tracking
+    parameters for TrackMate.
+    """
+    
+    local_im = to_track + '.tif'
+    pX = np.zeros((1, 4))
+    test_image = sio.imread(local_im)
+    pX[0, 0] = np.mean(test_image[0, :, :])
+    pX[0, 1] = np.std(test_image[0, :, :])
+    pX[0, 2] = np.percentile(test_image[0, :, :], 10)
+    pX[0, 3] = np.percentile(test_image[0:, :, :], 90)
+    
+    quality = []
+    for item in regress_object:
+        quality.append(item.predict(pX)[0])
+    
+    if regmethod == 'SVR':
+        return quality[0]
+    elif regmethod == 'SGDRegressor':
+        return quality[1]
+    elif regmethod == 'BayesianRidge':
+        return quality[2]
+    elif regmethod == 'LassoLars':
+        return quality[3]
+    elif regmethod == 'ARDRegression':
+        return quality[4]
+    elif regmethod == 'PassiveAggressiveRegressor':
+        return quality[5]
+    elif regmethod == 'TheilSenRegressor':
+        return quality[6]
+    elif regmethod == 'LinearRegression':
+        return quality[7]
