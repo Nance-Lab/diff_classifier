@@ -3,3 +3,4 @@ scipy
 pandas
 scikit-image
 sklearn
+boto3

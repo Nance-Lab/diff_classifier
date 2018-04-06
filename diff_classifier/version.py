@@ -45,4 +45,4 @@ MINOR = _version_minor
 MICRO = _version_micro
 VERSION = __version__
 PACKAGE_DATA = {'diff_classifier': [op.join('data', '*')]}
-REQUIRES = ["numpy", "scipy", "pandas", "scikit_image", "sklearn"]
+REQUIRES = ["numpy", "scipy", "pandas", "scikit_image", "sklearn", "boto3"]
