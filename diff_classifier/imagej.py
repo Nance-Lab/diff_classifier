@@ -5,7 +5,6 @@ import skimage.io as sio
 import subprocess
 import tempfile
 import diff_classifier as dc
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn import linear_model
 from sklearn import svm
 
@@ -132,7 +131,7 @@ def regress_sys(all_videos, y, training_size, have_output=True):
     """
 
     tprefix = []
-    for i in range(0, tnum):
+    for i in range(0, training_size):
         random.seed(i+1)
         tprefix.append(all_videos[random.randint(0, len(all_videos))])
         if have_output is False:
@@ -140,7 +139,7 @@ def regress_sys(all_videos, y, training_size, have_output=True):
 
     if have_output is True:
         # Define descriptors
-        descriptors = np.zeros((tnum, 4))
+        descriptors = np.zeros((training_size, 4))
         counter = 0
         for name in tprefix:
             local_im = name + '.tif'
