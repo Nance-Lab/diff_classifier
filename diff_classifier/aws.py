@@ -1,7 +1,7 @@
 import os
-# import diff_classifier.imagej as ij
 import boto3
 import os.path as op
+# import diff_classifier.imagej as ij
 
 
 def download_s3(remote_fname, local_fname, bucket_name="ccurtis7.pup"):
