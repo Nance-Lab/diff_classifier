@@ -1,5 +1,5 @@
 import os
-import diff_classifier.imagej as ij
+# import diff_classifier.imagej as ij
 import boto3
 import os.path as op
 
@@ -42,31 +42,31 @@ def upload_s3(local_fname, remote_fname, bucket_name="ccurtis7.pup"):
     b.upload_file(local_fname, remote_fname)
 
 
-def partition_and_store(remote_fname, local_dir, bucket_name="ccurtis7.pup"):
-    """
-    Download image from S3, partition, and upload partitions to S3.
+# def partition_and_store(remote_fname, local_dir, bucket_name="ccurtis7.pup"):
+#     """
+#     Download image from S3, partition, and upload partitions to S3.
 
-    Parameters
-    ----------
-    remote_fname: string
-        Target filename in S3 bucket.
-    local_dir: string
-        Local directory to store downloaded file.
-    bucket_name: string
-        Bucket name on S3.
+#     Parameters
+#     ----------
+#     remote_fname: string
+#         Target filename in S3 bucket.
+#     local_dir: string
+#         Local directory to store downloaded file.
+#     bucket_name: string
+#         Bucket name on S3.
 
-    Returns
-    -------
-    remote_names: list of strings.
-        Names of partitioned images in S3.
-    """
-    remote_dir, remote_file = op.split(remote_fname)
-    download_s3(remote_fname, op.join(local_dir, remote_file))
-    names = ij.partition_im(op.join(local_dir, remote_file))
+#     Returns
+#     -------
+#     remote_names: list of strings.
+#         Names of partitioned images in S3.
+#     """
+#     remote_dir, remote_file = op.split(remote_fname)
+#     download_s3(remote_fname, op.join(local_dir, remote_file))
+#     names = ij.partition_im(op.join(local_dir, remote_file))
 
-    remote_names = []
-    for file in names:
-        local_file = op.split(file)[1]
-        upload_s3(op.join(local_dir, local_file), op.join(remote_dir, local_file))
-        remote_names.append(op.join(remote_dir, local_file))
-    return remote_names
+#     remote_names = []
+#     for file in names:
+#         local_file = op.split(file)[1]
+#         upload_s3(op.join(local_dir, local_file), op.join(remote_dir, local_file))
+#         remote_names.append(op.join(remote_dir, local_file))
+#     return remote_names

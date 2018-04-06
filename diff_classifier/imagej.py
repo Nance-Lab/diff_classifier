@@ -7,6 +7,8 @@ import tempfile
 import diff_classifier as dc
 from sklearn import linear_model
 from sklearn import svm
+import random
+import diff_classifier.aws as aws
 
 
 def partition_im(tiffname, irows=4, icols=4, ires=512):
@@ -101,7 +103,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=
     fid.close()
 
 
-def regress_sys(all_videos, y, training_size, have_output=True):
+def regress_sys(folder, all_videos, y, training_size, have_output=True):
     """
     Uses regression techniques to select the best tracking parameters.
     Regression again intensities of input images.
@@ -142,7 +144,10 @@ def regress_sys(all_videos, y, training_size, have_output=True):
         descriptors = np.zeros((training_size, 4))
         counter = 0
         for name in tprefix:
+            pup = name.split('_')[0]
             local_im = name + '.tif'
+            remote_im = "{}/{}/{}".format(folder, pup, local_im)
+            aws.download_s3(remote_im, local_im)
             test_image = sio.imread(local_im)
             descriptors[counter, 0] = np.mean(test_image[0, :, :])
             descriptors[counter, 1] = np.std(test_image[0, :, :])
