@@ -480,8 +480,8 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     plt.plot(x, np.exp(geo_mean), 'k', linewidth=4)
     plt.plot(x, np.exp(geo_mean-geo_SEM), 'k--', linewidth=2)
     plt.plot(x, np.exp(geo_mean+geo_SEM), 'k--', linewidth=2)
-    plt.xlim(0, 1)
-    plt.ylim(0, 20)
+    plt.xlim(0, x_range)
+    plt.ylim(0, y_range)
     plt.xlabel('Tau (s)', fontsize=25)
     plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
 
