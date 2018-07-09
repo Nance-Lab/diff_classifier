@@ -252,36 +252,36 @@ def test_msd_ratio():
     
     assert ft.msd_ratio(df, 1, 9) == -0.09876543209876543
     
-def test_calculate_features():
-    d = {'Frame': [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
-         'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-         'X': [0, 0, 1, 1, 2, 1, 1, 2, 2, 3],
-         'Y': [0, 1, 1, 2, 2, 0, 1, 1, 2, 2]}
-    df = pd.DataFrame(data=d)
-    dfi = msd.all_msds2(df, frames = 5)
-    feat = ft.calculate_features(dfi)
+# def test_calculate_features():
+#     d = {'Frame': [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
+#          'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+#          'X': [0, 0, 1, 1, 2, 1, 1, 2, 2, 3],
+#          'Y': [0, 1, 1, 2, 2, 0, 1, 1, 2, 2]}
+#     df = pd.DataFrame(data=d)
+#     dfi = msd.all_msds2(df, frames = 5)
+#     feat = ft.calculate_features(dfi)
     
-    d = {'AR': np.ones(2)*3.9999999999999996,
-         'D_fit': np.ones(2)*0.1705189932550273,
-         'MSD_ratio': np.ones(2)*-0.2666666666666666,
-         'X': [0.75, 1.75],
-         'Y': [1.25, 1.25],
-         'Track_ID': [1.0, 2.0],
-         'alpha': np.ones(2)*1.7793370720777268,
-         'asymmetry1': np.ones(2)*0.9440237239896903,
-         'asymmetry2': np.ones(2)*0.12,
-         'asymmetry3': np.ones(2)*0.3691430189107616,
-         'boundedness': np.ones(2)*0.25,
-         'efficiency': np.ones(2)*2.0,
-         'elongation': np.ones(2)*0.75,
-         'fractal_dim': np.ones(2)*1.333333333333333,
-         'frames': [5.0, 5.0],
-         'kurtosis': np.ones(2)*1.166666666666667,
-         'straightness': np.ones(2)*0.7071067811865476,
-         'trappedness': np.ones(2)*-0.15258529289428524}
-    dfi = pd.DataFrame(data=d)
+#     d = {'AR': np.ones(2)*3.9999999999999996,
+#          'D_fit': np.ones(2)*0.1705189932550273,
+#          'MSD_ratio': np.ones(2)*-0.2666666666666666,
+#          'X': [0.75, 1.75],
+#          'Y': [1.25, 1.25],
+#          'Track_ID': [1.0, 2.0],
+#          'alpha': np.ones(2)*1.7793370720777268,
+#          'asymmetry1': np.ones(2)*0.9440237239896903,
+#          'asymmetry2': np.ones(2)*0.12,
+#          'asymmetry3': np.ones(2)*0.3691430189107616,
+#          'boundedness': np.ones(2)*0.25,
+#          'efficiency': np.ones(2)*2.0,
+#          'elongation': np.ones(2)*0.75,
+#          'fractal_dim': np.ones(2)*1.333333333333333,
+#          'frames': [5.0, 5.0],
+#          'kurtosis': np.ones(2)*1.166666666666667,
+#          'straightness': np.ones(2)*0.7071067811865476,
+#          'trappedness': np.ones(2)*-0.15258529289428524}
+#     dfi = pd.DataFrame(data=d)
     
-    pdt.assert_frame_equal(dfi, feat)
+#     pdt.assert_frame_equal(dfi, feat)
 
 def test_unmask_track():
     size = 10
