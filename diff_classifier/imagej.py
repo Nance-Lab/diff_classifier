@@ -103,7 +103,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=
     fid.close()
 
 
-def regress_sys(folder, all_videos, y, training_size, have_output=True):
+def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_name='ccurtis.data'):
     """
     Uses regression techniques to select the best tracking parameters.
     Regression again intensities of input images.
@@ -146,8 +146,8 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True):
         for name in tprefix:
             pup = name.split('_')[0]
             local_im = name + '.tif'
-            remote_im = "{}/{}/{}".format(folder, pup, local_im)
-            aws.download_s3(remote_im, local_im)
+            remote_im = "{}/{}".format(folder, local_im)
+            aws.download_s3(remote_im, local_im, bucket_name=bucket_name)
             test_image = sio.imread(local_im)
             descriptors[counter, 0] = np.mean(test_image[0, :, :])
             descriptors[counter, 1] = np.std(test_image[0, :, :])
