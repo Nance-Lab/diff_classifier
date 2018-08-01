@@ -3,7 +3,11 @@ import numpy as np
 import skimage.io as sio
 import numpy.ma as ma
 from scipy import interpolate
+import scipy.stats as stats
 import warnings
+import diff_classifier.aws as aws
+from matplotlib.pyplot import cm
+import matplotlib.pyplot as plt
 
 
 def nth_diff(dataframe, n=1, ax=0):
@@ -460,3 +464,236 @@ def all_msds2(data, frames=651):
         new_data = pd.DataFrame(data=d)
 
     return new_data
+
+
+def gavg_MSDs(prefix, umppx=0.16, fps=100.02, upload=True, remote_folder="01_18_Experiment", bucket='ccurtis.data'):
+    """
+    Calculates geometric averages and SEMs for MSD datasets.
+
+    Parameters
+    ----------
+    prefix: string
+        Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.
+    umppx: float64
+        Microns per pixel of original images.
+    fps: float64
+        Frames per second of video.
+    upload: boolean
+        True if you want to upload to s3.
+    remote_folder: string
+        Folder in S3 bucket to upload to.
+    bucket: string
+        Name of S3 bucket to upload to.
+
+    Returns
+    -------
+    geo_mean: numpy array
+        Geometric mean of trajectory MSDs at all time points.
+    geo_SEM: numpy array
+        Geometric standard errot of trajectory MSDs at all time points.
+
+    """
+
+    merged = pd.read_csv('msd_{}.csv'.format(prefix))
+    particles = int(max(merged['Track_ID']))
+    frames = int(max(merged['Frame']))
+    y = np.zeros((particles+1, frames+1))
+    
+    for i in range(0, particles+1):
+        y[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
+        x = merged.loc[merged.Track_ID == i, 'Frame']/fps
+
+    geo_mean = np.nanmean(ma.log(y), axis=0)
+    geo_SEM = stats.sem(ma.log(y), axis=0, nan_policy='omit')
+
+    outfile2 = 'geomean_{}.csv'.format(prefix)
+    outfile3 = 'geoSEM_{}.csv'.format(prefix)
+    np.savetxt(outfile2, geo_mean, delimiter=",")
+    np.savetxt(outfile3, geo_SEM, delimiter=",")
+    
+    if upload:
+        aws.upload_s3(outfile2, remote_folder+'/'+outfile2, bucket_name=bucket)
+        aws.upload_s3(outfile3, remote_folder+'/'+outfile3, bucket_name=bucket)
+
+    return geo_mean, geo_SEM
+
+
+def binning(experiments, wells=4):
+    """
+    Split set of experiments into groups.
+
+    Parameters
+    ----------
+    experiments: list of strings
+        List of experiment names.
+    wells: integer
+        Number of groups to divide experiments into.
+
+    Returns
+    -------
+    slices: integer
+        Number of experiments per group.
+    bins: dictionary of lists of strings
+        Dictionary, keys corresponding to group names, and elements containing lists of experiments
+        in each group.
+    bin_names: list of string
+        List of group names
+    """
+    
+    
+    total_videos = len(experiments)
+    bins = {}
+    slices = int(total_videos/wells)
+    bin_names = []
+    
+    for num in range(0, wells):  
+        s1 = num*slices
+        s2 = (num+1)*(slices)
+        pref = '100nm_5k_PEG_W{}'.format(num)
+        bins[pref] = experiments[s1:s2]
+        bin_names.append(pref)
+    return slices, bins, bin_names
+
+
+def precision_weight(group, gSEM):
+    """
+    Calculates precision weights to be used in precision-averaged MSD calculations.
+
+    Parameters
+    ----------
+    group: list of strings
+        List of experiment names to average. Each element corresponds to a key in gSEM and geoM2xy.
+    gSEM: dictionary of numpy arrays.
+        Each entry in dictionary corresponds to the standard errors of an MSD profile,
+        the key corresponding to an experiment name.
+
+    Returns
+    -------
+    weights: numpy array
+        Precision weights to be used in precision averaging.
+    """    
+    
+    frames = np.shape(gSEM[group[0]])[0]
+    slices = len(group)
+    video_counter = 0
+    w_holder = np.zeros((slices, frames))
+    for sample in group:
+        w_holder[video_counter, :] = 1/(gSEM[sample]*gSEM[sample])
+        video_counter = video_counter + 1
+    weights = np.sum(w_holder, axis=0)
+    
+    return weights
+
+
+def precision_averaging(group, geoM2xy, gSEM, weights, save=True, bucket='ccurtis.data', folder='test',
+                        experiment='test'):
+    """
+    Calculates precision-weighted averages of MSD datasets.
+
+    Parameters
+    ----------
+    group: list of strings
+        List of experiment names to average. Each element corresponds to a key in gSEM and geoM2xy.
+    geoM2xy: dictionary of numpy arrays
+        Each entry in dictionary corresponds to an MSD profiles, they key corresponding
+        to an experiment name.
+    gSEM: dictionary of numpy arrays
+        Each entry in dictionary corresponds to the standard errors of an MSD profile,
+        the key corresponding to an experiment name.
+    weights: numpy array
+        Precision weights to be used in precision averaging.
+
+    Returns
+    -------
+    geo: numpy array
+        Precision-weighted averaged MSDs from experiments specified in group
+    gSEM: numpy array
+        Precision-weighted averaged SEMs from experiments specified in group
+    """        
+    
+    frames = np.shape(gSEM[group[0]])[0]
+    slices = len(group)
+
+    video_counter = 0
+    geo_holder = np.zeros((slices, frames))
+    gSEM_holder = np.zeros((slices, frames))
+    w_holder = np.zeros((slices, frames))
+    for sample in group:
+        w_holder[video_counter, :] = (1/(gSEM[sample]*gSEM[sample]))/weights
+        geo_holder[video_counter, :] = w_holder[video_counter, :] * geoM2xy[sample]
+        gSEM_holder[video_counter, :] = (1/(gSEM[sample]*gSEM[sample]))
+        video_counter = video_counter + 1
+    geo = np.sum(geo_holder, axis=0)
+    gSEM = np.sqrt((1/np.sum(gSEM_holder, axis=0)))
+    
+    if save:
+        geo_f = 'geomean_{}.csv'.format(experiment)
+        gSEM_f = 'geoSEM_{}.csv'.format(experiment)
+        np.savetxt(geo_f, geo, delimiter=',')
+        np.savetxt(gSEM_f, gSEM, delimiter=',')
+        aws.upload_s3(geo_f, '{}/{}'.format(folder, geo_f), bucket_name=bucket)
+        aws.upload_s3(gSEM_f, '{}/{}'.format(folder, gSEM_f), bucket_name=bucket) 
+
+    return geo, gSEM
+
+
+def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test', yr=(10**-1, 10**1), fps=100.02,
+                         xr=(10**-2, 10**0), upload=True, outfile='test.png'):
+    """
+    Calculates precision-weighted averages of MSD datasets.
+
+    Parameters
+    ----------
+    group: list of strings
+        List of experiment names to plot. Each experiment must have an MSD and SEM file associated with it in s3.
+    bucket: string
+        S3 bucket from which to download data.
+    folder: string
+        Folder in s3 bucket from which to download data.
+    yr: list of floats
+        Y range of plot
+    xr: list of float
+        X range of plot
+    upload: boolean
+        True to upload to S3
+    outfile: string
+        Filename of output image
+
+    """ 
+
+    to_plot = {}
+    to_plot_SEM = {}
+    n = len(experiments)
+
+    color=iter(cm.viridis(np.linspace(0,1,n)))
+
+    fig = plt.figure(figsize=(8.5, 8.5))
+    plt.xlim(xr[0], xr[1])
+    plt.ylim(yr[0], yr[1])
+    plt.xlabel('Tau (s)', fontsize=25)
+    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
+
+    
+
+    geo = {}
+    gS = {}
+    counter = 0
+    for experiment in experiments:
+        aws.download_s3('{}/geomean_{}.csv'.format(folder, experiment), 'geomean_{}.csv'.format(experiment), bucket_name=bucket)
+        aws.download_s3('{}/geoSEM_{}.csv'.format(folder, experiment), 'geoSEM_{}.csv'.format(experiment), bucket_name=bucket)
+
+        geo[counter] = np.genfromtxt('geomean_{}.csv'.format(experiment))
+        gS[counter] = np.genfromtxt('geoSEM_{}.csv'.format(experiment))
+        frames = np.shape(gS[counter])[0]
+        x = np.linspace(0, frames-1, frames)/fps
+        c=next(color)
+
+        plt.loglog(x, np.exp(geo[counter]), c=c, linewidth=4)
+        plt.loglog(x, np.exp(geo[counter] - 1.96*gS[counter]), c=c, linewidth=2)
+        plt.loglog(x, np.exp(geo[counter] + 1.96*gS[counter]), c=c, linewidth=2)
+
+        counter = counter + 1
+
+    if upload==True:
+        fig.savefig(outfile, bbox_inches='tight')
+        aws.upload_s3(outfile, folder+'/'+outfile, bucket_name=bucket)
