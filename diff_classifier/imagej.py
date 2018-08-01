@@ -144,10 +144,10 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True):
         descriptors = np.zeros((training_size, 4))
         counter = 0
         for name in tprefix:
-            pup = name.split('_')[0]
+            #pup = name.split('_')[0]
             local_im = name + '.tif'
-            remote_im = "{}/{}/{}".format(folder, pup, local_im)
-            aws.download_s3(remote_im, local_im)
+            remote_im = "{}/{}".format(folder, local_im)
+            aws.download_s3(remote_im, local_im, bucket_name='hpontes.data')
             test_image = sio.imread(local_im)
             descriptors[counter, 0] = np.mean(test_image[0, :, :])
             descriptors[counter, 1] = np.std(test_image[0, :, :])
@@ -173,6 +173,9 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True):
             regress_object.append(clf.fit(X, y))
 
         return regress_object
+    
+    else:
+        return tprefix
 
 
 def regress_tracking_params(regress_object, to_track, regmethod='LinearRegression'):
