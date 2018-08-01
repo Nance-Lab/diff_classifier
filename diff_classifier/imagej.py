@@ -144,7 +144,7 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_n
         descriptors = np.zeros((training_size, 4))
         counter = 0
         for name in tprefix:
-            pup = name.split('_')[0]
+            #pup = name.split('_')[0]
             local_im = name + '.tif'
             remote_im = "{}/{}".format(folder, local_im)
             aws.download_s3(remote_im, local_im, bucket_name=bucket_name)
@@ -173,6 +173,9 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_n
             regress_object.append(clf.fit(X, y))
 
         return regress_object
+    
+    else:
+        return tprefix
 
 
 def regress_tracking_params(regress_object, to_track, regmethod='LinearRegression', frame=325):
