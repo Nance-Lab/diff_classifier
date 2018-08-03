@@ -485,9 +485,9 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     plt.xlabel('Tau (s)', fontsize=25)
     plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
 
-    outfile = '{}/msds_{}.png'.format(folder, prefix)
-    outfile2 = '{}/geomean_{}.csv'.format(folder, prefix)
-    outfile3 = '{}/geoSEM_{}.csv'.format(folder, prefix)
+    outfile = 'msds_{}.png'.format(prefix)
+    outfile2 = 'geomean_{}.csv'.format(prefix)
+    outfile3 = 'geoSEM_{}.csv'.format(prefix)
     fig.savefig(outfile, bbox_inches='tight')
     np.savetxt(outfile2, geo_mean, delimiter=",")
     np.savetxt(outfile3, geo_SEM, delimiter=",")
