@@ -175,7 +175,7 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_n
         return regress_object
 
 
-def regress_tracking_params(regress_object, to_track, regmethod='LinearRegression'):
+def regress_tracking_params(regress_object, to_track, regmethod='LinearRegression', frame=325):
     """
     Uses the regress object from regress_sys to predict tracking
     parameters for TrackMate.
@@ -200,10 +200,10 @@ def regress_tracking_params(regress_object, to_track, regmethod='LinearRegressio
     local_im = to_track + '.tif'
     pX = np.zeros((1, 4))
     test_image = sio.imread(local_im)
-    pX[0, 0] = np.mean(test_image[0, :, :])
-    pX[0, 1] = np.std(test_image[0, :, :])
-    pX[0, 2] = np.percentile(test_image[0, :, :], 10)
-    pX[0, 3] = np.percentile(test_image[0:, :, :], 90)
+    pX[0, 0] = np.mean(test_image[frame, :, :])
+    pX[0, 1] = np.std(test_image[frame, :, :])
+    pX[0, 2] = np.percentile(test_image[frame, :, :], 10)
+    pX[0, 3] = np.percentile(test_image[frame:, :, :], 90)
 
     quality = []
     for item in regress_object:
