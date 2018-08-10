@@ -495,16 +495,21 @@ def gavg_MSDs(prefix, umppx=0.16, fps=100.02, upload=True, remote_folder="01_18_
     """
 
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
-    particles = int(max(merged['Track_ID']))
-    frames = int(max(merged['Frame']))
-    y = np.zeros((particles+1, frames+1))
-    
-    for i in range(0, particles+1):
-        y[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
-        x = merged.loc[merged.Track_ID == i, 'Frame']/fps
+    try:
+        particles = int(max(merged['Track_ID']))
+        frames = int(max(merged['Frame']))
+        y = np.zeros((particles+1, frames+1))
 
-    geo_mean = np.nanmean(ma.log(y), axis=0)
-    geo_SEM = stats.sem(ma.log(y), axis=0, nan_policy='omit')
+        for i in range(0, particles+1):
+            y[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
+            x = merged.loc[merged.Track_ID == i, 'Frame']/fps
+
+        geo_mean = np.nanmean(ma.log(y), axis=0)
+        geo_SEM = stats.sem(ma.log(y), axis=0, nan_policy='omit')
+    
+    except:
+        geo_mean = np.nan*np.ones(651)
+        geo_SEM = np.nan*np.ones(651)
 
     outfile2 = 'geomean_{}.csv'.format(prefix)
     outfile3 = 'geoSEM_{}.csv'.format(prefix)
@@ -518,7 +523,7 @@ def gavg_MSDs(prefix, umppx=0.16, fps=100.02, upload=True, remote_folder="01_18_
     return geo_mean, geo_SEM
 
 
-def binning(experiments, wells=4):
+def binning(experiments, wells=4, prefix='test'):
     """
     Split set of experiments into groups.
 
@@ -549,7 +554,7 @@ def binning(experiments, wells=4):
     for num in range(0, wells):  
         s1 = num*slices
         s2 = (num+1)*(slices)
-        pref = '100nm_5k_PEG_W{}'.format(num)
+        pref = '{}_W{}'.format(prefix, num)
         bins[pref] = experiments[s1:s2]
         bin_names.append(pref)
     return slices, bins, bin_names
@@ -580,9 +585,13 @@ def precision_weight(group, gSEM):
     for sample in group:
         w_holder[video_counter, :] = 1/(gSEM[sample]*gSEM[sample])
         video_counter = video_counter + 1
-    weights = np.sum(w_holder, axis=0)
+        
+    w_holder = ma.masked_equal(w_holder, 0.0)
+    w_holder = ma.masked_equal(w_holder, 1.0)
     
-    return weights
+    weights = ma.sum(w_holder, axis=0)
+    
+    return weights, w_holder
 
 
 def precision_averaging(group, geoM2xy, gSEM, weights, save=True, bucket='ccurtis.data', folder='test',
@@ -621,10 +630,18 @@ def precision_averaging(group, geoM2xy, gSEM, weights, save=True, bucket='ccurti
     for sample in group:
         w_holder[video_counter, :] = (1/(gSEM[sample]*gSEM[sample]))/weights
         geo_holder[video_counter, :] = w_holder[video_counter, :] * geoM2xy[sample]
-        gSEM_holder[video_counter, :] = (1/(gSEM[sample]*gSEM[sample]))
+        gSEM_holder[video_counter, :] = 1/(gSEM[sample]*gSEM[sample])
         video_counter = video_counter + 1
-    geo = np.sum(geo_holder, axis=0)
-    gSEM = np.sqrt((1/np.sum(gSEM_holder, axis=0)))
+        
+    w_holder = ma.masked_equal(w_holder, 0.0)
+    w_holder = ma.masked_equal(w_holder, 1.0)
+    geo_holder = ma.masked_equal(geo_holder, 0.0)
+    geo_holder = ma.masked_equal(geo_holder, 1.0)
+    gSEM_holder = ma.masked_equal(gSEM_holder, 0.0)
+    gSEM_holder = ma.masked_equal(gSEM_holder, 1.0)
+    
+    geo = ma.sum(geo_holder, axis=0)
+    gSEM = ma.sqrt((1/ma.sum(gSEM_holder, axis=0)))
     
     if save:
         geo_f = 'geomean_{}.csv'.format(experiment)
@@ -634,11 +651,11 @@ def precision_averaging(group, geoM2xy, gSEM, weights, save=True, bucket='ccurti
         aws.upload_s3(geo_f, '{}/{}'.format(folder, geo_f), bucket_name=bucket)
         aws.upload_s3(gSEM_f, '{}/{}'.format(folder, gSEM_f), bucket_name=bucket) 
 
-    return geo, gSEM
+    return geo, gSEM, w_holder, gSEM_holder
 
 
 def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test', yr=(10**-1, 10**1), fps=100.02,
-                         xr=(10**-2, 10**0), upload=True, outfile='test.png'):
+                         xr=(10**-2, 10**0), upload=True, outfile='test.png', exponential=True):
     """
     Calculates precision-weighted averages of MSD datasets.
 
@@ -684,13 +701,21 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test', yr=(
 
         geo[counter] = np.genfromtxt('geomean_{}.csv'.format(experiment))
         gS[counter] = np.genfromtxt('geoSEM_{}.csv'.format(experiment))
+        geo[counter] = ma.masked_equal(geo[counter], 0.0)
+        gS[counter] = ma.masked_equal(gS[counter], 0.0)
+        
         frames = np.shape(gS[counter])[0]
         x = np.linspace(0, frames-1, frames)/fps
         c=next(color)
-
-        plt.loglog(x, np.exp(geo[counter]), c=c, linewidth=4)
-        plt.loglog(x, np.exp(geo[counter] - 1.96*gS[counter]), c=c, linewidth=2)
-        plt.loglog(x, np.exp(geo[counter] + 1.96*gS[counter]), c=c, linewidth=2)
+    
+        if exponential:
+            plt.loglog(x, np.exp(geo[counter]), c=c, linewidth=4)
+            plt.loglog(x, np.exp(geo[counter] - 1.96*gS[counter]), c=c, linewidth=2)
+            plt.loglog(x, np.exp(geo[counter] + 1.96*gS[counter]), c=c, linewidth=2)
+        else:
+            plt.loglog(x, geo[counter], c=c, linewidth=4)
+            plt.loglog(x, geo[counter] - 1.96*gS[counter], c=c, linewidth=2)
+            plt.loglog(x, geo[counter] + 1.96*gS[counter], c=c, linewidth=2)
 
         counter = counter + 1
 
