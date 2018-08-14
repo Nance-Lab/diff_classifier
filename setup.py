@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import os
+import fijibin
 
 ver_file = os.path.join('diff_classifier', 'version.py')
 with open(ver_file) as f:
