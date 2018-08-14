@@ -116,6 +116,7 @@ Diff_classifier development is supported by ....
   :caption: User Documentation
 
   getting_started
+  example_data
   tracking
   features_analysis
   interacting_with_s3
