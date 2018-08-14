@@ -14,14 +14,14 @@ Downloading example data
 
 The files can be downloaded with the command:
 
-.. ::
+.. code-block::
 
   wget https://digital.lib.washington.edu/researchworks/bitstream/handle/1773/41669/0mM.7z?sequence=4&isAllowed=y
 
 The raw files are compressed 7Z files, and must be unzipped to obtain the tiff files
 for analysis. This can be done with the pzip package:
 
-.. ::
+.. code-block::
 
   sudo apt-get install p7zip
   7za e myfiles.7z
