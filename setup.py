@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import os
 try:
     import fijibin
-else:
+except:
     print('Import error. Install Fiji manually.')
 
 ver_file = os.path.join('diff_classifier', 'version.py')
