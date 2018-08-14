@@ -36,7 +36,7 @@ The tracking portion of diff_classifier relies on the Fiji plugin `Trackmate
 with the Python plugin `fijibin <https://pypi.org/project/fijibin/>`_. By default,
 this is usually installed in the directory
 
-.. code-block::
+.. code-block:: shell
 
   /name/of/home/directory/.bin
   
