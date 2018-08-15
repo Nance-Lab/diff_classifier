@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 import os
-try:
-    import fijibin
-except:
-    print('Import error. Install Fiji manually.')
+#try:
+#    import fijibin
+#except:
+#    print('Import error. Install Fiji manually.')
 
 ver_file = os.path.join('diff_classifier', 'version.py')
 with open(ver_file) as f:
