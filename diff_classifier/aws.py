@@ -8,9 +8,11 @@ access desired S3 buckets.
 
 """
 import os
+import os.path as op
+
 import boto3
 
-import os.path as op
+
 # import diff_classifier.imagej as ij
 
 
@@ -27,9 +29,9 @@ def download_s3(remote_fname, local_fname, bucket_name="ccurtis.data"):
         Bucket name on S3.
     """
     if not os.path.exists(local_fname):
-        s3 = boto3.resource('s3')
-        b = s3.Bucket(bucket_name)
-        b.download_file(remote_fname, local_fname)
+        sthree = boto3.resource('sthree')
+        buckt = sthree.Bucket(bucket_name)
+        buckt.download_file(remote_fname, local_fname)
 
 
 def upload_s3(local_fname, remote_fname, bucket_name="ccurtis.data"):
@@ -46,9 +48,9 @@ def upload_s3(local_fname, remote_fname, bucket_name="ccurtis.data"):
         Bucket name on S3.
     """
 
-    s3 = boto3.resource('s3')
-    b = s3.Bucket(bucket_name)
-    b.upload_file(local_fname, remote_fname)
+    sthree = boto3.resource('sthree')
+    buckt = sthree.Bucket(bucket_name)
+    buckt.upload_file(local_fname, remote_fname)
 
 
 # def partition_and_store(remote_fname, local_dir, bucket_name="ccurtis7.pup"):
