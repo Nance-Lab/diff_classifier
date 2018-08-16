@@ -72,13 +72,15 @@ def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
     return names
 
 
-def mean_intensity(local_im):
+def mean_intensity(local_im, frame=0):
     """Calculates mean intensity of first frame of input image.
 
     Parameters
     ----------
     local_im : string
         Location of input image.
+    frame : int
+        Frame at which to perform mean.
 
     Returns
     -------
@@ -91,7 +93,7 @@ def mean_intensity(local_im):
 
     """
     test_image = sio.imread(local_im)
-    test_intensity = np.mean(test_image[0, :, :])
+    test_intensity = np.mean(test_image[frame, :, :])
 
     return test_intensity
 
