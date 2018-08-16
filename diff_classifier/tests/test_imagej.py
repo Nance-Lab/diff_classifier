@@ -65,11 +65,6 @@ def test_regress_sys():
     for track in tracks:
         assert track == 'FakeTracks'
 
-    counter = 0
-    for track in tracks:
-        assert track == yfinal[counter]
-        counter = counter + 1
-
     regress = ij.regress_sys(cwd, all_videos, yfit, training_size,
                              have_output=True, download=False)
     assert len(regress) == 8
@@ -79,6 +74,10 @@ def test_regress_sys():
 
     tracks = ij.regress_sys(cwd, all_videos, yfit, training_size,
                             have_output=False, download=False)
+    counter = 0
+    for track in tracks:
+        assert track == yfinal[counter]
+        counter = counter + 1
 
 
 def test_regress_tracking_params():
@@ -104,7 +103,7 @@ def test_regress_tracking_params():
     assert quality == 9.5
     quality = ij.regress_tracking_params(regress, 'FakeTracks',
                                          regmethod='SGDRegressor', frame=0)
-    assert quality == 9.5
+    assert quality < -10000
     quality = ij.regress_tracking_params(regress, 'FakeTracks',
                                          regmethod='LassoLars', frame=0)
     assert quality == 9.5
@@ -114,7 +113,7 @@ def test_regress_tracking_params():
     quality = ij.regress_tracking_params(regress, 'FakeTracks',
                                          regmethod='PassiveAggressiveRegressor',
                                          frame=0)
-    assert quality == 9.5
+    assert np.round(quality, 1) == 9.9
     quality = ij.regress_tracking_params(regress, 'FakeTracks',
                                          regmethod='TheilSenRegressor', frame=0)
     assert quality == 9.5
