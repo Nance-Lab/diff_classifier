@@ -1,13 +1,18 @@
+"""Utility functions used throughout diff_classifier.
+
+This module includes general functions for tasks such as importing files and
+converting between data types. Currently only includes a function to generate
+pandas dataframes for csv output from Trackmate.
+
+"""
 import pandas as pd
-import numpy as np
-import skimage.io as sio
 
 
 def csv_to_pd(csvfname):
-    """
-    csv_to_pd(csvfname)
+    """Reads Trackmate csv output file and converts to pandas dataframe.
 
-    Reads Trackmate csv output file and converts to a pandas dataframe.
+    A specialized function designed specifically for TrackMate output files.
+    This edits out the header at the beginning of the file.
 
     Parameters
     ----------
@@ -17,7 +22,7 @@ def csv_to_pd(csvfname):
 
     Returns
     -------
-    data : pandas dataframe
+    data : pandas DataFrame
         Contains all trajectories from csvfname.
 
     Examples
@@ -40,23 +45,23 @@ def csv_to_pd(csvfname):
         data.sort_values(['Track_ID', 'Frame'], ascending=[1, 1])
         data = data.astype('float64')
 
-        part_IDs = data.Track_ID.unique()
+        partids = data.Track_ID.unique()
         counter = 0
-        for ID in part_IDs:
-            data.loc[data.Track_ID == ID, 'Track_ID'] = counter
+        for partid in partids:
+            data.loc[data.Track_ID == partid, 'Track_ID'] = counter
             counter = counter + 1
     except:
         print('No data in csv file.')
-        d = {'Track_ID': [],
-             'Spot_ID': [],
-             'Frame': [],
-             'X': [],
-             'Y': [],
-             'Quality': [],
-             'SN_Ratio': [],
-             'Mean_Intensity': []}
+        rawd = {'Track_ID': [],
+                'Spot_ID': [],
+                'Frame': [],
+                'X': [],
+                'Y': [],
+                'Quality': [],
+                'SN_Ratio': [],
+                'Mean_Intensity': []}
         cols = ['Track_ID', 'Spot_ID', 'Frame', 'X', 'Y', 'Quality', 'SN_Ratio', 'Mean_Intensity']
-        data = pd.DataFrame(data=d, index=[])
+        data = pd.DataFrame(data=rawd, index=[])
         data = data[cols]
         data = data.astype('float64')
 

@@ -1,21 +1,39 @@
-import numpy as np
+"""Tools to perform particle tracking with Trackmate ImageJ plugin.
+
+This module includes functions for prepping images and performing tracking
+using the TrackMate ImageJ plugin [1]_.
+
+References
+----------
+.. [1] Tinevez, JY,; Perry, N. & Schindelin, J. et al. (2016), "TrackMate: an
+   open and extensible platoform for single-particle tracking.", Methods 115:
+   80-90, PMID 27713081 (on Google Scholar).
+
+"""
+
 import sys
-import os.path as op
-import skimage.io as sio
 import subprocess
 import tempfile
-import diff_classifier as dc
-from sklearn import linear_model
-from sklearn import svm
 import random
+
+import os.path as op
+import numpy as np
+import skimage.io as sio
+
+import diff_classifier as dc
 import diff_classifier.aws as aws
 
+from sklearn import linear_model
+from sklearn import svm
 
-def partition_im(tiffname, irows=4, icols=4, ires=512):
-    """
-    partition_im(tiffname, irows=int, icols=int, ires=int)
 
-    Partitions a 2048x2044 image into irows x icols images of size ires x ires and saved them.
+def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
+                 ires=(512, 512)):
+    """Partitions image into smaller images.
+
+    Partitions a large image into irows x icols images of size ires and saves
+    them. Also forces image to be square. Default input image sizes are from
+    a Nikon/Hamamatsu camera setup (2048 x 2044 pixels).
 
     Parameters
     ----------
@@ -25,24 +43,28 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
         Number of rows of size ires pixels to be partitioned from source image.
     icols : int
         Number of columns of size ires pixels to be partitioned from source image.
-    ires : int
-        Output images are of size ires x ires pixels.
+    ores : tuple of int
+        Input images are scaled to size ores pixels prior to splitting.
+    ires : tuple of int
+        Output images are of size ires pixels.
 
     Examples
     --------
-    >>> partition_im('your/sample/image.tif', irows=8, icols=8, ires=256)
+    >>> partition_im('your/sample/image.tif', irows=8, icols=8, ires=(256, 256))
 
     """
     test = sio.imread(tiffname)
-    test2 = np.zeros((test.shape[0], 2048, 2048), dtype=test.dtype)
-    test2[:, 0:2044, :] = test
+    oshape = test.shape
+    test2 = np.zeros((oshape[0], ores[0], ores[1]), dtype=test.dtype)
+    test2[0:oshape[0], 0:oshape[1], :] = test
 
-    new_image = np.zeros((test.shape[0], ires, ires), dtype=test.dtype)
+    new_image = np.zeros((oshape[0], ires[0], ires[1]), dtype=test.dtype)
     names = []
 
     for row in range(irows):
         for col in range(icols):
-            new_image = test2[:, row*ires:(row+1)*ires, col*ires:(col+1)*ires]
+            new_image = test2[:, row*ires[0]:(row+1)*ires[0],
+                              col*ires[1]:(col+1)*ires[1]]
             current = tiffname.split('.tif')[0] + '_%s_%s.tif' % (row, col)
             sio.imsave(current, new_image)
             names.append(current)
@@ -51,26 +73,80 @@ def partition_im(tiffname, irows=4, icols=4, ires=512):
 
 
 def mean_intensity(local_im):
+    """Calculates mean intensity of first frame of input image.
+
+    Parameters
+    ----------
+    local_im : string
+        Location of input image.
+
+    Returns
+    -------
+    test_intensity : float
+        Mean intensity of input image.
+
+    Examples
+    --------
+    >>> mean_intensity('your/sample/image')
+
+    """
     test_image = sio.imread(local_im)
     test_intensity = np.mean(test_image[0, :, :])
 
     return test_intensity
 
 
-def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=5.,
-          do_median_filtering=False, quality=30.0, x=511, y=511, ylo=1, median_intensity=55000.0, snr=0.0,
-          linking_max_distance=10.0, gap_closing_max_distance=10.0, max_frame_gap=3,
+def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
+          threshold=5., do_median_filtering=False, quality=30.0, xdims=(0, 511),
+          ydims=(1, 511), median_intensity=55000.0, snr=0.0, linking_max_distance=10.0,
+          gap_closing_max_distance=10.0, max_frame_gap=3,
           track_displacement=0.0):
-    """
+    """Performs particle tracking on input video.
 
+    Particle tracking is performed with the ImageJ plugin Trackmate. Outputs
+    a csv file containing analysis settings and particle trajectories.
+
+    Parameters
+    ----------
     target : str
-        Full path to a tif file to do tracking on.
-        Can also be a URL (e.g., 'http://fiji.sc/samples/FakeTracks.tif')
+        Full path to a tif file to do tracking on. Can also be a URL
+        (e.g., 'http://fiji.sc/samples/FakeTracks.tif')
     out_file : str
         Full path to a csv file to store the results.
     template : str, optional
         The full path of a template for tracking. Defaults to use
         `data/trackmate_template.py` stored in the diff_classifier source-code.
+    fiji_bin : str
+        The full path to ImageJ executable file. Includes default search
+        locations for Mac and Linux systems.
+    radius : float
+        Estimated radius of particles in image.
+    threshold : float
+        Threshold value for particle detection step.
+    do_median_filtering : bool
+        If True, performs a median filter on video prior to tracking.
+    quality : float
+        Lower quality cutoff value for particle filtering.
+    xdims : tuple of int
+        Upper and lower x limits for particle filtering.
+    ydims : tuple of int
+        Upper and lower y limits for particle filtering.
+    median_intensity : float
+        Lower median intensity cutoff value for particle filtering.
+    snr : float
+        Lower signal to noise ratio cutoff value for particle filtering.
+    limking_max_distance : float
+        Maximum allowable distance in pixels between two frames to join
+        particles in track.
+    gap_closing_max_distance : float
+        Maximum allowable distance in pixels between more than two frames to
+        join particles in track.
+    max_frame_gap : int
+        Maximum allowable number of frames a particle is allowed to leave video
+        and be counted as same trajectory.
+    track_displacement : float
+        Lower duration cutoff in frames for trajectory filtering.
+
     """
     if template is None:
         template = op.join(op.split(dc.__file__)[0],
@@ -85,51 +161,73 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5, threshold=
             fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
 
     script = ''.join(open(template).readlines())
-    tf = tempfile.NamedTemporaryFile(suffix=".py")
-    fid = open(tf.name, 'w')
-    fid.write(script.format(target_file=target, radius=str(radius), threshold=str(threshold),
-                            do_median_filtering=str(do_median_filtering), quality=str(quality),
-                            x = str(x), y = str(y), ylo = str(ylo),
+    tpfile = tempfile.NamedTemporaryFile(suffix=".py")
+    fid = open(tpfile.name, 'w')
+    fid.write(script.format(target_file=target, radius=str(radius),
+                            threshold=str(threshold),
+                            do_median_filtering=str(do_median_filtering),
+                            quality=str(quality),
+                            xd=str(xdims[1]), yd=str(ydims[1]), ylo=str(ydims[0]),
                             median_intensity=str(median_intensity), snr=str(snr),
                             linking_max_distance=str(linking_max_distance),
                             gap_closing_max_distance=str(gap_closing_max_distance),
-                            max_frame_gap=str(max_frame_gap), track_displacement=str(track_displacement)))
+                            max_frame_gap=str(max_frame_gap),
+                            track_displacement=str(track_displacement)))
     fid.close()
-    cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tf.name)
+    cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tpfile.name)
     print(cmd)
-    sp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
+    subp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     fid = open(out_file, 'w')
-    fid.write(sp.stdout.decode())
+    fid.write(subp.stdout.decode())
     fid.close()
 
 
-def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_name='ccurtis.data'):
-    """
-    Uses regression techniques to select the best tracking parameters.
-    Regression again intensities of input images.
+def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucket_name='ccurtis.data'):
+    """Uses regression based on image intensities to select tracking parameters.
+
+    This function uses regression methods from the scikit-learn module to
+    predict the lower quality cutoff values for particle filtering in TrackMate
+    based on the intensity distributions of input images. Currently only uses
+    the first frame of videos for analysis, and is limited to predicting
+    quality values.
+
+    In practice, users will run regress_sys twice in different modes to build
+    a regression system. First, set have_output to False. Function will return
+    list of randomly selected videos to include in the training dataset. The
+    user should then manually track particles using the Trackmate GUI, and enter
+    these values in during the next round as the input yfit variable.
 
     Parameters
     ----------
-    all_videos: list
+    folder : str
+        S3 directory containing video files specified in all_videos.
+    all_videos: list of str
         Contains prefixes of video filenames of entire video set to be
         tracked.  Training dataset will be some subset of these videos.
-    y: numpy array
+    yfit: numpy.ndarray
         Contains manually acquired quality levels using Trackmate for the
         files contained in the training dataset.
     training_size: int
         Number of files in training dataset.
-    have_output: boolean
-        If you have already acquired the quality values (y) for the
+    have_output: bool
+        If you have already acquired the quality values (yfit) for the
         training dataset, set to True.  If False, it will output the files
         the user will need to acquire quality values for.
+    bucket_name : str
+        S3 bucket containing videos to be downloaded for regression
+        calculations.
 
     Returns
     -------
-    regress_object: list of sklearn regression objects.
+    regress_object : list of sklearn.svm.classes.
         Contains list of regression objects assembled from the training
         datasets.  Uses the mean, 10th percentile, 90th percentile, and
         standard deviation intensities to predict the quality parameter
         in Trackmate.
+    t_prefix : list of str
+        Contains randomly selected images from all_videos to be included in
+        training dataset.
+
     """
 
     tprefix = []
@@ -144,7 +242,6 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_n
         descriptors = np.zeros((training_size, 4))
         counter = 0
         for name in tprefix:
-            pup = name.split('_')[0]
             local_im = name + '.tif'
             remote_im = "{}/{}".format(folder, local_im)
             aws.download_s3(remote_im, local_im, bucket_name=bucket_name)
@@ -156,7 +253,7 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_n
             counter = counter + 1
 
         # Define regression techniques
-        X = descriptors
+        Xfit = descriptors
         classifiers = [
             svm.SVR(),
             linear_model.SGDRegressor(),
@@ -170,31 +267,37 @@ def regress_sys(folder, all_videos, y, training_size, have_output=True, bucket_n
         regress_object = []
         for item in classifiers:
             clf = item
-            regress_object.append(clf.fit(X, y))
+            regress_object.append(clf.fit(Xfit, yfit))
 
         return regress_object
 
+    else:
+        return t_prefix
 
-def regress_tracking_params(regress_object, to_track, regmethod='LinearRegression', frame=325):
-    """
+
+def regress_tracking_params(regress_object, to_track,
+                            regmethod='LinearRegression', frame=325):
+    """Predicts quality values to be used in particle tracking.
+
     Uses the regress object from regress_sys to predict tracking
-    parameters for TrackMate.
+    parameters for TrackMate analysis.
 
     Parameters
     ----------
-    regress_object: list of regression objects
+    regress_object: list of sklearn.svm.classes.
         Obtained from regress_sys
     to_track: string
         Prefix of video files to be tracked.
-    regmethod: string
-        Desired regression method (LinearRegression, SVR, SGDRegressor,
-        BayesianRidge, LassoLars, ARDRegression, PassiveAggressiveRegressor,
-        TheilSenRegressor)
+    regmethod: {'LinearRegression', 'SVR', 'SGDRegressor', 'BayesianRidge',
+        'LassoLars', 'ARDRegression', 'PassiveAggressiveRegressor',
+        'TheilSenRegressor'}
+        Desired regression method.
 
     Returns
     -------
-    quality: float64
+    fqual: float
         Predicted quality factor used in TrackMate analysis.
+
     """
 
     local_im = to_track + '.tif'
@@ -210,18 +313,20 @@ def regress_tracking_params(regress_object, to_track, regmethod='LinearRegressio
         quality.append(item.predict(pX)[0])
 
     if regmethod == 'SVR':
-        return quality[0]
+        fqual = quality[0]
     elif regmethod == 'SGDRegressor':
-        return quality[1]
+        fqual = quality[1]
     elif regmethod == 'BayesianRidge':
-        return quality[2]
+        fqual = quality[2]
     elif regmethod == 'LassoLars':
-        return quality[3]
+        fqual = quality[3]
     elif regmethod == 'ARDRegression':
-        return quality[4]
+        fqual = quality[4]
     elif regmethod == 'PassiveAggressiveRegressor':
-        return quality[5]
+        fqual = quality[5]
     elif regmethod == 'TheilSenRegressor':
-        return quality[6]
+        fqual = quality[6]
     elif regmethod == 'LinearRegression':
-        return quality[7]
+        fqual = quality[7]
+
+    return fqual
