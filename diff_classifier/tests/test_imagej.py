@@ -65,11 +65,6 @@ def test_regress_sys():
     for track in tracks:
         assert track == 'FakeTracks'
 
-    all_videos = list(string.ascii_lowercase)
-    yfinal = ['e', 'b']
-
-    tracks = ij.regress_sys(cwd, all_videos, yfit, training_size,
-                            have_output=False, download=False)
     counter = 0
     for track in tracks:
         assert track == yfinal[counter]
@@ -78,6 +73,12 @@ def test_regress_sys():
     regress = ij.regress_sys(cwd, all_videos, yfit, training_size,
                              have_output=True, download=False)
     assert len(regress) == 8
+
+    all_videos = list(string.ascii_lowercase)
+    yfinal = ['e', 'b']
+
+    tracks = ij.regress_sys(cwd, all_videos, yfit, training_size,
+                            have_output=False, download=False)
 
 
 def test_regress_tracking_params():
@@ -92,7 +93,31 @@ def test_regress_tracking_params():
 
     regress = ij.regress_sys(cwd, all_videos, yfit, training_size,
                              have_output=True, download=False)
+
     quality = ij.regress_tracking_params(regress, 'FakeTracks', frame=0)
     assert quality == 9.5
-
-    
+    quality = ij.regress_tracking_params(regress, 'FakeTracks', regmethod='SVR',
+                                         frame=0)
+    assert quality == 9.5
+    quality = ij.regress_tracking_params(regress, 'FakeTracks',
+                                         regmethod='BayesianRidge', frame=0)
+    assert quality == 9.5
+    quality = ij.regress_tracking_params(regress, 'FakeTracks',
+                                         regmethod='SGDRegressor', frame=0)
+    assert quality == 9.5
+    quality = ij.regress_tracking_params(regress, 'FakeTracks',
+                                         regmethod='LassoLars', frame=0)
+    assert quality == 9.5
+    quality = ij.regress_tracking_params(regress, 'FakeTracks',
+                                         regmethod='ARDRegression', frame=0)
+    assert quality == 9.5
+    quality = ij.regress_tracking_params(regress, 'FakeTracks',
+                                         regmethod='PassiveAggressiveRegressor',
+                                         frame=0)
+    assert quality == 9.5
+    quality = ij.regress_tracking_params(regress, 'FakeTracks',
+                                         regmethod='TheilSenRegressor', frame=0)
+    assert quality == 9.5
+    quality = ij.regress_tracking_params(regress, 'FakeTracks',
+                                         regmethod='None', frame=0)
+    assert quality == 3.0
