@@ -113,7 +113,7 @@ def test_regress_tracking_params():
     quality = ij.regress_tracking_params(regress, 'FakeTracks',
                                          regmethod='PassiveAggressiveRegressor',
                                          frame=0)
-    assert np.round(quality, 1) == 9.9
+    assert np.round(quality, 1) == 9.1
     quality = ij.regress_tracking_params(regress, 'FakeTracks',
                                          regmethod='TheilSenRegressor', frame=0)
     assert quality == 9.5
