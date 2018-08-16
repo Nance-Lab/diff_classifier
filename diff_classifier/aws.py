@@ -1,12 +1,21 @@
+"""IO functions for downloading and uploading files from AWS S3 buckets.
+
+The diff_classifier module was built to be used with conjunction with AWS
+services. With the exception of Cloudknot parallelization capabilities, most
+functions can be used separate from AWS. These functions faciliate interaction
+with files stores in S3 buckets. Users must have appropriate credentials to
+access desired S3 buckets.
+
+"""
 import os
 import boto3
+
 import os.path as op
 # import diff_classifier.imagej as ij
 
 
-def download_s3(remote_fname, local_fname, bucket_name="ccurtis7.pup"):
-    """
-    Download a file from S3 to our local file-system
+def download_s3(remote_fname, local_fname, bucket_name="ccurtis.data"):
+    """Download a file from S3 to local file-system
 
     Parameters
     ----------
@@ -23,7 +32,7 @@ def download_s3(remote_fname, local_fname, bucket_name="ccurtis7.pup"):
         b.download_file(remote_fname, local_fname)
 
 
-def upload_s3(local_fname, remote_fname, bucket_name="ccurtis7.pup"):
+def upload_s3(local_fname, remote_fname, bucket_name="ccurtis.data"):
     """
     Upload a file from local file-system to S3.
 
