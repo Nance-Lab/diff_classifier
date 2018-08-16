@@ -2,6 +2,7 @@ import os
 import pytest
 import sys
 import tempfile
+import string
 
 import numpy as np
 import os.path as op
@@ -33,3 +34,65 @@ def test_mean_intensity():
 
     test = np.round(ij.mean_intensity(fname, frame=0), 1)
     assert test == 20.0
+
+
+def test_partition_im():
+    fname = 'FakeTracks.tif'
+    cwd = os.getcwd()
+    fullname = os.path.join(cwd, fname)
+    urlretrieve('http://fiji.sc/samples/FakeTracks.tif', filename=fullname)
+
+    rows = 2
+    cols = 2
+    names = ij.partition_im(fullname, irows=rows, icols=2, ores=(128, 128),
+                            ires=(64, 64))
+    for name in names:
+        assert os.path.isfile(name)
+
+
+def test_regress_sys():
+    fname = 'FakeTracks.tif'
+    cwd = os.getcwd()
+    fullname = os.path.join(cwd, fname)
+    urlretrieve('http://fiji.sc/samples/FakeTracks.tif', filename=fullname)
+
+    all_videos = ['FakeTracks']*10
+    yfit = [10, 9]
+    training_size = 2
+
+    tracks = ij.regress_sys(cwd, all_videos, yfit, training_size,
+                            have_output=False, download=False)
+    for track in tracks:
+        assert track == 'FakeTracks'
+
+    all_videos = list(string.ascii_lowercase)
+    yfinal = ['e', 'b']
+
+    tracks = ij.regress_sys(cwd, all_videos, yfit, training_size,
+                            have_output=False, download=False)
+    counter = 0
+    for track in tracks:
+        assert track == yfinal[counter]
+        counter = counter + 1
+
+    regress = ij.regress_sys(cwd, all_videos, yfit, training_size,
+                             have_output=True, download=False)
+    assert len(regress) == 8
+
+
+def test_regress_tracking_params():
+    fname = 'FakeTracks.tif'
+    cwd = os.getcwd()
+    fullname = os.path.join(cwd, fname)
+    urlretrieve('http://fiji.sc/samples/FakeTracks.tif', filename=fullname)
+
+    all_videos = ['FakeTracks']*10
+    yfit = [10, 9]
+    training_size = 2
+
+    regress = ij.regress_sys(cwd, all_videos, yfit, training_size,
+                             have_output=True, download=False)
+    quality = ij.regress_tracking_params(regress, 'FakeTracks', frame=0)
+    assert quality == 9.5
+
+    

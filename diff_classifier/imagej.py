@@ -184,7 +184,8 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
     fid.close()
 
 
-def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucket_name='ccurtis.data'):
+def regress_sys(folder, all_videos, yfit, training_size, frame=0,
+                have_output=True, download=True, bucket_name='ccurtis.data'):
     """Uses regression based on image intensities to select tracking parameters.
 
     This function uses regression methods from the scikit-learn module to
@@ -226,7 +227,7 @@ def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucke
         datasets.  Uses the mean, 10th percentile, 90th percentile, and
         standard deviation intensities to predict the quality parameter
         in Trackmate.
-    t_prefix : list of str
+    tprefix : list of str
         Contains randomly selected images from all_videos to be included in
         training dataset.
 
@@ -246,16 +247,17 @@ def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucke
         for name in tprefix:
             local_im = name + '.tif'
             remote_im = "{}/{}".format(folder, local_im)
-            aws.download_s3(remote_im, local_im, bucket_name=bucket_name)
+            if download:
+                aws.download_s3(remote_im, local_im, bucket_name=bucket_name)
             test_image = sio.imread(local_im)
-            descriptors[counter, 0] = np.mean(test_image[0, :, :])
-            descriptors[counter, 1] = np.std(test_image[0, :, :])
-            descriptors[counter, 2] = np.percentile(test_image[0, :, :], 10)
-            descriptors[counter, 3] = np.percentile(test_image[0:, :, :], 90)
+            descriptors[counter, 0] = np.mean(test_image[frame, :, :])
+            descriptors[counter, 1] = np.std(test_image[frame, :, :])
+            descriptors[counter, 2] = np.percentile(test_image[frame, :, :], 10)
+            descriptors[counter, 3] = np.percentile(test_image[frame, :, :], 90)
             counter = counter + 1
 
         # Define regression techniques
-        Xfit = descriptors
+        xfit = descriptors
         classifiers = [
             svm.SVR(),
             linear_model.SGDRegressor(),
@@ -269,16 +271,16 @@ def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucke
         regress_object = []
         for item in classifiers:
             clf = item
-            regress_object.append(clf.fit(Xfit, yfit))
+            regress_object.append(clf.fit(xfit, yfit))
 
         return regress_object
 
     else:
-        return t_prefix
+        return tprefix
 
 
 def regress_tracking_params(regress_object, to_track,
-                            regmethod='LinearRegression', frame=325):
+                            regmethod='LinearRegression', frame=0):
     """Predicts quality values to be used in particle tracking.
 
     Uses the regress object from regress_sys to predict tracking
@@ -330,5 +332,7 @@ def regress_tracking_params(regress_object, to_track,
         fqual = quality[6]
     elif regmethod == 'LinearRegression':
         fqual = quality[7]
+    else:
+        fqual = 3.0
 
     return fqual
