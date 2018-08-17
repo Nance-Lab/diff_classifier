@@ -187,8 +187,21 @@ def test_geomean_msdisp():
     npt.assert_equal(np.round(np.exp(geostder[geostder.mask == False].data), 1),
                      geostder_t)
 
+
 def test_binning():
-    print()
+    slices, bins, bin_names = msd.binning(experiments)
+    experiments = []
+    for num in range(8):
+        experiments.append('test_{}'.format(num))
+    bins_t = {'test_W0': ['test_0', 'test_1'],
+              'test_W1': ['test_2', 'test_3'],
+              'test_W2': ['test_4', 'test_5'],
+              'test_W3': ['test_6', 'test_7']}
+    bin_names_t = ['test_W0', 'test_W1', 'test_W2', 'test_W3']
+
+    assert slices == 2
+    assert bins == bins_t
+    assert bin_names == bin_names_t
 
 
 def test_precision_weight():
