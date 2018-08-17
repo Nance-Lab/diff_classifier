@@ -254,8 +254,9 @@ def test_precision_averaging():
     geo_t = np.array([19.6,  78.4, 176.4, 313.5])
     npt.assert_equal(np.round(geodata.geostd[geodata.geostd.mask == False].data,
                               1), geostd_t)
-    npt.assert_equal(np.round(geodata.geomean[geodata.geomean.mask == False].data,
-                              1), geo_t)
+    npt.assert_equal(np.round(
+                     np.exp(geodata.geomean[
+                              geodata.geomean.mask == False].data), 1), geo_t)
 
 
 def tesT_plot_all_experiments():
