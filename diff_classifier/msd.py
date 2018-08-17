@@ -217,7 +217,6 @@ def all_msds(data):
                                 ].sort_values(['Track_ID', 'Frame'],
                                               ascending=[1, 1]
                                               ).reset_index(drop=True)
-        index2 = 0
         if particle == 0:
             index1 = 0
             index2 = length
