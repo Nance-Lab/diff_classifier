@@ -205,7 +205,7 @@ def all_msds(data):
     new = {}
     new['length'] = partcount*length
     new['frame'] = np.zeros(new['length'])
-    new['ID'] = new['length']
+    new['ID'] = np.zeros(new['length'])
     new['xy'] = [np.zeros(new['length']),
                  np.zeros(new['length'])]
     meansd = np.zeros(new['length'])
