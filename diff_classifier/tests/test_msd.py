@@ -140,3 +140,49 @@ def test_all_msds2():
 
     length = max(df['Frame']) + 1
     pdt.assert_frame_equal(dfi, msd.all_msds2(df, frames=length)[cols])
+
+
+def test_geomean_msdisp():
+    data1 = {'Frame': [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+             'Track_ID': [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+             'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+             'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
+
+    geomean_t = np.array([2., 8., 18., 32.])
+    geostder_t = np.array([1., 1., 1., 1., 1.])
+    df = pd.DataFrame(data=data1)
+    msds = msd.all_msds2(df)
+    msds.to_csv('msd_test.csv')
+
+    geomean, geostder = msd.geomean_msdisp('test', umppx=1, fps=1, upload=False)
+    npt.assert_equal(np.round(np.exp(geomean[geomean.mask == False].data), 1),
+                     geomean_t)
+    npt.assert_equal(np.round(np.exp(geostder[geostder.mask == False].data), 1),
+                     geostder_t)
+
+    data1 = {'Frame': [1, 2, 1, 2],
+             'Track_ID': [1, 1, 2, 2],
+             'X': [1, 2, 3, 4],
+             'Y': [1, 2, 3, 4]}
+    df = pd.DataFrame(data=data1)
+    msds = msd.all_msds2(df)
+    msds.to_csv('msd_test.csv')
+    geomean, geostder = msd.geomean_msdisp('test', umppx=1, fps=1, upload=False)
+    npt.assert_equal(geomean, np.nan*np.ones(651))
+    npt.assert_equal(geostder, np.nan*np.ones(651))
+
+
+def test_binning():
+    print()
+
+
+def test_precision_weight():
+    print()
+
+
+def test_precision_averaging():
+    print()
+
+
+def tesT_plot_all_experiments():
+    print()

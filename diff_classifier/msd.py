@@ -451,7 +451,8 @@ def geomean_msdisp(prefix, umppx=0.16, fps=100.02, upload=True,
                    remote_folder="01_18_Experiment", bucket='ccurtis.data'):
     """Comptes geometric averages of mean squared displacement datasets
 
-    Calculates geometric averages and stadard errors for MSD datasets.
+    Calculates geometric averages and stadard errors for MSD datasets. Might
+    error out if not formatted as output from all_msds2.
 
     Parameters
     ----------
@@ -490,9 +491,9 @@ def geomean_msdisp(prefix, umppx=0.16, fps=100.02, upload=True,
         geo_mean = np.nanmean(ma.log(ypos), axis=0)
         geo_stder = stats.sem(ma.log(ypos), axis=0, nan_policy='omit')
 
-    except:
-        geo_mean = np.nan*np.ones(651)
-        geo_stder = np.nan*np.ones(651)
+    except ValueError:
+        geo_mean = np.nan*np.ones(1+int(max(merged['Frame'])))
+        geo_stder = np.nan*np.ones(1+int(max(merged['Frame'])))
 
     np.savetxt('geomean_{}.csv'.format(prefix), geo_mean, delimiter=",")
     np.savetxt('geoSEM_{}.csv'.format(prefix), geo_stder, delimiter=",")
