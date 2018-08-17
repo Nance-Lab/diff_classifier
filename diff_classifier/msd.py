@@ -647,7 +647,10 @@ def precision_averaging(group, geomean, geo_stder, weights, save=True,
         aws.upload_s3(gstder_f, '{}/{}'.format(folder, gstder_f),
                       bucket_name=bucket)
 
-    return geo, geo_stder, w_holder, gstder_holder
+    geodata = Bunch(geomean=geo, geostd=geo_stder, weighthold=w_holder,
+                    geostdhold=gstder_holder)
+
+    return geodata
 
 
 def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
@@ -725,3 +728,8 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
     if upload:
         fig.savefig(outfile, bbox_inches='tight')
         aws.upload_s3(outfile, folder+'/'+outfile, bucket_name=bucket)
+
+
+class Bunch:
+    def __init__(self, **kwds):
+        self.__dict__.update(kwds)
