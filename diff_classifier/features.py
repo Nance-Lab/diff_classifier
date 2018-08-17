@@ -290,7 +290,7 @@ def asymmetry(track):
     0.0059602683290953052)
 
     """
-
+    dframe = track
     assert isinstance(dframe, pd.core.frame.DataFrame), "track must be a pandas\
      dataframe."
     assert isinstance(dframe['X'], pd.core.series.Series), "track must contain\
@@ -374,6 +374,7 @@ def minboundrect(dframe):
     python/min_bounding_rect.py
     """
 
+    dframe = track
     assert isinstance(dframe, pd.core.frame.DataFrame), "track must be a pandas\
      dataframe."
     assert isinstance(dframe['X'], pd.core.series.Series), "track must contain\
@@ -485,6 +486,7 @@ def aspectratio(track):
 
     """
 
+    dframe = track
     assert isinstance(dframe, pd.core.frame.DataFrame), "track must be a pandas\
      dataframe."
     assert isinstance(dframe['X'], pd.core.series.Series), "track must contain\
@@ -556,6 +558,7 @@ def boundedness(track, framerate=1):
     (0.96037058689895005, 2.9989749477908401, 0.03576118370932313)
     """
 
+    dframe = track
     assert isinstance(dframe, pd.core.frame.DataFrame), "track must be a pandas\
      dataframe."
     assert isinstance(dframe['X'], pd.core.series.Series), "track must contain\
