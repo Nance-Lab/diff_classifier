@@ -189,7 +189,6 @@ def test_geomean_msdisp():
 
 
 def test_binning():
-    slices, bins, bin_names = msd.binning(experiments)
     experiments = []
     for num in range(8):
         experiments.append('test_{}'.format(num))
@@ -198,6 +197,7 @@ def test_binning():
               'test_W2': ['test_4', 'test_5'],
               'test_W3': ['test_6', 'test_7']}
     bin_names_t = ['test_W0', 'test_W1', 'test_W2', 'test_W3']
+    slices, bins, bin_names = msd.binning(experiments)
 
     assert slices == 2
     assert bins == bins_t
@@ -205,7 +205,26 @@ def test_binning():
 
 
 def test_precision_weight():
-    print()
+    experiments = []
+    geomean = {}
+    geostder = {}
+    for num in range(4):
+        name = 'test_{}'.format(num)
+        experiments.append(name)
+        data1 = {'Frame': [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+                 'Track_ID': [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+                 'X': [x*(num+1) for x in [5, 6, 7, 8, 9, 2, 4, 6, 8, 10]],
+                 'Y': [x*(num+1) for x in [6, 7, 8, 9, 10, 6, 8, 10, 12, 14]]}
+        df = pd.DataFrame(data=data1)
+        msds = msd.all_msds2(df)
+        msds.to_csv('msd_test_{}.csv'.format(num))
+        geomean[name], geostder[name] = msd.geomean_msdisp(name, umppx=1, fps=1,
+                                                           upload=False)
+
+    slices, bins, bin_names = msd.binning(experiments, wells=1)
+    weights, w_holder = msd.precision_weight(experiments, geostder)
+    weights_t = np.array([8.3, 8.3, 8.3, 8.3])
+    npt.assert_equal(np.round(weights[weights.mask == False].data, 1), weights_t)
 
 
 def test_precision_averaging():
