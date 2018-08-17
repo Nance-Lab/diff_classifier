@@ -307,7 +307,7 @@ def asymmetry(track):
     return eig1, eig2, asym1, asym2, asym3
 
 
-def minboundrect(dframe):
+def minboundrect(track):
     """Calculates the minimum bounding rectangle of an input trajectory.
 
     Parameters
