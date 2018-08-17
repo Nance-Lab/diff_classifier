@@ -321,9 +321,9 @@ def make_xyarray(data, length=651):
                                ascending=[1, 1]).reset_index(drop=True)
     new_frame = np.linspace(0, length-1, length)
 
-    old_frame = track['Frame'].as_matrix().astype(float)
-    oldxy = [track['X'].as_matrix(),
-             track['Y'].as_matrix()]
+    old_frame = track['Frame'].values.astype(float)
+    oldxy = [track['X'].values,
+             track['Y'].values]
     fxy = [interpolate.interp1d(old_frame, oldxy[0], bounds_error=False,
                                 fill_value=np.nan),
            interpolate.interp1d(old_frame, oldxy[1], bounds_error=False,
@@ -342,8 +342,8 @@ def make_xyarray(data, length=651):
                                    ascending=[1, 1]).reset_index(drop=True)
 
         old_frame = track['Frame']
-        oldxy = [track['X'].as_matrix(),
-                 track['Y'].as_matrix()]
+        oldxy = [track['X'].values,
+                 track['Y'].values]
         fxy = [interpolate.interp1d(old_frame, oldxy[0], bounds_error=False,
                                     fill_value=np.nan),
                interpolate.interp1d(old_frame, oldxy[1], bounds_error=False,
