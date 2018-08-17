@@ -489,7 +489,8 @@ def geomean_msdisp(prefix, umppx=0.16, fps=100.02, upload=True,
             xpos = merged.loc[merged.Track_ID == i, 'Frame']/fps
 
         geo_mean = np.nanmean(ma.log(ypos), axis=0)
-        geo_stder = stats.sem(ma.log(ypos), axis=0, nan_policy='omit')
+        geo_stder = ma.masked_equal(stats.sem(ma.log(ypos), axis=0,
+                                              nan_policy='omit'), 0.0)
 
     except ValueError:
         geo_mean = np.nan*np.ones(1+int(max(merged['Frame'])))

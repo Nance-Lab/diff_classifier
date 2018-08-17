@@ -149,7 +149,7 @@ def test_geomean_msdisp():
              'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
 
     geomean_t = np.array([2., 8., 18., 32.])
-    geostder_t = np.array([1., 1., 1., 1., 1.])
+    geostder_t = np.array([])
     df = pd.DataFrame(data=data1)
     msds = msd.all_msds2(df)
     msds.to_csv('msd_test.csv')
@@ -171,6 +171,21 @@ def test_geomean_msdisp():
     npt.assert_equal(geomean, np.nan*np.ones(651))
     npt.assert_equal(geostder, np.nan*np.ones(651))
 
+    data1 = {'Frame': [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+             'Track_ID': [0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+             'X': [5, 6, 7, 8, 9, 2, 4, 6, 8, 10],
+             'Y': [6, 7, 8, 9, 10, 6, 8, 10, 12, 14]}
+    df = pd.DataFrame(data=data1)
+    geomean_t = np.array([4., 16., 36., 64.])
+    geostder_t = np.array([2., 2., 2., 2])
+    msds = msd.all_msds2(df)
+    msds.to_csv('msd_test.csv')
+
+    geomean, geostder = msd.geomean_msdisp('test', umppx=1, fps=1, upload=False)
+    npt.assert_equal(np.round(np.exp(geomean[geomean.mask == False].data), 1),
+                     geomean_t)
+    npt.assert_equal(np.round(np.exp(geostder[geostder.mask == False].data), 1),
+                     geostder_t)
 
 def test_binning():
     print()
