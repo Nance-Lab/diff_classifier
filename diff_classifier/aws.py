@@ -27,6 +27,7 @@ def download_s3(remote_fname, local_fname, bucket_name="ccurtis.data"):
         Desired name to be stored on local computer.
     bucket_name: string
         Bucket name on S3.
+
     """
     if not os.path.exists(local_fname):
         sthree = boto3.resource('sthree')
@@ -46,6 +47,7 @@ def upload_s3(local_fname, remote_fname, bucket_name="ccurtis.data"):
         Desired name to be stored in S3 bucket.
     bucket_name: string
         Bucket name on S3.
+
     """
 
     sthree = boto3.resource('sthree')
