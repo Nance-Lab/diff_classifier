@@ -14,20 +14,20 @@ def test_partial_corr():
 
 
 def test_kmo():
-    dataf = msd.random_traj_dataset(nparts=300, ndist=(2, 6))
+    dataf = msd.random_traj_dataset(nparts=10, ndist=(2, 6))
     msds = msd.all_msds2(dataf, frames=100)
     feat = ft.calculate_features(msds)
     dataset = feat.drop(['frames', 'Track_ID'], axis=1)
-    npt.assert_equal(np.round(pca.kmo(dataset), 3), 0.958)
+    npt.assert_equal(np.round(pca.kmo(dataset), 3), 0.681)
 
 
 def test_pca_analysis():
-    dataf = msd.random_traj_dataset(nparts=300, ndist=(2, 6))
+    dataf = msd.random_traj_dataset(nparts=10, ndist=(2, 6))
     msds = msd.all_msds2(dataf, frames=100)
     feat = ft.calculate_features(msds)
     pcadataset = pca.pca_analysis(feat, dropcols=['frames', 'Track_ID'],
                                   n_components=5)
-    npt.assert_equal(np.round(np.sum(pcadataset.components.values), 3), -0.193)
+    npt.assert_equal(np.round(np.sum(pcadataset.components.values), 3), -0.971)
 
 
 def test_plot_pca():
