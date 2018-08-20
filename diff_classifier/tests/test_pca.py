@@ -14,13 +14,12 @@ def test_partial_corr():
 
 
 def test_kmo():
-    corrmatrix = np.corrcoef(dataset.transpose())
-    npt.assert_equal(np.round(np.sum(corrmatrix), 1), 11.8)
-
     dataf = msd.random_traj_dataset(nparts=10, ndist=(1, 1), seed=2)
     msds = msd.all_msds2(dataf, frames=100)
     feat = ft.calculate_features(msds)
     dataset = feat.drop(['frames', 'Track_ID'], axis=1)
+    corrmatrix = np.corrcoef(dataset.transpose())
+    npt.assert_equal(np.round(np.sum(corrmatrix), 1), 11.8)
     npt.assert_equal(np.round(pca.kmo(dataset), 3), 0.597)
 
 
