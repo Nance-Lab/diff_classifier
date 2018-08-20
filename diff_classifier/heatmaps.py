@@ -199,7 +199,7 @@ def plot_heatmap(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, r
 
 
 def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, rows=4, cols=4,
-                     upload=True, remote_folder = "01_18_Experiment",
+                     dotsize=10, figsize=(12, 10), upload=True, remote_folder = "01_18_Experiment",
                      bucket='ccurtis.data'):
     """
     Plot scatterplot of trajectories in video with colors corresponding to features.
@@ -244,8 +244,8 @@ def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=51
     xs = ma.compressed(ma.masked_where(to_mask, merged_ft['X'].astype(int)))
     ys = ma.compressed(ma.masked_where(to_mask, merged_ft['Y'].astype(int)))
 
-    fig = plt.figure(figsize=(12, 10))
-    plt.scatter(xs, ys, c=zs, s=10)
+    fig = plt.figure(figsize=figsize)
+    plt.scatter(xs, ys, c=zs, s=dotsize)
     mapper.set_array(10)
     plt.colorbar(mapper)
     plt.xlim(0, ires*cols)
@@ -253,7 +253,7 @@ def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=51
     plt.axis('off')
 
     print('Plotted {} scatterplot successfully.'.format(prefix))
-    outfile = 'scatter_{}.png'.format(prefix)
+    outfile = 'scatter_{}_{}.png'.format(feature, prefix)
     fig.savefig(outfile, bbox_inches='tight')
     if upload == True:
         aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
