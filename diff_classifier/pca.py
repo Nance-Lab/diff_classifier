@@ -188,7 +188,7 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     """
 
     dataset_num = dataset.drop(dropcols, axis=1)
-    dataset_raw = dataset_num.as_matrix()
+    dataset_raw = dataset_num.values
 
     # Fill in NaN values
     if imputenans:
@@ -224,9 +224,9 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     pcadataset.components = pd.DataFrame(comps.transpose())
     for num in range(0, n_components):
         highest = np.abs(pcadataset.components[
-                         num]).as_matrix().argsort()[-5:][::-1]
+                         num]).values.argsort()[-5:][::-1]
         pels = []
-        pcadataset.prvals[num] = pcadataset.components[num].as_matrix()[highest]
+        pcadataset.prvals[num] = pcadataset.components[num].values[highest]
         for col in highest:
             pels.append(dataset_num.columns[col])
         prim_comps[num] = pels

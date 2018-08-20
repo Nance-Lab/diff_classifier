@@ -20,6 +20,9 @@ def test_kmo():
     dataset = feat.drop(['frames', 'Track_ID'], axis=1)
     npt.assert_equal(np.round(pca.kmo(dataset), 3), 0.597)
 
+    corrmatrix = np.corrcoef(dataset.transpose())
+    npt.assert_equal(np.round(np.sum(corrmatrix), 1), 11.8)
+
 
 def test_pca_analysis():
     dataf = msd.random_traj_dataset(nparts=10, ndist=(2, 6))
