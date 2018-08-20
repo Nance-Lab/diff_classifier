@@ -767,11 +767,12 @@ def calculate_features(dframe, framerate=1):
     partcount = trackids.shape[0]
 
     for particle in range(0, partcount):
-        single_track_masked =
-        dframe.loc[dframe['Track_ID'] ==
-                   trackids[particle]].sort_values(['Track_ID', 'Frame'],
-                                                   ascending=[
-                                                   1, 1]).reset_index(drop=True)
+        single_track_masked =\
+         dframe.loc[dframe['Track_ID'] ==
+                    trackids[particle]].sort_values(['Track_ID', 'Frame'],
+                                                    ascending=[
+                                                    1,
+                                                    1]).reset_index(drop=True)
         single_track = unmask_track(single_track_masked)
         (datai['alpha'][particle],
          datai['D_fit'][particle]) = alpha_calc(single_track)
