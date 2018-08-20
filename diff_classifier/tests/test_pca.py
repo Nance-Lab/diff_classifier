@@ -11,6 +11,7 @@ def test_partial_corr():
     dataf = msd.random_traj_dataset()
     msds = msd.all_msds2(dataf, frames=100)
     feat = ft.calculate_features(msds)
+    pcorr = pca.partial_corr(dataset)
     npt.assert_equal(24.0, np.round(np.sum(pcorr), 1))
 
 

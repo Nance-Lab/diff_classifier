@@ -498,7 +498,7 @@ def aspectratio(track):
     rangle, area, width, height, center_point, corner_pts = minboundrect(track)
     aspratio = width/height
     if aspratio > 1:
-        print()
+        aspratio = aspratio
     else:
         aspratio = 1/aspratio
     elong = 1 - (1/aspratio)
