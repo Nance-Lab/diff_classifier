@@ -1,6 +1,4 @@
-import pandas as pd
 import numpy as np
-import pandas.util.testing as pdt
 import numpy.testing as npt
 import diff_classifier.msd as msd
 import diff_classifier.pca as pca
@@ -24,7 +22,12 @@ def test_kmo():
 
 
 def test_pca_analysis():
-    print()
+    dataf = random_traj_dataset(nparts=300, ndist=(2, 6))
+    msds = msd.all_msds2(dataf, frames=100)
+    feat = ft.calculate_features(msds)
+    pcadataset = pca.pca_analysis(feat, dropcols=['frames', 'Track_ID'],
+                                  n_components=5)
+    npt.assert_equal(np.round(np.sum(pcadataset.components.values), 3), -0.193)
 
 
 def test_plot_pca():

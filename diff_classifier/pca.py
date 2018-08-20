@@ -216,7 +216,7 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     print('Cumulative explained variance:')
     for i in range(0, n_components):
         cum_var = cum_var + explained_v[i]
-        print('{} component: {}'.format(i, x))
+        print('{} component: {}'.format(i, cum_var))
 
     prim_comps = {}
     pcadataset.prvals = {}
@@ -228,7 +228,7 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
         pels = []
         pcadataset.prvals[num] = pcadataset.components[num].as_matrix()[highest]
         for col in highest:
-            pels.append(dataset.columns[col])
+            pels.append(dataset_num.columns[col])
         prim_comps[num] = pels
 
     # Main contributors to each primary component
