@@ -277,7 +277,7 @@ def test_random_traj_dataset():
     cols = ['Frame', 'Track_ID', 'X', 'Y']
     dfi = pd.DataFrame(data=di)[cols]
 
-    pdt.assert_frame_equal(dfi, random_traj_dataset(nframes=5, nparts=2,
+    pdt.assert_frame_equal(dfi, msd.random_traj_dataset(nframes=5, nparts=2,
                                                     fsize=(0, 5))[cols])
 
 
