@@ -131,7 +131,7 @@ def kmo(dataset):
     pcorr = pca.partial_corr(dataset)
 
     # Calculation of the KMO statistic
-    matrix = corrmatrix*corrmatrix
+    matrix = np.multiply(corrmatrix, corrmatrix)
     rows = matrix.shape[0]
     cols = matrix.shape[1]
     rij = np.sum(matrix) - np.trace(matrix)

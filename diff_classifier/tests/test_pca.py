@@ -27,16 +27,18 @@ def test_kmo():
     pcorr = pca.partial_corr(dataset)
 
     # Calculation of the KMO statistic
-    matrix = corrmatrix*corrmatrix
+    matrix = np.multiply(corrmatrix, corrmatrix)
     rows = matrix.shape[0]
     cols = matrix.shape[1]
     rij = np.sum(matrix) - np.trace(matrix)
     uij = np.sum(pcorr) - np.trace(pcorr)
     kmostat = rij/(rij+uij)
     print(kmostat)
+    npt.assert_equal(np.round(np.sum(pcorr), 1), 37.1)
     npt.assert_equal(np.round(uij, 1), 21.1)
     npt.assert_equal(np.round(rij, 1), 73.6)
     npt.assert_equal(np.round(pca.kmo(dataset), 3), 0.777)
+
 
 def test_pca_analysis():
     dataf = msd.random_traj_dataset(nparts=10, ndist=(2, 6))
