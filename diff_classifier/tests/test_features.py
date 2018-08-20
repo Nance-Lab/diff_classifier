@@ -228,8 +228,8 @@ def test_efficiency():
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
-    assert ft.efficiency(dframe) ==
-    (0.003548421265914009, 0.0059620286331768385)
+    assert ft.efficiency(dframe) ==\
+        (0.003548421265914009, 0.0059620286331768385)
 
     frames = 10
     data = {'Frame': np.linspace(0, frames, frames),
