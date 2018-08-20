@@ -259,5 +259,27 @@ def test_precision_averaging():
                               geodata.geomean.mask == False].data), 1), geo_t)
 
 
-def tesT_plot_all_experiments():
+def test_random_walk():
+    xi = np.array([0., -1.,  0.,  0.,  1.])
+    yi = np.array([0., 0., 0., 1., 1.])
+    x, y = msd.random_walk(nsteps=5)
+    npt.assert_equal(xi, x)
+    npt.assert_equal(yi, y)
+
+
+def test_random_traj_dataset():
+    di = {'Frame': [float(i) for i in[0, 1, 2, 3, 4, 0, 1, 2, 3, 4]],
+          'Track_ID': [float(i) for i in[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]],
+          'X': np.array([1., 1., 1., 1.93045976, 1.93045976, 0., -0.2881835, 0.,
+                        0., 0.2881835]),
+          'Y': np.array([1., 0.06954024, -0.86091951, -0.86091951, 0.06954024,
+                        4., 4., 4., 4.2881835, 4.2881835])}
+    cols = ['Frame', 'Track_ID', 'X', 'Y']
+    dfi = pd.DataFrame(data=di)[cols]
+
+    pdt.assert_frame_equal(dfi, random_traj_dataset(nframes=5, nparts=2,
+                                                    fsize=(0, 5))[cols])
+
+
+def test_plot_all_experiments():
     print('To do later.')

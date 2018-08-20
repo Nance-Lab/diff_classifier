@@ -6,6 +6,7 @@ Trackmate ImageJ plugin.
 
 """
 import warnings
+import random as rand
 
 import pandas as pd
 import numpy as np
@@ -728,6 +729,107 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
     if upload:
         fig.savefig(outfile, bbox_inches='tight')
         aws.upload_s3(outfile, folder+'/'+outfile, bucket_name=bucket)
+
+
+def random_walk(nsteps=100, seed=1, start=(0, 0)):
+    """Creates 2d random walk trajectory.
+
+    Parameters
+    ----------
+    nsteps : int
+        Number of steps for trajectory to move.
+    seed : int
+        Seed for pseudo-random number generator for reproducability.
+    start : tuple of int or float
+        Starting xy coordinates at which the random walk begins.
+
+    Returns
+    -------
+    x : numpy.ndarray
+        Array of x coordinates of random walk.
+    y : numpy.ndarray
+        Array of y coordinates of random walk.
+
+    """
+
+    rand.seed(a=seed)
+
+    x = np.zeros(nsteps)
+    y = np.zeros(nsteps)
+    x[0] = start[0]
+    y[0] = start[1]
+
+    for i in range(1, nsteps):
+        val = rand.randint(1, 4)
+        if val == 1:
+            x[i] = x[i - 1] + 1
+            y[i] = y[i - 1]
+        elif val == 2:
+            x[i] = x[i - 1] - 1
+            y[i] = y[i - 1]
+        elif val == 3:
+            x[i] = x[i - 1]
+            y[i] = y[i - 1] + 1
+        else:
+            x[i] = x[i - 1]
+            y[i] = y[i - 1] - 1
+
+    return x, y
+
+
+def random_traj_dataset(nframes=100, nparts=30, seed=1, fsize=(0, 512),
+                        ndist=(1, 2)):
+    """Creates a random population of random walks.
+
+    Parameters
+    ----------
+    nframes : int
+        Number of frames for each random trajectory.
+    nparts : int
+        Number of particles in trajectory dataset.
+    seed : int
+        Seed for pseudo-random number generator for reproducability.
+    fsize : tuple of int or float
+        Scope of points over which particles may start at.
+    ndist : tuple of int or float
+        Parameters to generate normal distribution, mu and sigma.
+
+    Returns
+    -------
+    dataf : pandas.core.frame.DataFrame
+        Trajectory data containing a 'Frame', 'Track_ID', 'X', and
+        'Y' column.
+
+    """
+
+    frames = []
+    trackid = []
+    x = []
+    y = []
+    start = [0, 0]
+    pseed = seed
+
+    for i in range(nparts):
+        rand.seed(a=i+pseed)
+        start[0] = rand.randint(fsize[0], fsize[1])
+        rand.seed(a=i+3+pseed)
+        start[1] = rand.randint(fsize[0], fsize[1])
+        rand.seed(a=i+5+pseed)
+        weight = rand.normalvariate(mu=ndist[0], sigma=ndist[1])
+
+        trackid = np.append(trackid, np.array([i]*nframes))
+        xi, yi = random_walk(nsteps=nframes, seed=i)
+        x = np.append(x, weight*xi+start[0])
+        y = np.append(y, weight*yi+start[1])
+        frames = np.append(frames, np.linspace(0, nframes-1, nframes))
+
+    datai = {'Frame': frames,
+             'Track_ID': trackid,
+             'X': x,
+             'Y': y}
+    dataf = pd.DataFrame(data=datai)
+
+    return dataf
 
 
 class Bunch:
