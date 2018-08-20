@@ -128,20 +128,14 @@ def kmo(dataset):
 
     # Correlation matrix and the partial covariance matrix.
     corrmatrix = np.corrcoef(dataset.transpose())
-    pcorr = partial_corr(dataset)
+    pcorr = pca.partial_corr(dataset)
 
     # Calculation of the KMO statistic
     matrix = corrmatrix*corrmatrix
     rows = matrix.shape[0]
     cols = matrix.shape[1]
-    rij = 0
-    uij = 0
-    for row in range(0, rows):
-        for col in range(0, cols):
-            if not row == col:
-                rij = rij + matrix[row, col]
-                uij = uij + pcorr[row, col]
-
+    rij = np.sum(matrix) - np.trace(matrix)
+    uij = np.sum(pcorr) - np.trace(pcorr)
     kmostat = rij/(rij+uij)
     print(kmostat)
     return kmostat
