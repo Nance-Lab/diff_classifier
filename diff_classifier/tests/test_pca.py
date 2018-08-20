@@ -11,6 +11,30 @@ def test_partial_corr():
     feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(24.0, np.round(np.sum(pcorr), 1))
+    
+    dataf = msd.random_traj_dataset(nparts=10)
+    msds = msd.all_msds2(dataf, frames=100)
+    feat = ft.calculate_features(msds)
+    pcorr = pca.partial_corr(feat)
+    npt.assert_equal(47.9, np.round(np.sum(pcorr), 1))
+
+    dataf = msd.random_traj_dataset(nparts=10, seed=9)
+    msds = msd.all_msds2(dataf, frames=100)
+    feat = ft.calculate_features(msds)
+    pcorr = pca.partial_corr(feat)
+    npt.assert_equal(33.4, np.round(np.sum(pcorr), 1))
+
+    dataf = msd.random_traj_dataset(nparts=10, nframes=40, seed=9)
+    msds = msd.all_msds2(dataf, frames=40)
+    feat = ft.calculate_features(msds)
+    pcorr = pca.partial_corr(feat)
+    npt.assert_equal(17.4, np.round(np.sum(pcorr), 1))
+    
+    dataf = msd.random_traj_dataset(nparts=10, nframes=40, ndist=(3, 5), seed=9)
+    msds = msd.all_msds2(dataf, frames=40)
+    feat = ft.calculate_features(msds)
+    pcorr = pca.partial_corr(feat)
+    npt.assert_equal(35.7, np.round(np.sum(pcorr), 1))
 
 
 def test_kmo():
