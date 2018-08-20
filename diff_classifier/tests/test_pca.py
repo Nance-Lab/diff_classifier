@@ -14,7 +14,7 @@ def test_partial_corr():
 
 
 def test_kmo():
-    dataf = pca.random_traj_dataset(nparts=300, ndist=(2, 6))
+    dataf = msd.random_traj_dataset(nparts=300, ndist=(2, 6))
     msds = msd.all_msds2(dataf, frames=100)
     feat = ft.calculate_features(msds)
     dataset = feat.drop(['frames', 'Track_ID'], axis=1)
@@ -22,7 +22,7 @@ def test_kmo():
 
 
 def test_pca_analysis():
-    dataf = pca.random_traj_dataset(nparts=300, ndist=(2, 6))
+    dataf = msd.random_traj_dataset(nparts=300, ndist=(2, 6))
     msds = msd.all_msds2(dataf, frames=100)
     feat = ft.calculate_features(msds)
     pcadataset = pca.pca_analysis(feat, dropcols=['frames', 'Track_ID'],
