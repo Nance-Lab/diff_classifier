@@ -206,7 +206,7 @@ def test_boundedness():
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.boundedness(dframe) == (0.607673328076712, 5.674370543833708,
-                                  -0.0535555587618044)
+                                      -0.0535555587618044)
 
     frames = 10
     data = {'Frame': np.linspace(0, frames, frames),
@@ -216,7 +216,7 @@ def test_boundedness():
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.boundedness(dframe) == (0.039999999999999994, 1.0,
-                                  -0.21501108474766228)
+                                      -0.21501108474766228)
 
 
 def test_efficiency():
@@ -228,7 +228,8 @@ def test_efficiency():
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
-    assert ft.efficiency(dframe) == (0.003548421265914009, 0.0059620286331768385)
+    assert ft.efficiency(dframe) ==
+    (0.003548421265914009, 0.0059620286331768385)
 
     frames = 10
     data = {'Frame': np.linspace(0, frames, frames),

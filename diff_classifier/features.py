@@ -507,12 +507,12 @@ def aspectratio(track):
 
 
 def boundedness(track, framerate=1):
-    """
-    Calculates the boundedness, fractal dimension, and trappedness of the input track.
+    """Calculates the boundedness, fractal dimension, and trappedness of the
+    input track.
 
     Parameters
     ----------
-    track : pandas DataFrame
+    track : pandas.core.frame.DataFrame
         At a minimum, must contain a Frames and a MSDs column.  The function
         msd_calc can be used to generate the correctly formatted pd dataframe.
     framerate : framrate of the video being analyzed.  Actually cancels out. So
@@ -520,22 +520,24 @@ def boundedness(track, framerate=1):
 
     Returns
     -------
-    bound : numpy.float64
+    bound : float
         Boundedness of the input track.  Quantifies how much a particle with
-        diffusion coefficient dcoef is restricted by a circular confinement of radius
-        rad when it diffuses for a time duration N*delt.  Defined as bound = dcoef*N*delt/rad**2.
-        For this case, dcoef is the short time diffusion coefficient (after 2 frames),
-        and rad is half the maximum distance between any two positions.
-    fractd : numpy.float64
-        The fractal path dimension defined as fractd = log(N)/log(N*data1*l**-1) where netdisp
-        is the total length (sum over all steplengths), N is the number of steps,
-        and data1 is the largest distance between any two positions.
-    probf : numpy.float64
-        The probability that a particle with diffusion coefficient dcoef and traced
-        for a period of time N*delt is trapped in region r0.  Given by
-        pt = 1 - exp(0.2048 - 0.25117*(dcoef*N*delt/r0**2))
-        For this case, dcoef is the short time diffusion coefficient, and r0 is half
-        the maximum distance between any two positions.
+        diffusion coefficient dcoef is restricted by a circular confinement of
+        radius rad when it diffuses for a time duration N*delt.  Defined as
+        bound = dcoef*N*delt/rad**2. For this case, dcoef is the short time
+        diffusion coefficient (after 2 frames), and rad is half the maximum
+        distance between any two positions.
+    fractd : float
+        The fractal path dimension defined as fractd = log(N)/log(N*data1*l**-1)
+        where netdisp is the total length (sum over all steplengths), N is the
+        number of steps, and data1 is the largest distance between any two
+        positions.
+    probf : float
+        The probability that a particle with diffusion coefficient dcoef and
+        traced for a period of time N*delt is trapped in region r0.  Given by
+        pt = 1 - exp(0.2048 - 0.25117*(dcoef*N*delt/r0**2)). For this case,
+        dcoef is the short time diffusion coefficient, and r0 is half the
+        maximum distance between any two positions.
 
     Examples
     --------
@@ -556,6 +558,7 @@ def boundedness(track, framerate=1):
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> boundedness(dframe)
     (0.96037058689895005, 2.9989749477908401, 0.03576118370932313)
+
     """
 
     dframe = track
@@ -574,9 +577,12 @@ def boundedness(track, framerate=1):
         distance = np.zeros((length, length))
 
         for frame in range(0, length-1):
-            distance[frame, 0:length-frame-1] = (np.sqrt(msd.nth_diff(dframe['X'], frame+1)**2 + msd.nth_diff(dframe['Y'], frame+1)**2).values)
+            distance[frame, 0:length-frame-1] =\
+             (np.sqrt(msd.nth_diff(dframe['X'], frame+1)**2 +
+              msd.nth_diff(dframe['Y'], frame+1)**2).values)
 
-        netdisp = np.sum((np.sqrt(msd.nth_diff(dframe['X'], 1)**2 + msd.nth_diff(dframe['Y'], 1)**2).values))
+        netdisp = np.sum((np.sqrt(msd.nth_diff(dframe['X'], 1)**2 +
+                                  msd.nth_diff(dframe['Y'], 1)**2).values))
         rad = np.max(distance)/2
         N = dframe['Frame'][dframe['Frame'].shape[0]-1]
         fram = N*framerate
@@ -604,11 +610,11 @@ def efficiency(track):
 
     Returns
     -------
-    eff : numpy.float64
+    eff : float
         Efficiency of the input track.  Relates the sum of squared step
         lengths.  Based on Helmuth et al. (2007) and defined as:
         E = |xpos(N-1)-xpos(0)|**2/SUM(|xpos(i) - xpos(i-1)|**2
-    strait : numpy.float64
+    strait : float
         Relates the net displacement netdisp to the sum of step lengths and is
         defined as:
         S = |xpos(N-1)-xpos(0)|/SUM(|xpos(i) - xpos(i-1)|
@@ -761,11 +767,11 @@ def calculate_features(dframe, framerate=1):
     partcount = trackids.shape[0]
 
     for particle in range(0, partcount):
-        single_track_masked = dframe.loc[dframe['Track_ID'] == trackids[
-                                         particle]].sort_values(
-                                         ['Track_ID', 'Frame'],
-                                         ascending=[1,
-                                                    1]).reset_index(drop=True)
+        single_track_masked =
+        dframe.loc[dframe['Track_ID'] ==
+                   trackids[particle]].sort_values(['Track_ID', 'Frame'],
+                                                   ascending=[
+                                                   1, 1]).reset_index(drop=True)
         single_track = unmask_track(single_track_masked)
         (datai['alpha'][particle],
          datai['D_fit'][particle]) = alpha_calc(single_track)
