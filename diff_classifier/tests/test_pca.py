@@ -1,8 +1,12 @@
+import os
+import pytest
 import numpy as np
 import numpy.testing as npt
 import diff_classifier.msd as msd
 import diff_classifier.pca as pca
 import diff_classifier.features as ft
+
+is_travis = "CI" in os.environ.keys()
 
 
 @pytest.mark.skipif(is_travis, reason="Function behaves differently on Travis.")
