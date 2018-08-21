@@ -1,5 +1,7 @@
 import os
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 import diff_classifier.msd as msd
 import diff_classifier.features as ft
 import diff_classifier.heatmaps as hm
