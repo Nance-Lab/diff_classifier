@@ -13,6 +13,7 @@ python:
 #- python tests.py
 
 install:
+- pip install -U tox-travis coverage coveralls
 - wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
 - unzip fiji-linux64.zip
 - travis_retry pip install $PIP_DEPS
@@ -26,3 +27,12 @@ before_script: # configure a headless display to test plot generation
 
 script:
 - py.test --pyargs diff_classifier --cov-report term-missing --cov=diff_classifier
+- tox
+- coverage report
+
+after_success:
+- coveralls
+
+after_success:
+- ls -a
+- coveralls
