@@ -483,7 +483,7 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     plt.xlim(0, x_range)
     plt.ylim(0, y_range)
     plt.xlabel('Tau (s)', fontsize=25)
-    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
+    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$)', fontsize=25)
 
     outfile = '{}/msds_{}.png'.format(folder, prefix)
     outfile2 = '{}/geomean_{}.csv'.format(folder, prefix)
