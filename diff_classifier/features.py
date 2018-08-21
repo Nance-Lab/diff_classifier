@@ -76,8 +76,8 @@ def alpha_calc(track):
     --------
     >>> frames = 5
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> alpha_calc(dframe)
@@ -85,12 +85,13 @@ def alpha_calc(track):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames)+3),
-                 'Y': np.cos(np.linspace(1, frames, frames)+3)}
+    ...          'X': np.sin(np.linspace(1, frames, frames)+3),
+    ...          'Y': np.cos(np.linspace(1, frames, frames)+3)}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> alpha_calc(dframe)
     (0.023690002018364065, 0.5144436515510022)
+
     """
 
     ypos = track['MSDs']
@@ -135,8 +136,8 @@ def gyration_tensor(track):
     --------
     >>> frames = 5
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> gyration_tensor(dframe)
@@ -147,8 +148,8 @@ def gyration_tensor(track):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames)+3),
-                 'Y': np.cos(np.linspace(1, frames, frames)+3)}
+    ...          'X': np.sin(np.linspace(1, frames, frames)+3),
+    ...          'Y': np.cos(np.linspace(1, frames, frames)+3)}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> gyration_tensor(dframe)
@@ -156,6 +157,7 @@ def gyration_tensor(track):
     0.42766829138901619,
     array([ 0.6020119 , -0.79848711]),
     array([-0.79848711, -0.6020119 ]))
+
     """
 
     dframe = track
@@ -205,8 +207,8 @@ def kurtosis(track):
     --------
     >>> frames = 5
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> kurtosis(dframe)
@@ -214,8 +216,8 @@ def kurtosis(track):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames)+3),
-                 'Y': np.cos(np.linspace(1, frames, frames)+3)}
+    ...          'X': np.sin(np.linspace(1, frames, frames)+3),
+    ...          'Y': np.cos(np.linspace(1, frames, frames)+3)}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> kurtosis(dframe)
@@ -269,8 +271,8 @@ def asymmetry(track):
     --------
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-             'X': np.linspace(1, frames, frames)+5,
-             'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> asymmetry(dframe)
@@ -278,8 +280,8 @@ def asymmetry(track):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-               'X': np.sin(np.linspace(1, frames, frames)+3),
-               'Y': np.cos(np.linspace(1, frames, frames)+3)}
+    ...          'X': np.sin(np.linspace(1, frames, frames)+3),
+    ...          'Y': np.cos(np.linspace(1, frames, frames)+3)}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> asymmetry(dframe)
@@ -335,8 +337,8 @@ def minboundrect(track):
     --------
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> minboundrect(dframe)
@@ -352,8 +354,8 @@ def minboundrect(track):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames))+3,
-                 'Y': np.cos(np.linspace(1, frames, frames))+3}
+    ...          'X': np.sin(np.linspace(1, frames, frames))+3,
+    ...          'Y': np.cos(np.linspace(1, frames, frames))+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> minboundrect(dframe)
@@ -372,6 +374,7 @@ def minboundrect(track):
     Based off of code from the following repo:
     https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/
     python/min_bounding_rect.py
+
     """
 
     dframe = track
@@ -468,8 +471,8 @@ def aspectratio(track):
     --------
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> aspectratio(dframe)
@@ -477,8 +480,8 @@ def aspectratio(track):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames))+3,
-                 'Y': np.cos(np.linspace(1, frames, frames))+3}
+    ...          'X': np.sin(np.linspace(1, frames, frames))+3,
+    ...          'Y': np.cos(np.linspace(1, frames, frames))+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> aspectratio(dframe)
@@ -543,8 +546,8 @@ def boundedness(track, framerate=1):
     --------
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> boundedness(dframe)
@@ -552,8 +555,8 @@ def boundedness(track, framerate=1):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames)+3),
-                 'Y': np.cos(np.linspace(1, frames, frames)+3)}
+    ...          'X': np.sin(np.linspace(1, frames, frames)+3),
+    ...          'Y': np.cos(np.linspace(1, frames, frames)+3)}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> boundedness(dframe)
@@ -623,8 +626,8 @@ def efficiency(track):
     --------
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> ft.efficiency(dframe)
@@ -632,8 +635,8 @@ def efficiency(track):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames))+3,
-                 'Y': np.cos(np.linspace(1, frames, frames))+3}
+    ...          'X': np.sin(np.linspace(1, frames, frames))+3,
+    ...          'Y': np.cos(np.linspace(1, frames, frames))+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> ft.efficiency(dframe)
@@ -683,8 +686,8 @@ def msd_ratio(track, fram1=3, fram2=100):
     --------
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.linspace(1, frames, frames)+5,
-                 'Y': np.linspace(1, frames, frames)+3}
+    ...          'X': np.linspace(1, frames, frames)+5,
+    ...          'Y': np.linspace(1, frames, frames)+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> ft.msd_ratio(dframe, 1, 9)
@@ -692,8 +695,8 @@ def msd_ratio(track, fram1=3, fram2=100):
 
     >>> frames = 10
     >>> data1 = {'Frame': np.linspace(1, frames, frames),
-                 'X': np.sin(np.linspace(1, frames, frames))+3,
-                 'Y': np.cos(np.linspace(1, frames, frames))+3}
+    ...          'X': np.sin(np.linspace(1, frames, frames))+3,
+    ...          'Y': np.cos(np.linspace(1, frames, frames))+3}
     >>> dframe = pd.DataFrame(data=data1)
     >>> dframe['MSDs'], dframe['Gauss'] = msd_calc(dframe)
     >>> ft.msd_ratio(dframe, 1, 9)

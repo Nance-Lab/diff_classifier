@@ -42,34 +42,20 @@ def nth_diff(dataframe, n=1, axis=0):
 
     Examples
     --------
-    >>>> data1 = {'col1': [1, 2, 3, 4, 5]}
-    >>>> df = pd.DataFrame(data=data1)
-    >>>> nth_diff(df)
-
-    0    1
-    1    1
-    2    1
-    3    1
-    Name: col1, dtype: int64
-
-
-    #test2
-    >>>> df = np.ones((5, 10))
-    >>>> nth_diff(df)
-
+    >>> df = np.ones((5, 10))
+    >>> nth_diff(df)
     array([[0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+           [0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0.]])
 
-    >>>> df = np.ones((5, 10))
-    >>>> nth_diff (df)
-
+    >>> df = np.ones((5, 10))
+    >>> nth_diff (df)
     array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+           [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
 
     """
 
@@ -120,17 +106,17 @@ def msd_calc(track, length=10):
 
     Examples
     --------
-    >>>> data1 = {'Frame': [1, 2, 3, 4, 5],
-         'X': [5, 6, 7, 8, 9],
-         'Y': [6, 7, 8, 9, 10]}
-    >>>> df = pd.DataFrame(data=data1)
-    >>>> new_track = msd.msd_calc(df, 5)
+    >>> data1 = {'Frame': [1, 2, 3, 4, 5],
+    ...          'X': [5, 6, 7, 8, 9],
+    ...          'Y': [6, 7, 8, 9, 10]}
+    >>> df = pd.DataFrame(data=data1)
+    >>> new_track = msd.msd_calc(df, 5)
 
-    >>>> data1 = {'Frame': [1, 2, 3, 4, 5],
-         'X': [5, 6, 7, 8, 9],
-         'Y': [6, 7, 8, 9, 10]}
-    >>>> df = pd.DataFrame(data=data1)
-    >>>> new_track = msd.msd_calc(df)
+    >>> data1 = {'Frame': [1, 2, 3, 4, 5],
+    ...          'X': [5, 6, 7, 8, 9],
+    ...          'Y': [6, 7, 8, 9, 10]}
+    >>> df = pd.DataFrame(data=data1)
+    >>> new_track = msd.msd_calc(df)
 
     """
 
@@ -192,9 +178,9 @@ def all_msds(data):
     Examples
     --------
     >>> data1 = {'Frame': [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-             'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-             'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-             'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
+    ...          'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+    ...          'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+    ...          'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
     >>> df = pd.DataFrame(data=data1)
     >>> all_msds(df)
 
@@ -270,14 +256,13 @@ def make_xyarray(data, length=651):
 
     Examples
     --------
-    >>>> data1 = {'Frame': [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],
-              'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-              'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-              'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
-    >>>> df = pd.DataFrame(data=data1)
-    >>>> length = max(df['Frame']) + 1
-    >>>> xyft = msd.make_xyarray(df, length=length)
-
+    >>> data1 = {'Frame': [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],
+    ...          'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+    ...          'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+    ...          'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
+    >>> df = pd.DataFrame(data=data1)
+    >>> length = max(df['Frame']) + 1
+    >>> xyft = msd.make_xyarray(df, length=length)
     {'farray': array([[0., 0.],
                [1., 1.],
                [2., 2.],
@@ -308,6 +293,7 @@ def make_xyarray(data, length=651):
                [nan,  6.]])}
 
     """
+
     # Initial values
     first_p = int(min(data['Track_ID']))
     particles = int(max(data['Track_ID'])) - first_p + 1
@@ -384,14 +370,14 @@ def all_msds2(data, frames=651):
 
     Examples
     --------
-    >>>> data1 = {'Frame': [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
-             'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-             'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-             'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
-    >>>> df = pd.DataFrame(data=data1)
-    >>>> cols = ['Frame', 'Track_ID', 'X', 'Y', 'MSDs', 'Gauss']
-    >>>> length = max(df['Frame']) + 1
-    >>>> msd.all_msds2(df, frames=length)[cols]
+    >>> data1 = {'Frame': [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
+    ...          'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
+    ...          'X': [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
+    ...          'Y': [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}
+    >>> df = pd.DataFrame(data=data1)
+    >>> cols = ['Frame', 'Track_ID', 'X', 'Y', 'MSDs', 'Gauss']
+    >>> om flength = max(df['Frame']) + 1
+    >>> msd.all_msds2(df, frames=length)[cols]
 
     """
     if data.shape[0] > 2:
