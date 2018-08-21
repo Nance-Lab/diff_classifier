@@ -8,11 +8,13 @@ env:
 python:
 - '3.6'
 
-script:
-- cd $HOME/diff_classifier
-- python tests.py
+#script:
+#- cd $HOME/diff_classifier
+#- python tests.py
 
 install:
+- cd $HOME/diff_classifier
+- python tests.py
 - wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
 - unzip fiji-linux64.zip
 - travis_retry pip install $PIP_DEPS
