@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import matplotlib
-import nose
+#import nose
 matplotlib.use('agg')
 
-nose.main()
+#nose.main()
