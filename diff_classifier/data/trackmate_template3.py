@@ -81,9 +81,9 @@ settings.addSpotAnalyzerFactory(SpotContrastAndSNRAnalyzerFactory())
 
 filter2 = FeatureFilter('QUALITY', {quality}, True)
 filter3 = FeatureFilter('POSITION_X', 1, True)
-filter4 = FeatureFilter('POSITION_X', {x}, False)
+filter4 = FeatureFilter('POSITION_X', {xd}, False)
 filter5 = FeatureFilter('POSITION_Y', {ylo}, True)
-filter6 = FeatureFilter('POSITION_Y', {y}, False)
+filter6 = FeatureFilter('POSITION_Y', {yd}, False)
 settings.addSpotFilter(filter2)
 settings.addSpotFilter(filter4)
 settings.addSpotFilter(filter5)
@@ -99,7 +99,7 @@ settings.addSpotFilter(filter6)
 settings.addTrackAnalyzer(TrackSpeedStatisticsAnalyzer())
 settings.addTrackAnalyzer(TrackDurationAnalyzer())
 
-filter7 = FeatureFilter('TRACK_DURATION', {track_displacement}, True)
+filter7 = FeatureFilter('TRACK_DURATION', {track_duration}, True)
 settings.addTrackFilter(filter7)
 
 settings.initialSpotFilterValue = 1

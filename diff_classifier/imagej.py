@@ -102,7 +102,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
           threshold=5., do_median_filtering=False, quality=30.0, xdims=(0, 511),
           ydims=(1, 511), median_intensity=55000.0, snr=0.0, linking_max_distance=10.0,
           gap_closing_max_distance=10.0, max_frame_gap=3,
-          track_displacement=0.0):
+          track_duration=0.0):
     """Performs particle tracking on input video.
 
     Particle tracking is performed with the ImageJ plugin Trackmate. Outputs
@@ -146,7 +146,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
     max_frame_gap : int
         Maximum allowable number of frames a particle is allowed to leave video
         and be counted as same trajectory.
-    track_displacement : float
+    track_duration : float
         Lower duration cutoff in frames for trajectory filtering.
 
     """
@@ -174,7 +174,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
                             linking_max_distance=str(linking_max_distance),
                             gap_closing_max_distance=str(gap_closing_max_distance),
                             max_frame_gap=str(max_frame_gap),
-                            track_displacement=str(track_displacement)))
+                            track_duration=str(track_duration)))
     fid.close()
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tpfile.name)
     print(cmd)
