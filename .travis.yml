@@ -16,4 +16,6 @@ install:
 - travis_retry pip install -e .
 
 script:
+- cd $HOME/diff_classifier
+- python tests.py
 - py.test --pyargs diff_classifier --cov-report term-missing --cov=diff_classifier
