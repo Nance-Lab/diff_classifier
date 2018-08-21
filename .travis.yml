@@ -27,7 +27,7 @@ before_script: # configure a headless display to test plot generation
 
 script:
 - py.test --pyargs diff_classifier --cov-report term-missing --cov=diff_classifier
-- tox
+#- tox
 - coverage report
 
 after_success:
