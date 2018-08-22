@@ -1,89 +1,157 @@
-def download_and_split(filename):
+'''Test functions to send to Cloudknot
 
-    import diff_classifier.imagej as ij
+'''
+
+def split(prefix, remote_folder, bucket='nancelab.publicfiles',
+          rows=4, cols=4, ores=(2048, 2048), ires=(512, 512)):
+
+    import os
+    import boto3
     import diff_classifier.aws as aws
-    import os.path as op
-
-    local_name = op.split(filename)[1]
-    DIR = op.split(filename)[0]
-    try1 = filename.split('.')[0] + '_0_0.tif'
-    try2 = filename.split('.')[0] + '_3_3.tif'
-
+    import diff_classifier.imagej as ij
+    
+    local_folder = os.getcwd()
+    filename = '{}.tif'.format(prefix)
+    remote_name = remote_folder+'/'+filename
+    local_name = local_folder+'/'+filename
+    msd_file = 'msd_{}.csv'.format(prefix)
+    ft_file = 'features_{}.csv'.format(prefix)
+    aws.download_s3(remote_name, local_name, bucket_name=bucket)
+    
     s3 = boto3.client('s3')
-    try:
-        obj = s3.head_object(Bucket='ccurtis7.pup', Key=try1)
-    except:
-        try:
-            obj = s3.head_object(Bucket='ccurtis7.pup', Key=try2)
-        except:
-            aws.download_s3(filename, local_name)
-            names = ij.partition_im(local_name)
-            for name in names:
-                aws.upload_s3(name, op.split(filename)[0]+'/'+name)
-    print("Done with splitting.  Should output file of name {}".format(op.split(filename)[0]+'/'+name))
+
+    # Splitting section
+    ij.partition_im(local_name, irows=rows, icols=cols, ores=ores, ires=ires)
+
+    # Names of subfiles
+    names = []
+    for i in range(0, 4):
+        for j in range(0, 4):
+            names.append('{}_{}_{}.tif'.format(prefix, i, j))
+
+    for name in names:
+        aws.upload_s3(name, remote_folder+'/'+name, bucket_name=bucket)
+        os.remove(name)
+        print("Done with splitting.  Should output file of name {}".format(remote_folder+'/'+name))
+
+    os.remove(filename)
 
 
-def download_and_track(filename):
-
-    import diff_classifier.imagej as ij
-    import diff_classifier.utils as ut
-    import diff_classifier.aws as aws
+def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
+             regress_f = 'regress.obj', rows=4, cols=4, ires=(512, 512),
+             tparams = {'radius': 3.0, 'threshold': 0.0, 'do_median_filtering': False,
+             'quality': 15.0, 'xdims': (0, 511), 'ydims': (1, 511),
+             'median_intensity': 300.0, 'snr': 0.0, 'linking_max_distance': 6.0,
+             'gap_closing_max_distance': 10.0, 'max_frame_gap': 3,
+             'track_duration': 20.0}):
+       
+    import os
     import os.path as op
-    import pandas as pd
-
-    aws.download_s3(filename, op.split(filename)[1])
-
-    outfile = 'Traj_' + op.split(filename)[1].split('.')[0] + '.csv'
-    local_im = op.split(filename)[1]
-    if not op.isfile(outfile):
-        ij.track(local_im, outfile, template=None, fiji_bin=None, radius=4.5, threshold=0.,
-              do_median_filtering=True, quality=4.5, median_intensity=300.0, snr=0.0,
-              linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
-              track_displacement=10.0)
-
-        aws.upload_s3(outfile, op.split(filename)[0]+'/'+outfile)
-    print("Done with tracking.  Should output file of name {}".format(op.split(filename)[0]+'/'+outfile))
-
-
-def download_and_calc_MSDs(prefix):
-
+    import boto3
+    from sklearn.externals import joblib
     import diff_classifier.aws as aws
     import diff_classifier.utils as ut
     import diff_classifier.msd as msd
     import diff_classifier.features as ft
-    import os
-    import os.path as op
-    import numpy as np
-    import numpy.ma as ma
-    import pandas as pd
+    import diff_classifier.imagej as ij
 
-    remote_folder = "01_18_Experiment/{}".format(prefix.split('_')[0])
     local_folder = os.getcwd()
-    ires = 512
+    filename = '{}.tif'.format(subprefix)
+    remote_name = remote_folder+'/'+filename
+    local_name = local_folder+'/'+filename
+    outfile = 'Traj_' + subprefix + '.csv'
+    local_im = op.join(local_folder, '{}.tif'.format(subprefix))
+    row = int(subprefix.split('_')[-2])
+    col = int(subprefix.split('_')[-1])
+    
+    aws.download_s3(remote_folder+'/'+regress_f, regress_f, bucket_name=bucket)
+    with open(regress_f, 'rb') as fp:
+        regress = joblib.load(fp)
 
-    for row in range(0, 4):
-        for col in range(0, 4):
-            filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
-            to_download = remote_folder+'/'+filename
-            local_name = local_folder+'/'+filename
-            aws.download_s3(to_download, local_name)
-            if row==0 and col==0:
-                merged = msd.all_msds(ut.csv_to_pd(local_name))
+    s3 = boto3.client('s3')
+    
+    try:
+        aws.download_s3(remote_folder+'/'+outfile, outfile, bucket_name=bucket)
+    except:
+        aws.download_s3('{}/{}'.format(remote_folder, '{}.tif'.format(subprefix)), local_im, bucket_name=bucket)        
+        tparams['quality'] = ij.regress_tracking_params(regress, subprefix, regmethod='PassiveAggressiveRegressor')
+
+        if row==rows-1:
+            tparams['ydims'][1] = ires[1] - 27
+
+        ij.track(local_im, outfile, template=None, fiji_bin=None, tparams=tparams)
+        aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
+    print("Done with tracking.  Should output file of name {}".format(remote_folder+'/'+outfile))
+
+
+def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
+                  ires=(512, 512), frames=651):
+    
+    import os
+    import boto3
+    import diff_classifier.aws as aws
+    import diff_classifier.msd as msd
+    import diff_classifier.features as ft
+    
+    filename = '{}.tif'.format(prefix)
+    remote_name = remote_folder+'/'+filename
+    msd_file = 'msd_{}.csv'.format(prefix)
+    ft_file = 'features_{}.csv'.format(prefix)
+
+    s3 = boto3.client('s3')
+
+    names = []
+    for i in range(0, 4):
+        for j in range(0, 4):
+            names.append('{}_{}_{}.tif'.format(prefix, i, j))
+
+    counter = 0
+    maxrow = 0
+    for name in names:
+        row = int(name.split(prefix)[1].split('.')[0].split('_')[1])
+        col = int(name.split(prefix)[1].split('.')[0].split('_')[2])
+        if row > maxrow:
+            maxrow = row
+        
+        filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
+        aws.download_s3(remote_folder+'/'+filename, filename, bucket_name=bucket)
+        local_name = filename
+
+        if counter == 0:
+            to_add = ut.csv_to_pd(local_name)
+            to_add['X'] = to_add['X'] + ires[0]*col
+            to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(maxrow-row)
+            merged = msd.all_msds2(to_add, frames=frames)
+        else:
+
+            if merged.shape[0] > 0:
+                to_add = ut.csv_to_pd(local_name)
+                to_add['X'] = to_add['X'] + ires[0]*col
+                to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(maxrow-row)
+                to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID']) + 1
             else:
                 to_add = ut.csv_to_pd(local_name)
-                to_add['X'] = to_add['X'] + ires*row
-                to_add['Y'] = to_add['Y'] + ires*col
-                to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID'])
-                merged.append(msd.all_msds(to_add))
-            print('Successfully downloaded and calculated MSDs for {}_{}_{}'.format(prefix, row, col))
+                to_add['X'] = to_add['X'] + ires[0]*col
+                to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(maxrow-row)
+                to_add['Track_ID'] = to_add['Track_ID']
 
-    merged.to_csv('MSD_{}.csv'.format(prefix))
-    print('Saved MSDs as MSD_{}.csv'.format(prefix))
+            merged = merged.append(msd.all_msds2(to_add, frames=frames))
+            print('Done calculating MSDs for row {} and col {}'.format(row, col))
+        counter = counter + 1
+
+    merged.to_csv(msd_file)
+    aws.upload_s3(msd_file, remote_folder+'/'+msd_file, bucket_name=bucket)
     merged_ft = ft.calculate_features(merged)
-    merged_ft.to_csv('features_{}.csv'.format(prefix))
-    print('Saved features as features_{}.csv'.format(prefix))
+    merged_ft.to_csv(ft_file)
+    aws.upload_s3(ft_file, remote_folder+'/'+ft_file, bucket_name=bucket)
 
-
+    os.remove(ft_file)
+    os.remove(msd_file)
+    for name in names:
+        outfile = 'Traj_' + name.split('.')[0] + '.csv'
+        os.remove(outfile)
+                    
+                    
 def download_split_track_msds(prefix):
     """
     1. Checks to see if features file exists.

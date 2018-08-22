@@ -30,7 +30,7 @@ def download_s3(remote_fname, local_fname, bucket_name="ccurtis.data"):
 
     """
     if not os.path.exists(local_fname):
-        sthree = boto3.resource('sthree')
+        sthree = boto3.resource('s3')
         buckt = sthree.Bucket(bucket_name)
         buckt.download_file(remote_fname, local_fname)
 
@@ -50,7 +50,7 @@ def upload_s3(local_fname, remote_fname, bucket_name="ccurtis.data"):
 
     """
 
-    sthree = boto3.resource('sthree')
+    sthree = boto3.resource('s3')
     buckt = sthree.Bucket(bucket_name)
     buckt.upload_file(local_fname, remote_fname)
 

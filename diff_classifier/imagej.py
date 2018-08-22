@@ -98,11 +98,12 @@ def mean_intensity(local_im, frame=0):
     return test_intensity
 
 
-def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
-          threshold=5., do_median_filtering=False, quality=30.0, xdims=(0, 511),
-          ydims=(1, 511), median_intensity=55000.0, snr=0.0, linking_max_distance=10.0,
-          gap_closing_max_distance=10.0, max_frame_gap=3,
-          track_duration=0.0):
+def track(target, out_file, template=None, fiji_bin=None,
+          tparams={'radius': 3.0, 'threshold': 0.0, 'do_median_filtering': False,
+           'quality': 15.0, 'xdims': (0, 511), 'ydims': (1, 511),
+           'median_intensity': 300.0, 'snr': 0.0, 'linking_max_distance': 6.0,
+           'gap_closing_max_distance': 10.0, 'max_frame_gap': 3,
+           'track_duration': 20.0}):
     """Performs particle tracking on input video.
 
     Particle tracking is performed with the ImageJ plugin Trackmate. Outputs
@@ -165,16 +166,16 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
     script = ''.join(open(template).readlines())
     tpfile = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tpfile.name, 'w')
-    fid.write(script.format(target_file=target, radius=str(radius),
-                            threshold=str(threshold),
-                            do_median_filtering=str(do_median_filtering),
-                            quality=str(quality),
-                            xd=str(xdims[1]), yd=str(ydims[1]), ylo=str(ydims[0]),
-                            median_intensity=str(median_intensity), snr=str(snr),
-                            linking_max_distance=str(linking_max_distance),
-                            gap_closing_max_distance=str(gap_closing_max_distance),
-                            max_frame_gap=str(max_frame_gap),
-                            track_duration=str(track_duration)))
+    fid.write(script.format(target_file=target, radius=str(tparams['radius']),
+                            threshold=str(tparams['threshold']),
+                            do_median_filtering=str(tparams['do_median_filtering']),
+                            quality=str(tparams['quality']),
+                            xd=str(tparams['xdims'][1]), yd=str(tparams['ydims'][1]), ylo=str(tparams['ydims'][0]),
+                            median_intensity=str(tparams['median_intensity']), snr=str(tparams['snr']),
+                            linking_max_distance=str(tparams['linking_max_distance']),
+                            gap_closing_max_distance=str(tparams['gap_closing_max_distance']),
+                            max_frame_gap=str(tparams['max_frame_gap']),
+                            track_duration=str(tparams['track_duration'])))
     fid.close()
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tpfile.name)
     print(cmd)
