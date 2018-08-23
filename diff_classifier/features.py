@@ -14,6 +14,7 @@ import numpy as np
 import numpy.linalg as LA
 import numpy.ma as ma
 from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 import diff_classifier.msd as msd
 
 
@@ -799,3 +800,53 @@ def calculate_features(dframe, framerate=1):
             datai['MSD_ratio'][particle] = np.nan
 
     return datai
+
+
+def feature_violin(tgroups, feature='boundedness',
+                   labels=['sample 1', 'sample 2', 'sample 3'],
+                   points=40, ylim=[0, 1]):
+    '''Plots violin plots of features in comparison groups
+    
+    Parameters
+    ----------
+    tgroups : dict of pandas.core.frames.DataFrame
+        Dictionary containing pandas dataframes containing trajectory
+        features of subgroups to be plotted
+    feature : string
+        Feature to be compared
+    labels : list of strings
+        Labels of subgroups to be plotted.
+    points : int
+        Determines resolution of violin plot
+    ylim : list of int
+        Y range of output plot
+    
+    '''
+
+    majorticks = np.linspace(0, ylim[1], 11)
+    to_graph = []
+    pos = []
+    counter = 1
+    for key in tgroups:
+        to_graph.append(tgroups[key][feature].dropna().tolist())
+        pos.append(counter)
+        counter = counter + 1
+        
+    def set_axis_style(ax, labels):
+        ax.get_xaxis().set_tick_params(direction='out')
+        ax.xaxis.set_ticks_position('bottom')
+        ax.set_xticks(np.arange(1, len(labels) + 1))
+        ax.set_xticklabels(labels)
+        ax.set_xlim(0.25, len(labels) + 0.75)
+    
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(6, 6))
+
+    axes.violinplot(to_graph, pos, points=points, widths=0.9,
+                    showmeans=True, showextrema=False)
+    set_axis_style(axes, labels)
+    axes.tick_params(axis = 'both', which = 'major',
+                     labelsize = 16)
+    axes.set_ylim(ylim)
+    axes.set_yticks(majorticks)
+    
+    plt.show()

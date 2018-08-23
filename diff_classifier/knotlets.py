@@ -206,7 +206,7 @@ def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
         if counter == 0:
             to_add = ut.csv_to_pd(local_name)
             to_add['X'] = to_add['X'] + ires[0]*col
-            to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(maxrow-row)
+            to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(rows-1-row)
             merged = msd.all_msds2(to_add, frames=frames)
         else:
 

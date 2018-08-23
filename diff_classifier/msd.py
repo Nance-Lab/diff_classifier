@@ -552,6 +552,8 @@ def precision_weight(group, geo_stder):
     -------
     weights: numpy.ndarray
         Precision weights to be used in precision averaging.
+    w_holder : numpy.ndarray
+        Precision values of each video at each time point.
 
     """
 
@@ -671,13 +673,13 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
 
     n = len(experiments)
 
-    color = iter(cm.viridis(np.linspace(0, 1, n)))
+    color = iter(cm.viridis(np.linspace(0, 0.9, n)))
 
     fig = plt.figure(figsize=(8.5, 8.5))
     plt.xlim(xrange[0], xrange[1])
     plt.ylim(yrange[0], yrange[1])
     plt.xlabel('Tau (s)', fontsize=25)
-    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
+    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$)', fontsize=25)
 
     geo = {}
     gstder = {}
@@ -698,19 +700,23 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
         c = next(color)
 
         if exponential:
-            plt.loglog(xpos, np.exp(geo[counter]), c=c, linewidth=4)
+            plt.loglog(xpos, np.exp(geo[counter]), c=c, linewidth=6,
+                       label=experiment)
             plt.loglog(xpos, np.exp(geo[counter] - 1.96*gstder[counter]),
-                       c=c, linewidth=2)
+                       c=c, dashes=[6,2], linewidth=4)
             plt.loglog(xpos, np.exp(geo[counter] + 1.96*gstder[counter]),
-                       c=c, linewidth=2)
+                       c=c, dashes=[6,2], linewidth=4)
         else:
-            plt.loglog(xpos, geo[counter], c=c, linewidth=4)
+            plt.loglog(xpos, geo[counter], c=c, linewidth=6,
+                       label=experiment)
             plt.loglog(xpos, geo[counter] - 1.96*gstder[counter], c=c,
-                       linewidth=2)
+                       dashes=[6,2], linewidth=4)
             plt.loglog(xpos, geo[counter] + 1.96*gstder[counter], c=c,
-                       linewidth=2)
+                       dashes=[6,2], linewidth=4)
 
         counter = counter + 1
+
+    plt.legend(frameon=False, prop={'size': 16})
 
     if upload:
         fig.savefig(outfile, bbox_inches='tight')
