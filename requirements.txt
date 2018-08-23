@@ -1,6 +1,13 @@
+pip
+coverage==4.5.1
+coveralls
+pytest==3.5.1
 numpy
 scipy
 pandas
 scikit-image
 sklearn
 boto3
+shapely
+numpydoc
+ipywidgets
