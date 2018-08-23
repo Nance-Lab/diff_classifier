@@ -142,7 +142,7 @@ def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
 
 
 def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
-                  ires=(512, 512), frames=651):
+                  ires=(512, 512), frames=651, rows=4, cols=4):
     '''Calculates MSDs and features from input trajectory files
     
     A function based on msd.all_msds2 and features.calculate_features,
@@ -162,6 +162,10 @@ def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
         to make sure you correctly splitting.
     frames : int
         Number of frames in input videos.
+    rows : int
+        Number of rows to split image into.
+    cols : int
+        Number of columns to split image into.
     
     '''
 
@@ -185,12 +189,9 @@ def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
             names.append('{}_{}_{}.tif'.format(prefix, i, j))
 
     counter = 0
-    maxrow = 0
     for name in names:
         row = int(name.split(prefix)[1].split('.')[0].split('_')[1])
         col = int(name.split(prefix)[1].split('.')[0].split('_')[2])
-        if row > maxrow:
-            maxrow = row
         
         filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
         aws.download_s3(remote_folder+'/'+filename, filename, bucket_name=bucket)
@@ -206,12 +207,12 @@ def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
             if merged.shape[0] > 0:
                 to_add = ut.csv_to_pd(local_name)
                 to_add['X'] = to_add['X'] + ires[0]*col
-                to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(maxrow-row)
+                to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(rows-1-row)
                 to_add['Track_ID'] = to_add['Track_ID'] + max(merged['Track_ID']) + 1
             else:
                 to_add = ut.csv_to_pd(local_name)
                 to_add['X'] = to_add['X'] + ires[0]*col
-                to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(maxrow-row)
+                to_add['Y'] = ires[1] - to_add['Y'] + ires[1]*(rows-1-row)
                 to_add['Track_ID'] = to_add['Track_ID']
 
             merged = merged.append(msd.all_msds2(to_add, frames=frames))
