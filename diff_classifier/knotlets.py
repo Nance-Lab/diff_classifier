@@ -1,9 +1,36 @@
-'''Test functions to send to Cloudknot
+'''Test functions to submit tracking jobs to AWS Batch with Cloudknot
 
 '''
 
 def split(prefix, remote_folder, bucket='nancelab.publicfiles',
           rows=4, cols=4, ores=(2048, 2048), ires=(512, 512)):
+    '''Splits input image file into smaller images.
+    
+    A function based on imagej.partition_im that download images
+    from an S3 bucket, splits it into smaller images, and uploads
+    these to S3.
+    
+    Parameters
+    ----------
+    prefix : string
+        Prefix (everything except file extension and folder name)
+        of image file to be tracked. Must be available on S3.
+    remote_folder : string
+        Folder name where file is contained on S3 in the bucket
+        specified by 'bucket'.
+    bucket : string
+        S3 bucket where file is contained.
+    rows : int
+        Number of rows to split image into.
+    cols : int
+        Number of columns to split image into.
+    ores : tuple of int
+        Original resolution of input image.
+    ires : tuple of int
+        Resolution of split images. Really just a sanity check
+        to make sure you correctly splitting.
+    
+    '''
 
     import os
     import boto3
@@ -44,6 +71,36 @@ def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
              'median_intensity': 300.0, 'snr': 0.0, 'linking_max_distance': 6.0,
              'gap_closing_max_distance': 10.0, 'max_frame_gap': 3,
              'track_duration': 20.0}):
+    '''Tracks particles in input image using Trackmate.
+    
+    A function based on imagej.track that downloads the image from S3,
+    tracks particles using Trackmate, and uploads the resulting trajectory
+    file to S3.
+    
+    Parameters
+    ----------
+    subprefix : string
+        Prefix (everything except file extension and folder name)
+        of image file to be tracked. Must be available on S3.
+    remote_folder : string
+        Folder name where file is contained on S3 in the bucket
+        specified by 'bucket'.
+    bucket : string
+        S3 bucket where file is contained.
+    regress_f : string
+        Name of regress object used to predict quality parameter.
+    rows : int
+        Number of rows to split image into.
+    cols : int
+        Number of columns to split image into.
+    ires : tuple of int
+        Resolution of split images. Really just a sanity check
+        to make sure you correctly splitting.
+    tparams : dict
+        Dictionary containing tracking parameters to Trackmate
+        analysis.
+
+    '''
        
     import os
     import os.path as op
@@ -77,7 +134,7 @@ def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
         tparams['quality'] = ij.regress_tracking_params(regress, subprefix, regmethod='PassiveAggressiveRegressor')
 
         if row==rows-1:
-            tparams['ydims'] = (ires[0], ires[1] - 27)
+            tparams['ydims'] = (tparams['ydims'][0], ires[1] - 27)
 
         ij.track(local_im, outfile, template=None, fiji_bin=None, tparams=tparams)
         aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
@@ -86,7 +143,28 @@ def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
 
 def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
                   ires=(512, 512), frames=651):
+    '''Calculates MSDs and features from input trajectory files
     
+    A function based on msd.all_msds2 and features.calculate_features,
+    creates msd and feature csv files from input trajectory files
+    and uploads to S3.
+    
+    prefix : string
+        Prefix (everything except file extension and folder name)
+        of image file to be tracked. Must be available on S3.
+    remote_folder : string
+        Folder name where file is contained on S3 in the bucket
+        specified by 'bucket'.
+    bucket : string
+        S3 bucket where file is contained.
+    ires : tuple of int
+        Resolution of split images. Really just a sanity check
+        to make sure you correctly splitting.
+    frames : int
+        Number of frames in input videos.
+    
+    '''
+
     import os
     import boto3
     import diff_classifier.aws as aws
@@ -161,15 +239,50 @@ def split_track_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
                      'median_intensity': 300.0, 'snr': 0.0, 'linking_max_distance': 6.0,
                      'gap_closing_max_distance': 10.0, 'max_frame_gap': 3,
                      'track_duration': 20.0}):
+    '''Splits images, track particles, and calculates MSDs
    
+    A composite function designed to work with Cloudknot to split images,
+    track particles, and calculate MSDs.
+    
+    Parameters
+    ----------
+    prefix : string
+        Prefix (everything except file extension and folder name)
+        of image file to be tracked. Must be available on S3.
+    remote_folder : string
+        Folder name where file is contained on S3 in the bucket
+        specified by 'bucket'.
+    bucket : string
+        S3 bucket where file is contained.
+    rows : int
+        Number of rows to split image into.
+    cols : int
+        Number of columns to split image into.
+    ores : tuple of int
+        Original resolution of input image.
+    ires : tuple of int
+        Resolution of split images. Really just a sanity check
+        to make sure you correctly splitting.
+    to_split : bool
+        If True, will perform image splitting.
+    regress_f : string
+        Name of regress object used to predict quality parameter.
+    frames : int
+        Number of frames in input videos.
+    tparams : dict
+        Dictionary containing tracking parameters to Trackmate
+        analysis.
+     
+    '''
+
     if to_split:
         split(prefix=prefix, remote_folder=remote_folder, bucket=bucket,
               rows=rows, cols=cols, ores=ores, ires=ires)
     
     pref = []                  
-        for row in range(0, rows):
-            for col in range(0, cols):
-                pref.append("{}_{}_{}".format(prefix, row, col))
+    for row in range(0, rows):
+        for col in range(0, cols):
+            pref.append("{}_{}_{}".format(prefix, row, col))
 
     for subprefix in pref:            
         tracking(subprefix=subprefix, remote_folder=remote_folder, bucket=bucket,
@@ -181,6 +294,13 @@ def split_track_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
 
 
 def sensitivity_it(counter):
+    '''Performs sensitivity analysis on single input image
+    
+    An example function (not designed for re-use) of a sensitivity
+    analysis that demonstrates the impact of input tracking
+    parameters on output MSDs and features.
+    
+    '''
 
     import matplotlib as mpl
     mpl.use('Agg')
