@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>diff_classifier.knotlets &mdash; diff_classifier 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="index.html"/>
+        <link rel="prev" title="diff_classifier.heatmaps" href="heatmaps.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_data.html">Example data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interacting_with_S3.html">Uploading and download with s3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="msd.html"><code class="docutils literal"><span class="pre">diff_classifier.msd</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="imagej.html"><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html"><code class="docutils literal"><span class="pre">diff_classifier.features</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws.html"><code class="docutils literal"><span class="pre">diff_classifier.aws</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="heatmaps.html"><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">API</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/knotlets.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="diff-classifier-knotlets">
+<h1><a class="reference internal" href="#module-diff_classifier.knotlets" title="diff_classifier.knotlets"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a><a class="headerlink" href="#diff-classifier-knotlets" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-diff_classifier.knotlets" title="diff_classifier.knotlets"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-diff_classifier.knotlets"></span><p>Test functions to submit tracking jobs to AWS Batch with Cloudknot</p>
+<dl class="function">
+<dt id="diff_classifier.knotlets.assemble_msds">
+<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">assemble_msds</code><span class="sig-paren">(</span><em>prefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>ires=(512</em>, <em>512)</em>, <em>frames=651</em>, <em>rows=4</em>, <em>cols=4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#assemble_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.assemble_msds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates MSDs and features from input trajectory files</p>
+<p>A function based on msd.all_msds2 and features.calculate_features, creates
+msd and feature csv files from input trajectory files and uploads to S3.</p>
+<dl class="docutils">
+<dt>prefix <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Prefix (everything except file extension and folder name) of image file
+to be tracked. Must be available on S3.</dd>
+<dt>remote_folder <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Folder name where file is contained on S3 in the bucket specified by
+&#8216;bucket&#8217;.</dd>
+<dt>bucket <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>S3 bucket where file is contained.</dd>
+<dt>ires <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int</span></dt>
+<dd>Resolution of split images. Really just a sanity check to make sure you
+correctly splitting.</dd>
+<dt>frames <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of frames in input videos.</dd>
+<dt>rows <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of rows to split image into.</dd>
+<dt>cols <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of columns to split image into.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.knotlets.split">
+<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">split</code><span class="sig-paren">(</span><em>prefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>rows=4</em>, <em>cols=4</em>, <em>ores=(2048</em>, <em>2048)</em>, <em>ires=(512</em>, <em>512)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits input image file into smaller images.</p>
+<p>A function based on imagej.partition_im that download images from an S3
+bucket, splits it into smaller images, and uploads these to S3.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Prefix (everything except file extension and folder name) of image file
+to be tracked. Must be available on S3.</p>
+</dd>
+<dt><strong>remote_folder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Folder name where file is contained on S3 in the bucket specified by
+&#8216;bucket&#8217;.</p>
+</dd>
+<dt><strong>bucket</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">S3 bucket where file is contained.</p>
+</dd>
+<dt><strong>rows</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of rows to split image into.</p>
+</dd>
+<dt><strong>cols</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of columns to split image into.</p>
+</dd>
+<dt><strong>ores</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int</span></dt>
+<dd><p class="first last">Original resolution of input image.</p>
+</dd>
+<dt><strong>ires</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int</span></dt>
+<dd><p class="first last">Resolution of split images. Really just a sanity check to make sure you
+correctly splitting.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.knotlets.split_track_msds">
+<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">split_track_msds</code><span class="sig-paren">(</span><em>prefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>rows=4</em>, <em>cols=4</em>, <em>ores=(2048</em>, <em>2048)</em>, <em>ires=(512</em>, <em>512)</em>, <em>to_split=False</em>, <em>regress_f='regress.obj'</em>, <em>frames=651</em>, <em>tparams={'radius': 3.0</em>, <em>'snr': 0.0</em>, <em>'do_median_filtering': False</em>, <em>'threshold': 0.0</em>, <em>'max_frame_gap': 3</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'median_intensity': 300.0</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'quality': 15.0</em>, <em>'track_duration': 20.0</em>, <em>'linking_max_distance': 6.0</em>, <em>'gap_closing_max_distance': 10.0}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#split_track_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.split_track_msds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits images, track particles, and calculates MSDs</p>
+<p>A composite function designed to work with Cloudknot to split images,
+track particles, and calculate MSDs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Prefix (everything except file extension and folder name) of image file
+to be tracked. Must be available on S3.</p>
+</dd>
+<dt><strong>remote_folder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Folder name where file is contained on S3 in the bucket specified by
+&#8216;bucket&#8217;.</p>
+</dd>
+<dt><strong>bucket</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">S3 bucket where file is contained.</p>
+</dd>
+<dt><strong>rows</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of rows to split image into.</p>
+</dd>
+<dt><strong>cols</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of columns to split image into.</p>
+</dd>
+<dt><strong>ores</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int</span></dt>
+<dd><p class="first last">Original resolution of input image.</p>
+</dd>
+<dt><strong>ires</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int</span></dt>
+<dd><p class="first last">Resolution of split images. Really just a sanity check to make sure you
+correctly splitting.</p>
+</dd>
+<dt><strong>to_split</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">If True, will perform image splitting.</p>
+</dd>
+<dt><strong>regress_f</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Name of regress object used to predict quality parameter.</p>
+</dd>
+<dt><strong>frames</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of frames in input videos.</p>
+</dd>
+<dt><strong>tparams</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">Dictionary containing tracking parameters to Trackmate analysis.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.knotlets.tracking">
+<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">tracking</code><span class="sig-paren">(</span><em>subprefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>regress_f='regress.obj'</em>, <em>rows=4</em>, <em>cols=4</em>, <em>ires=(512</em>, <em>512)</em>, <em>tparams={'radius': 3.0</em>, <em>'snr': 0.0</em>, <em>'do_median_filtering': False</em>, <em>'threshold': 0.0</em>, <em>'max_frame_gap': 3</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'median_intensity': 300.0</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'quality': 15.0</em>, <em>'track_duration': 20.0</em>, <em>'linking_max_distance': 6.0</em>, <em>'gap_closing_max_distance': 10.0}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.tracking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tracks particles in input image using Trackmate.</p>
+<p>A function based on imagej.track that downloads the image from S3, tracks
+particles using Trackmate, and uploads the resulting trajectory file to S3.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>subprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Prefix (everything except file extension and folder name) of image file
+to be tracked. Must be available on S3.</p>
+</dd>
+<dt><strong>remote_folder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Folder name where file is contained on S3 in the bucket specified by
+&#8216;bucket&#8217;.</p>
+</dd>
+<dt><strong>bucket</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">S3 bucket where file is contained.</p>
+</dd>
+<dt><strong>regress_f</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Name of regress object used to predict quality parameter.</p>
+</dd>
+<dt><strong>rows</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of rows to split image into.</p>
+</dd>
+<dt><strong>cols</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of columns to split image into.</p>
+</dd>
+<dt><strong>ires</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int</span></dt>
+<dd><p class="first last">Resolution of split images. Really just a sanity check to make sure you
+correctly splitting.</p>
+</dd>
+<dt><strong>tparams</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">Dictionary containing tracking parameters to Trackmate analysis.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="heatmaps.html" class="btn btn-neutral" title="diff_classifier.heatmaps" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
