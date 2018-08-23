@@ -72,13 +72,15 @@ def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
     return names
 
 
-def mean_intensity(local_im):
+def mean_intensity(local_im, frame=0):
     """Calculates mean intensity of first frame of input image.
 
     Parameters
     ----------
     local_im : string
         Location of input image.
+    frame : int
+        Frame at which to perform mean.
 
     Returns
     -------
@@ -91,16 +93,17 @@ def mean_intensity(local_im):
 
     """
     test_image = sio.imread(local_im)
-    test_intensity = np.mean(test_image[0, :, :])
+    test_intensity = np.mean(test_image[frame, :, :])
 
     return test_intensity
 
 
-def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
-          threshold=5., do_median_filtering=False, quality=30.0, xdims=(0, 511),
-          ydims=(1, 511), median_intensity=55000.0, snr=0.0, linking_max_distance=10.0,
-          gap_closing_max_distance=10.0, max_frame_gap=3,
-          track_displacement=0.0):
+def track(target, out_file, template=None, fiji_bin=None,
+          tparams={'radius': 3.0, 'threshold': 0.0, 'do_median_filtering': False,
+           'quality': 15.0, 'xdims': (0, 511), 'ydims': (1, 511),
+           'median_intensity': 300.0, 'snr': 0.0, 'linking_max_distance': 6.0,
+           'gap_closing_max_distance': 10.0, 'max_frame_gap': 3,
+           'track_duration': 20.0}):
     """Performs particle tracking on input video.
 
     Particle tracking is performed with the ImageJ plugin Trackmate. Outputs
@@ -144,7 +147,7 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
     max_frame_gap : int
         Maximum allowable number of frames a particle is allowed to leave video
         and be counted as same trajectory.
-    track_displacement : float
+    track_duration : float
         Lower duration cutoff in frames for trajectory filtering.
 
     """
@@ -163,16 +166,16 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
     script = ''.join(open(template).readlines())
     tpfile = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tpfile.name, 'w')
-    fid.write(script.format(target_file=target, radius=str(radius),
-                            threshold=str(threshold),
-                            do_median_filtering=str(do_median_filtering),
-                            quality=str(quality),
-                            xd=str(xdims[1]), yd=str(ydims[1]), ylo=str(ydims[0]),
-                            median_intensity=str(median_intensity), snr=str(snr),
-                            linking_max_distance=str(linking_max_distance),
-                            gap_closing_max_distance=str(gap_closing_max_distance),
-                            max_frame_gap=str(max_frame_gap),
-                            track_displacement=str(track_displacement)))
+    fid.write(script.format(target_file=target, radius=str(tparams['radius']),
+                            threshold=str(tparams['threshold']),
+                            do_median_filtering=str(tparams['do_median_filtering']),
+                            quality=str(tparams['quality']),
+                            xd=str(tparams['xdims'][1]), yd=str(tparams['ydims'][1]), ylo=str(tparams['ydims'][0]),
+                            median_intensity=str(tparams['median_intensity']), snr=str(tparams['snr']),
+                            linking_max_distance=str(tparams['linking_max_distance']),
+                            gap_closing_max_distance=str(tparams['gap_closing_max_distance']),
+                            max_frame_gap=str(tparams['max_frame_gap']),
+                            track_duration=str(tparams['track_duration'])))
     fid.close()
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tpfile.name)
     print(cmd)
@@ -182,7 +185,8 @@ def track(target, out_file, template=None, fiji_bin=None, radius=2.5,
     fid.close()
 
 
-def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucket_name='ccurtis.data'):
+def regress_sys(folder, all_videos, yfit, training_size, frame=0,
+                have_output=True, download=True, bucket_name='ccurtis.data'):
     """Uses regression based on image intensities to select tracking parameters.
 
     This function uses regression methods from the scikit-learn module to
@@ -224,7 +228,7 @@ def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucke
         datasets.  Uses the mean, 10th percentile, 90th percentile, and
         standard deviation intensities to predict the quality parameter
         in Trackmate.
-    t_prefix : list of str
+    tprefix : list of str
         Contains randomly selected images from all_videos to be included in
         training dataset.
 
@@ -244,16 +248,17 @@ def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucke
         for name in tprefix:
             local_im = name + '.tif'
             remote_im = "{}/{}".format(folder, local_im)
-            aws.download_s3(remote_im, local_im, bucket_name=bucket_name)
+            if download:
+                aws.download_s3(remote_im, local_im, bucket_name=bucket_name)
             test_image = sio.imread(local_im)
-            descriptors[counter, 0] = np.mean(test_image[0, :, :])
-            descriptors[counter, 1] = np.std(test_image[0, :, :])
-            descriptors[counter, 2] = np.percentile(test_image[0, :, :], 10)
-            descriptors[counter, 3] = np.percentile(test_image[0:, :, :], 90)
+            descriptors[counter, 0] = np.mean(test_image[frame, :, :])
+            descriptors[counter, 1] = np.std(test_image[frame, :, :])
+            descriptors[counter, 2] = np.percentile(test_image[frame, :, :], 10)
+            descriptors[counter, 3] = np.percentile(test_image[frame, :, :], 90)
             counter = counter + 1
 
         # Define regression techniques
-        Xfit = descriptors
+        xfit = descriptors
         classifiers = [
             svm.SVR(),
             linear_model.SGDRegressor(),
@@ -267,16 +272,16 @@ def regress_sys(folder, all_videos, yfit, training_size, have_output=True, bucke
         regress_object = []
         for item in classifiers:
             clf = item
-            regress_object.append(clf.fit(Xfit, yfit))
+            regress_object.append(clf.fit(xfit, yfit))
 
         return regress_object
 
     else:
-        return t_prefix
+        return tprefix
 
 
 def regress_tracking_params(regress_object, to_track,
-                            regmethod='LinearRegression', frame=325):
+                            regmethod='LinearRegression', frame=0):
     """Predicts quality values to be used in particle tracking.
 
     Uses the regress object from regress_sys to predict tracking
@@ -328,5 +333,7 @@ def regress_tracking_params(regress_object, to_track,
         fqual = quality[6]
     elif regmethod == 'LinearRegression':
         fqual = quality[7]
+    else:
+        fqual = 3.0
 
     return fqual

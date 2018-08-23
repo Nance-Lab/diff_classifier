@@ -109,7 +109,9 @@ This project is licensed under the
 
 Acknowledgements
 ----------------
-Diff_classifier development is supported by ....
+The authors would like to thank the expertise and resources provided by the
+eScience Institute at the University of Washington during their annual
+Incubator Project that made diff_classifier possible.
 
 .. toctree::
   :maxdepth: 2

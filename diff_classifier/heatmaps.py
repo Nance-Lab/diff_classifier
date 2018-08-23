@@ -199,7 +199,7 @@ def plot_heatmap(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, r
 
 
 def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, rows=4, cols=4,
-                     upload=True, remote_folder = "01_18_Experiment",
+                     dotsize=10, figsize=(12, 10), upload=True, remote_folder = "01_18_Experiment",
                      bucket='ccurtis.data'):
     """
     Plot scatterplot of trajectories in video with colors corresponding to features.
@@ -244,8 +244,8 @@ def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=51
     xs = ma.compressed(ma.masked_where(to_mask, merged_ft['X'].astype(int)))
     ys = ma.compressed(ma.masked_where(to_mask, merged_ft['Y'].astype(int)))
 
-    fig = plt.figure(figsize=(12, 10))
-    plt.scatter(xs, ys, c=zs, s=10)
+    fig = plt.figure(figsize=figsize)
+    plt.scatter(xs, ys, c=zs, s=dotsize)
     mapper.set_array(10)
     plt.colorbar(mapper)
     plt.xlim(0, ires*cols)
@@ -253,14 +253,15 @@ def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=51
     plt.axis('off')
 
     print('Plotted {} scatterplot successfully.'.format(prefix))
-    outfile = 'scatter_{}.png'.format(prefix)
+    outfile = 'scatter_{}_{}.png'.format(feature, prefix)
     fig.savefig(outfile, bbox_inches='tight')
     if upload == True:
         aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
 
 
 def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True, 
-                      remote_folder = "01_18_Experiment", bucket='ccurtis.data'):
+                      remote_folder = "01_18_Experiment", bucket='ccurtis.data',
+                      figsize=(12, 12)):
     """
     Plot trajectories in video.
 
@@ -282,7 +283,7 @@ def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True,
     particles = int(max(merged['Track_ID']))
     ires = resolution
 
-    fig = plt.figure(figsize=(12, 12))
+    fig = plt.figure(figsize=figsize)
     for part in range(0, particles):
         x = merged[merged['Track_ID'] == part]['X']
         y = merged[merged['Track_ID'] == part]['Y']
@@ -434,7 +435,7 @@ def plot_particles_in_frame(prefix, x_range=600, y_range=2000, upload=True,
 
 
 def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02, alpha=0.01, folder='.', upload=True,
-                         remote_folder="01_18_Experiment", bucket='ccurtis.data'):
+                         remote_folder="01_18_Experiment", bucket='ccurtis.data', figsize=(10, 10)):
     """
     Plot MSDs of trajectories and the geometric average.
 
@@ -466,7 +467,7 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
 
     merged = pd.read_csv('{}/msd_{}.csv'.format(folder, prefix))
 
-    fig = plt.figure(figsize=(10, 10))
+    fig = plt.figure(figsize=figsize)
     particles = int(max(merged['Track_ID']))
     frames = int(max(merged['Frame']))
     y = np.zeros((particles+1, frames+1))
@@ -483,7 +484,7 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     plt.xlim(0, x_range)
     plt.ylim(0, y_range)
     plt.xlabel('Tau (s)', fontsize=25)
-    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$/s)', fontsize=25)
+    plt.ylabel(r'Mean Squared Displacement ($\mu$m$^2$)', fontsize=25)
 
     outfile = '{}/msds_{}.png'.format(folder, prefix)
     outfile2 = '{}/geomean_{}.csv'.format(folder, prefix)
