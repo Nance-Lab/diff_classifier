@@ -804,7 +804,7 @@ def calculate_features(dframe, framerate=1):
 
 def feature_violin(tgroups, feature='boundedness',
                    labels=['sample 1', 'sample 2', 'sample 3'],
-                   points=40, ylim=[0, 1]):
+                   points=40, ylim=[0, 1], nticks=11):
     '''Plots violin plots of features in comparison groups
     
     Parameters
@@ -823,12 +823,12 @@ def feature_violin(tgroups, feature='boundedness',
     
     '''
 
-    majorticks = np.linspace(0, ylim[1], 11)
+    majorticks = np.linspace(ylim[0], ylim[1], nticks)
     to_graph = []
     pos = []
     counter = 1
     for key in tgroups:
-        to_graph.append(tgroups[key][feature].dropna().tolist())
+        to_graph.append(tgroups[key][feature][tgroups[key][feature] < 10000].replace([np.inf, -np.inf], np.nan).dropna().values)
         pos.append(counter)
         counter = counter + 1
         
