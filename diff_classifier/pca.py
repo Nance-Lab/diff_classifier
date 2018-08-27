@@ -6,6 +6,7 @@ diff_classifier, but can potentially be extended to other applications.
 
 """
 
+import random
 import pandas as pd
 import numpy as np
 from scipy import stats, linalg
