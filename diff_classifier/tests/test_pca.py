@@ -2,6 +2,7 @@ import os
 import pytest
 import numpy as np
 import numpy.testing as npt
+import pandas as pd
 import diff_classifier.msd as msd
 import diff_classifier.pca as pca
 import diff_classifier.features as ft
@@ -65,3 +66,70 @@ def test_pca_analysis():
 
 def test_plot_pca():
     print()
+
+
+def test_build_KNN_model():
+    output = ['F']*1000 + ['M']*1000
+    data = {'output' : output,
+            0 : np.append(np.random.normal(1, 1, size=1000),
+                          np.random.normal(2, 1, size=1000)),
+            1 : np.append(np.random.normal(0.1, 0.1, size=1000),
+                          np.random.normal(0.2, 0.1, size=1000))}
+    dataf = pd.DataFrame(data)
+
+    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+                                      equal_sampling=False, tsize=25,
+                                      n_neighbors=5, input_cols=2)
+    
+    assert X.shape == (25, 2)
+    assert Y.shape == (25,)
+
+
+def test_predict_KNN():
+    output = ['F']*1000 + ['M']*1000
+    data = {'output' : output,
+            0 : np.append(np.random.normal(1, 1, size=1000),
+                          np.random.normal(2, 1, size=1000)),
+            1 : np.append(np.random.normal(0.1, 0.1, size=1000),
+                          np.random.normal(0.2, 0.1, size=1000))}
+    dataf = pd.DataFrame(data)
+
+    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+                                      equal_sampling=False, tsize=25,
+                                      n_neighbors=5, input_cols=2)
+    
+    testp = np.array([])
+    for i in range(0, 30):
+        KNNmod, X, y = build_KNN_model(dataf, 'output', ['F', 'M'],
+                                       equal_sampling=True, tsize=25,
+                                       n_neighbors=5, input_cols=2)
+
+        X2 = dataf.values[:, -2:]
+        y2 = dataf.values[:, 0]
+        testp = np.append(testp, predict_KNN(KNNmod, X2, y2))
+    
+    assert testp > 0.6
+    
+    # test 2
+    data = {'output' : output,
+            0 : np.append(np.random.normal(1, 1, size=1000),
+                          np.random.normal(1000, 1, size=1000)),
+            1 : np.append(np.random.normal(0.1, 0.1, size=1000),
+                          np.random.normal(100, 0.1, size=1000))}
+    dataf = pd.DataFrame(data)
+
+    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+                                      equal_sampling=False, tsize=25,
+                                      n_neighbors=5, input_cols=2)
+    
+    testp = np.array([])
+    for i in range(0, 30):
+        KNNmod, X, y = build_KNN_model(dataf, 'output', ['F', 'M'],
+                                       equal_sampling=True, tsize=25,
+                                       n_neighbors=5, input_cols=2)
+
+        X2 = dataf.values[:, -2:]
+        y2 = dataf.values[:, 0]
+        testp = np.append(testp, predict_KNN(KNNmod, X2, y2))
+    
+    assert testp > 0.95

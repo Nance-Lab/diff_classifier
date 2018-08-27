@@ -9,6 +9,7 @@ diff_classifier, but can potentially be extended to other applications.
 import pandas as pd
 import numpy as np
 from scipy import stats, linalg
+from sklearn import neighbors
 from sklearn.decomposition import PCA as pca
 from sklearn.preprocessing import StandardScaler as stscale
 from sklearn.preprocessing import Imputer
@@ -142,7 +143,7 @@ def kmo(dataset):
 
 
 def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
-                 n_components=5):
+                 rem_outliers=True, out_thresh=10, n_components=5):
     """Performs a primary component analysis on an input dataset
 
     Parameters
@@ -180,8 +181,25 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
             Raw pca scores.
 
     """
-
+    pd.options.mode.chained_assignment = None  # default='warn'
     dataset_num = dataset.drop(dropcols, axis=1)
+    
+    if rem_outliers:
+        for i in range(10):
+            for col in dataset_num.columns:
+                xmean = np.mean(dataset_num[col])
+                xstd = np.std(dataset_num[col])
+
+                counter = 0
+                for x in dataset_num[col]:
+                    if x > xmean + out_thresh*xstd:
+                        dataset[col][counter] = np.nan
+                        dataset_num[col][counter] = np.nan
+                    if x < xmean - out_thresh*xstd:
+                        dataset[col][counter] = np.nan
+                        dataset_num[col][counter] = np.nan
+                    counter = counter + 1
+    
     dataset_raw = dataset_num.values
 
     # Fill in NaN values
@@ -234,7 +252,8 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
 
 
 def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
-             labels=['Sample1', 'Sample2'], savefig=True, filename='test.png'):
+             labels=['Sample1', 'Sample2'], savefig=True, filename='test.png',
+             rticks = np.linspace(-2, 2, 5)):
     """Plots the average output features from a PCA analysis in polar
     coordinates
 
@@ -259,7 +278,7 @@ def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
     for key in datasets:
         N = datasets[key].shape[0]
     width = (2*np.pi) / N
-    color = iter(cm.viridis(np.linspace(0, 1, N)))
+    color = iter(cm.viridis(np.linspace(0, 0.9, len(datasets))))
 
     theta = np.linspace(0.0, 2 * np.pi, N+1, endpoint=True)
     radii = {}
@@ -282,8 +301,119 @@ def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
     #     bar.set_alpha(0.8)
     ax.set_xticks(np.pi/180. * np.linspace(0, 360, N, endpoint=False))
     ax.set_xticklabels(list(range(0, N)))
+    ax.set_yticks(rticks)
 
     if savefig:
         plt.savefig(filename, bbox_inches='tight')
 
     plt.show()
+
+
+def build_KNN_model(rawdata, feature, featvals, equal_sampling=True,
+                    tsize = 20, n_neighbors=5, from_end=True, input_cols=6):
+    """Builds a K-nearest neighbor model using an input dataset.
+    
+    Parameters
+    ----------
+    rawdata : pandas.core.frames.DataFrame
+        Raw dataset of n samples and p features.
+    feature : string or int
+        Feature in rawdata containing output values on which KNN
+        model is to be based.
+    featvals : string or int
+        All values that feature can take.
+    equal_sampling : bool
+        If True, training dataset will contain an equal number
+        of samples that take each value of featvals. If false,
+        each sample in training dataset will be taken randomly
+        from rawdata.
+    tsize : int
+        Size of training dataset. If equal_sampling is False,
+        training dataset will be exactly this size. If True,
+        training dataset will contain N x tsize where N is the
+        number of unique values in featvals.
+    n_neighbors : int
+        Number of nearest neighbors to be used in KNN
+        algorithm.
+    from_end : int
+        If True, in_cols will select features to be used as
+        training data defined end of rawdata e.g.
+        rawdata[:, -6:]. If False, input_cols will be read
+        as a tuple e.g. rawdata[:, 10:15].
+    input_col : int or tuple
+        Defined in from_end above. 
+    
+    Returns
+    -------
+    clf : sklearn.neighbors.classification.KNeighborsClassifier
+        KNN model
+    X : numpy.ndarray
+        training input dataset used to create clf
+    y : numpy.ndarray
+        training output dataset used to create clf
+    
+    """
+    
+    if equal_sampling:
+        for featval in featvals:
+            if from_end:
+                test = rawdata[rawdata[feature]==featval
+                               ].values[:, -input_cols:]
+            else:
+                test = rawdata[rawdata[feature]==featval
+                               ].values[:, input_cols[0]:input_cols[1]]
+            to_plot = np.array(random.sample(range(0, test.shape[0]
+                                                   ), tsize))
+            if featval == featvals[0]:
+                X = test[to_plot, :]
+                y = rawdata[rawdata[feature]==featval
+                            ][feature].values[to_plot]
+            else:
+                X = np.append(X, test[to_plot, :], axis=0)
+                y = np.append(y, rawdata[rawdata[feature]==featval
+                                         ][feature].values[to_plot],axis=0)
+    
+    else:
+        if from_end:
+            test = rawdata.values[:, -input_cols:]
+        else:
+            test = rawdata.values[:, input_cols[0]:input_cols[1]]
+        to_plot = np.array(random.sample(range(0, test.shape[0]), tsize))
+        X = test[to_plot, :]
+        y = rawdata[feature].values[to_plot]
+            
+    clf = neighbors.KNeighborsClassifier(n_neighbors)
+    clf.fit(X, y)
+    
+    return clf, X, y
+
+
+def predict_KNN(model, X, y):
+    """Calculates fraction correctly predicted using input KNN
+    model
+    
+    Parameters
+    ----------
+    model : sklearn.neighbors.classification.KNeighborsClassifier
+        KNN model
+    X : numpy.ndarray
+        training input dataset used to create clf
+    y : numpy.ndarray
+        training output dataset used to create clf
+    
+    Returns
+    -------
+    pcorrect : float
+        Fraction of correctly predicted outputs using the
+        input KNN model and the input test dataset X and y
+    
+    """
+    yp = model.predict(X)
+    correct = np.zeros(y.shape[0])
+    for i in range(0, y.shape[0]):
+        if y[i] == yp[i]:
+            correct[i] = 1
+
+    pcorrect = np.average(correct)
+    #print(pcorrect)
+    return pcorrect
