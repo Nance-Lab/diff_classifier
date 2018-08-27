@@ -100,7 +100,7 @@ def test_predict_KNN():
     
     testp = np.array([])
     for i in range(0, 30):
-        KNNmod, X, y = build_KNN_model(dataf, 'output', ['F', 'M'],
+        KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                        equal_sampling=True, tsize=25,
                                        n_neighbors=5, input_cols=2)
 
@@ -124,7 +124,7 @@ def test_predict_KNN():
     
     testp = np.array([])
     for i in range(0, 30):
-        KNNmod, X, y = build_KNN_model(dataf, 'output', ['F', 'M'],
+        KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                        equal_sampling=True, tsize=25,
                                        n_neighbors=5, input_cols=2)
 
