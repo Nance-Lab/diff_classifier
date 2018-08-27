@@ -106,7 +106,7 @@ def test_predict_KNN():
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
-        testp = np.append(testp, predict_KNN(KNNmod, X2, y2))
+        testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
     
     assert testp > 0.6
     
@@ -130,6 +130,6 @@ def test_predict_KNN():
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
-        testp = np.append(testp, predict_KNN(KNNmod, X2, y2))
+        testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
     
     assert testp > 0.95
