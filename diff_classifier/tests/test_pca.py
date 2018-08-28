@@ -10,7 +10,7 @@ import diff_classifier.features as ft
 is_travis = "CI" in os.environ.keys()
 
 
-#@pytest.mark.skipif(is_travis, reason="Function behaves differently on Travis.")
+# @pytest.mark.skipif(is_travis, reason="Function behaves differently on Travis.")
 @pytest.mark.xfail
 def test_partial_corr():
     dataf = msd.random_traj_dataset()
@@ -18,7 +18,7 @@ def test_partial_corr():
     feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(24.0, np.round(np.sum(pcorr), 1))
-    
+
     dataf = msd.random_traj_dataset(nparts=10)
     msds = msd.all_msds2(dataf, frames=100)
     feat = ft.calculate_features(msds)
@@ -36,7 +36,7 @@ def test_partial_corr():
     feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(17.4, np.round(np.sum(pcorr), 1))
-    
+
     dataf = msd.random_traj_dataset(nparts=10, nframes=40, ndist=(3, 5), seed=9)
     msds = msd.all_msds2(dataf, frames=40)
     feat = ft.calculate_features(msds)
@@ -44,7 +44,7 @@ def test_partial_corr():
     npt.assert_equal(35.7, np.round(np.sum(pcorr), 1))
 
 
-#@pytest.mark.skipif(is_travis, reason="Function behaves differently on Travis.")
+# @pytest.mark.skipif(is_travis, reason="Function behaves differently on Travis.")
 @pytest.mark.xfail
 def test_kmo():
     dataf = msd.random_traj_dataset(nparts=10, ndist=(1, 1), seed=3)
@@ -70,66 +70,66 @@ def test_plot_pca():
 
 def test_build_KNN_model():
     output = ['F']*1000 + ['M']*1000
-    data = {'output' : output,
-            0 : np.append(np.random.normal(1, 1, size=1000),
-                          np.random.normal(2, 1, size=1000)),
-            1 : np.append(np.random.normal(0.1, 0.1, size=1000),
-                          np.random.normal(0.2, 0.1, size=1000))}
+    data = {'output': output,
+            0: np.append(np.random.normal(1, 1, size=1000),
+                         np.random.normal(2, 1, size=1000)),
+            1: np.append(np.random.normal(0.1, 0.1, size=1000),
+                         np.random.normal(0.2, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
     model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
-    
+
     assert X.shape == (25, 2)
     assert Y.shape == (25,)
 
 
 def test_predict_KNN():
     output = ['F']*1000 + ['M']*1000
-    data = {'output' : output,
-            0 : np.append(np.random.normal(1, 1, size=1000),
-                          np.random.normal(2, 1, size=1000)),
-            1 : np.append(np.random.normal(0.1, 0.1, size=1000),
-                          np.random.normal(0.2, 0.1, size=1000))}
+    data = {'output': output,
+            0: np.append(np.random.normal(1, 1, size=1000),
+                         np.random.normal(2, 1, size=1000)),
+            1: np.append(np.random.normal(0.1, 0.1, size=1000),
+                         np.random.normal(0.2, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
     model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
-    
+
     testp = np.array([])
     for i in range(0, 30):
         KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
-                                       equal_sampling=True, tsize=25,
-                                       n_neighbors=5, input_cols=2)
+                                           equal_sampling=True, tsize=25,
+                                           n_neighbors=5, input_cols=2)
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
         testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
-    
-    assert testp > 0.6
-    
+
+    assert np.mean(testp) > 0.6
+
     # test 2
-    data = {'output' : output,
-            0 : np.append(np.random.normal(1, 1, size=1000),
-                          np.random.normal(1000, 1, size=1000)),
-            1 : np.append(np.random.normal(0.1, 0.1, size=1000),
-                          np.random.normal(100, 0.1, size=1000))}
+    data = {'output': output,
+            0: np.append(np.random.normal(1, 1, size=1000),
+                         np.random.normal(1000, 1, size=1000)),
+            1: np.append(np.random.normal(0.1, 0.1, size=1000),
+                         np.random.normal(100, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
     model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
-    
+
     testp = np.array([])
     for i in range(0, 30):
         KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
-                                       equal_sampling=True, tsize=25,
-                                       n_neighbors=5, input_cols=2)
+                                           equal_sampling=True, tsize=25,
+                                           n_neighbors=5, input_cols=2)
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
         testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
-    
-    assert testp > 0.95
+
+    assert np.mean(testp) > 0.95
