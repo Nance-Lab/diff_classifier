@@ -8,13 +8,18 @@ import diff_classifier.features as ft
 import diff_classifier.msd as msd
 
 
-def test_make_xyarray():
+def test_unmask_track():
     data = {'Frame': [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],
             'Track_ID': [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
             'X': [np.nan, 6, 7, 8, 9, 1, 2, 3, 4, np.nan],
-            'Y': [np.nan, 7, 8, 9, 10, 2, 3, 4, 5, np.nan]}
+            'Y': [np.nan, 7, 8, 9, 10, 2, 3, 4, 5, np.nan],
+            'Quality': [np.nan, 10, 10, 10, 10, 10, 10, 10, 10, np.nan],
+            'SN_Ratio': [np.nan, 0.1, 0.1, 0.1, 0.1, 0.1,
+                         0.1, 0.1, 0.1, np.nan],
+            'Mean_Intensity': [np.nan, 10, 10, 10, 10, 10, 10, 10, 10, np.nan]}
     dframe = pd.DataFrame(data=data)
-    cols = ['Frame', 'Track_ID', 'X', 'Y', 'MSDs', 'Gauss']
+    cols = ['Frame', 'Track_ID', 'X', 'Y', 'MSDs', 'Gauss', 'Quality',
+            'SN_Ratio', 'Mean_Intensity']
     length = max(dframe['Frame']) + 1
     m_df = msd.all_msds2(dframe, frames=length)[cols]
 
@@ -23,7 +28,10 @@ def test_make_xyarray():
              'X': [float(i) for i in[1, 2, 3, 4]],
              'Y': [float(i) for i in[2, 3, 4, 5]],
              'MSDs': [float(i) for i in[0, 2, 8, 18]],
-             'Gauss': [float(i) for i in[0, 0.25, 0.25, 0.25]]}
+             'Gauss': [float(i) for i in[0, 0.25, 0.25, 0.25]],
+             'Quality': 4*[10.0],
+             'SN_Ratio': 4*[0.1],
+             'Mean_Intensity': 4*[10.0]}
     dft = pd.DataFrame(data=datat)
 
     pdt.assert_frame_equal(ft.unmask_track(m_df[m_df['Track_ID'] == 2]), dft)
@@ -34,7 +42,10 @@ def test_alpha_calc():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.alpha_calc(dframe) == (2.0000000000000004, 0.4999999999999998)
@@ -43,7 +54,10 @@ def test_alpha_calc():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+5),
             'Y': np.cos(np.linspace(0, frames, frames)+3),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.alpha_calc(dframe) == (0.8201034110620524, 0.1494342948594476)
@@ -54,7 +68,10 @@ def test_gyration_tensor():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     o1, o2, o3, o4 = (8.0, 0.0, np.array([0.70710678, -0.70710678]),
@@ -70,7 +87,10 @@ def test_gyration_tensor():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+5),
             'Y': np.cos(np.linspace(0, frames, frames)+5),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     o1, o2, o3, o4 = (0.47248734315843355, 0.3447097846562249,
@@ -89,7 +109,10 @@ def test_kurtosis():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.kurtosis(dframe) == 4.079999999999999
@@ -98,7 +121,10 @@ def test_kurtosis():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+3),
             'Y': np.cos(np.linspace(0, frames, frames)+3),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.kurtosis(dframe) == 1.4759027695843443
@@ -109,7 +135,10 @@ def test_asymmetry():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -125,7 +154,10 @@ def test_asymmetry():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+3),
             'Y': np.cos(np.linspace(0, frames, frames)+3),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -144,7 +176,10 @@ def test_minboundrect():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -164,7 +199,10 @@ def test_minboundrect():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+3),
             'Y': np.cos(np.linspace(0, frames, frames)+3),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -190,7 +228,10 @@ def test_aspectratio():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': [0, 1, 1, 2, 2, 3],
             'Y': [0, 0, 1, 1, 2, 2],
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.aspectratio(dframe)[0:2] == (3.9000000000000026, 0.7435897435897438)
@@ -202,7 +243,10 @@ def test_boundedness():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+3),
             'Y': np.cos(np.linspace(0, frames, frames)+3),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.boundedness(dframe) == (0.607673328076712, 5.674370543833708,
@@ -212,7 +256,10 @@ def test_boundedness():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
     assert ft.boundedness(dframe) == (0.039999999999999994, 1.0,
@@ -224,7 +271,10 @@ def test_efficiency():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+3),
             'Y': np.cos(np.linspace(0, frames, frames)+3),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -235,7 +285,10 @@ def test_efficiency():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -247,7 +300,10 @@ def test_msd_ratio():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.sin(np.linspace(0, frames, frames)+3),
             'Y': np.cos(np.linspace(0, frames, frames)+3),
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -257,7 +313,10 @@ def test_msd_ratio():
     data = {'Frame': np.linspace(0, frames, frames),
             'X': np.linspace(0, frames, frames)+5,
             'Y': np.linspace(0, frames, frames)+3,
-            'Track_ID': np.ones(frames)}
+            'Track_ID': np.ones(frames),
+            'Quality': 10.0*np.ones(frames),
+            'SN_Ratio': 0.1*np.ones(frames),
+            'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
@@ -295,29 +354,29 @@ def test_msd_ratio():
 #     pdt.assert_frame_equal(dfi, feat)
 
 
-def test_unmask_track():
-    size = 10
-    ID = np.ones(size)
-    frame = np.linspace(5, size-1+5, size)
-    x = frame + 1
-    y = frame + 3
-
-    data = {'Frame': frame,
-            'Track_ID': ID,
-            'X': x,
-            'Y': y}
-    di = pd.DataFrame(data=data)
-    track = msd.all_msds2(di, frames=20)
-    output = ft.unmask_track(track)
-
-    data2 = {'Frame': frame-5,
-             'Track_ID': ID,
-             'X': x,
-             'Y': y,
-             'MSDs': np.array((0, 2, 8, 18, 32, 50, 72, 98, 128,
-                               162)).astype('float64'),
-             'Gauss': np.array((0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25,
-                                0.25, 0.25))}
-    check = pd.DataFrame(data=data2)
-
-    pdt.assert_frame_equal(output, check)
+# def test_unmask_track():
+#     size = 10
+#     ID = np.ones(size)
+#     frame = np.linspace(5, size-1+5, size)
+#     x = frame + 1
+#     y = frame + 3
+#
+#     data = {'Frame': frame,
+#             'Track_ID': ID,
+#             'X': x,
+#             'Y': y}
+#     di = pd.DataFrame(data=data)
+#     track = msd.all_msds2(di, frames=20)
+#     output = ft.unmask_track(track)
+#
+#     data2 = {'Frame': frame-5,
+#              'Track_ID': ID,
+#              'X': x,
+#              'Y': y,
+#              'MSDs': np.array((0, 2, 8, 18, 32, 50, 72, 98, 128,
+#                                162)).astype('float64'),
+#              'Gauss': np.array((0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25,
+#                                 0.25, 0.25))}
+#     check = pd.DataFrame(data=data2)
+#
+#     pdt.assert_frame_equal(output, check)

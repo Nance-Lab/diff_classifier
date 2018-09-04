@@ -43,13 +43,20 @@ def unmask_track(track):
     comp_y = ma.compressed(ma.masked_where(x_mask, track['Y']))
     comp_msd = ma.compressed(ma.masked_where(msd_mask, track['MSDs']))
     comp_gauss = ma.compressed(ma.masked_where(msd_mask, track['Gauss']))
+    comp_qual = ma.compressed(ma.masked_where(msd_mask, track['Quality']))
+    comp_snr = ma.compressed(ma.masked_where(msd_mask, track['SN_Ratio']))
+    comp_meani = ma.compressed(ma.masked_where(msd_mask,
+                                               track['Mean_Intensity']))
 
     data1 = {'Frame': comp_frame,
              'Track_ID': compid,
              'X': comp_x,
              'Y': comp_y,
              'MSDs': comp_msd,
-             'Gauss': comp_gauss
+             'Gauss': comp_gauss,
+             'Quality': comp_qual,
+             'SN_Ratio': comp_snr,
+             'Mean_Intensity': comp_meani
              }
     comp_track = pd.DataFrame(data=data1)
     return comp_track
@@ -806,7 +813,7 @@ def feature_violin(tgroups, feature='boundedness',
                    labels=['sample 1', 'sample 2', 'sample 3'],
                    points=40, ylim=[0, 1], nticks=11):
     '''Plots violin plots of features in comparison groups
-    
+
     Parameters
     ----------
     tgroups : dict of pandas.core.frames.DataFrame
@@ -820,7 +827,7 @@ def feature_violin(tgroups, feature='boundedness',
         Determines resolution of violin plot
     ylim : list of int
         Y range of output plot
-    
+
     '''
 
     majorticks = np.linspace(ylim[0], ylim[1], nticks)
@@ -831,22 +838,22 @@ def feature_violin(tgroups, feature='boundedness',
         to_graph.append(tgroups[key][feature][tgroups[key][feature] < 10000].replace([np.inf, -np.inf], np.nan).dropna().values)
         pos.append(counter)
         counter = counter + 1
-        
+
     def set_axis_style(ax, labels):
         ax.get_xaxis().set_tick_params(direction='out')
         ax.xaxis.set_ticks_position('bottom')
         ax.set_xticks(np.arange(1, len(labels) + 1))
         ax.set_xticklabels(labels)
         ax.set_xlim(0.25, len(labels) + 0.75)
-    
+
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(6, 6))
 
     axes.violinplot(to_graph, pos, points=points, widths=0.9,
                     showmeans=True, showextrema=False)
     set_axis_style(axes, labels)
-    axes.tick_params(axis = 'both', which = 'major',
-                     labelsize = 16)
+    axes.tick_params(axis='both', which='major',
+                     labelsize=16)
     axes.set_ylim(ylim)
     axes.set_yticks(majorticks)
-    
+
     plt.show()
