@@ -719,7 +719,7 @@ def msd_ratio(track, fram1=3, fram2=100):
     return ratio
 
 
-def calculate_features(dframe, framerate=1):
+def calculate_features(dframe, framerate=1, frame=100):
     """Calculates multiple features from input MSD dataset and stores in pandas
     dataframe.
 
@@ -734,6 +734,8 @@ def calculate_features(dframe, framerate=1):
         Required for accurate calculation of some features.  Default is 1.
         Possibly not required. Ignore if performing all calcuations without
         units.
+    frame : int
+        Frame at which to calculate Deff
 
     Returns
     -------
@@ -770,7 +772,11 @@ def calculate_features(dframe, framerate=1):
            'MSD_ratio': holder,
            'frames': holder,
            'X': holder,
-           'Y': holder}
+           'Y': holder,
+           'Quality': holder,
+           'Mean_Intensity': holder,
+           'SN_Ratio': holder,
+           'Deff': holder}
 
     datai = pd.DataFrame(data=die)
 
@@ -805,6 +811,15 @@ def calculate_features(dframe, framerate=1):
                                                       single_track.shape[0]-2])
         else:
             datai['MSD_ratio'][particle] = np.nan
+
+        try:
+            datai['Deff'][particle] = single_track['MSDs'][frame] / (4*frame)
+        except:
+            datai['Deff'][particle] = np.nan
+
+        datai['Mean_Intensity'] = np.nanmean(single_track['Mean_Intensity'].values)
+        datai['Quality'] = np.nanmean(single_track['Quality'].values)
+        datai['SN_Ratio'] = np.nanmean(single_track['SN_Ratio'].values)
 
     return datai
 
