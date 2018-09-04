@@ -370,9 +370,9 @@ def make_xyarray(data, length=651):
         xyft['yarray'][:, part-first_p] = intxy[1]
         xyft['farray'][:, part-first_p] = new_frame
         xyft['tarray'][:, part-first_p] = part
-        xyft['qarray'][:, 0] = intxy[2]
-        xyft['snarray'][:, 0] = intxy[3]
-        xyft['iarray'][:, 0] = intxy[4]
+        xyft['qarray'][:, part-first_p] = intxy[2]
+        xyft['snarray'][:, part-first_p] = intxy[3]
+        xyft['iarray'][:, part-first_p] = intxy[4]
 
     return xyft
 
@@ -747,16 +747,16 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
             plt.loglog(xpos, np.exp(geo[counter]), c=c, linewidth=6,
                        label=experiment)
             plt.loglog(xpos, np.exp(geo[counter] - 1.96*gstder[counter]),
-                       c=c, dashes=[6,2], linewidth=4)
+                       c=c, dashes=[6, 2], linewidth=4)
             plt.loglog(xpos, np.exp(geo[counter] + 1.96*gstder[counter]),
-                       c=c, dashes=[6,2], linewidth=4)
+                       c=c, dashes=[6, 2], linewidth=4)
         else:
             plt.loglog(xpos, geo[counter], c=c, linewidth=6,
                        label=experiment)
             plt.loglog(xpos, geo[counter] - 1.96*gstder[counter], c=c,
-                       dashes=[6,2], linewidth=4)
+                       dashes=[6, 2], linewidth=4)
             plt.loglog(xpos, geo[counter] + 1.96*gstder[counter], c=c,
-                       dashes=[6,2], linewidth=4)
+                       dashes=[6, 2], linewidth=4)
 
         counter = counter + 1
 
@@ -862,7 +862,10 @@ def random_traj_dataset(nframes=100, nparts=30, seed=1, fsize=(0, 512),
     datai = {'Frame': frames,
              'Track_ID': trackid,
              'X': x,
-             'Y': y}
+             'Y': y,
+             'Quality': nframes*nparts*[10],
+             'SN_Ratio': nframes*nparts*[0.1],
+             'Mean_Intensity': nframes*nparts*[120]}
     dataf = pd.DataFrame(data=datai)
 
     return dataf
