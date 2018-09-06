@@ -11,3 +11,4 @@ boto3
 shapely
 numpydoc
 ipywidgets
+seaborn
