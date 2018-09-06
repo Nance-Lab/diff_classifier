@@ -154,10 +154,10 @@ def test_feature_violin():
 def test_feature_plot_2D():
 
     np.random.seed(seed=1)
-    dataset = {'label': 10*['yes'] + 10*['no'],
-               0: np.random.normal(0.5, 1, size=20),
-               1: np.random.normal(1, 2, size=20),
-               2: np.random.normal(3, 10, size=20)
+    dataset = {'label': 500*['yes'] + 500*['no'],
+               0: np.random.normal(0.5, 1, size=1000),
+               1: np.random.normal(1, 2, size=1000),
+               2: np.random.normal(3, 10, size=1000)
                }
     df = pd.DataFrame(data=dataset)
 
