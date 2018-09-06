@@ -154,10 +154,10 @@ def test_feature_violin():
 def test_feature_plot_2D():
 
     np.random.seed(seed=1)
-    dataset = {'label': 200*['yes'] + 200*['no'],
-               0: np.random.normal(0.5, 1, size=400),
-               1: np.random.normal(1, 2, size=400),
-               2: np.random.normal(3, 10, size=400)
+    dataset = {'label': 250*['yes'] + 250*['no'],
+               0: np.random.normal(0.5, 1, size=500),
+               1: np.random.normal(1, 2, size=500),
+               2: np.random.normal(3, 10, size=500)
                }
     df = pd.DataFrame(data=dataset)
 
@@ -167,4 +167,4 @@ def test_feature_plot_2D():
     assert os.path.isfile('test1.png')
 
     xy = pca.feature_plot_2D(df, label='label', features=[0, 1], randsel=False)
-    assert len(xy[1]) == 500
+    assert len(xy[1]) == 250
