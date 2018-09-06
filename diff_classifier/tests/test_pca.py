@@ -145,7 +145,7 @@ def test_feature_violin():
                }
     df = pd.DataFrame(data=dataset)
 
-    to_violin = feature_violin(df, fname='test.png')
+    to_violin = pca.feature_violin(df, fname='test.png')
 
     assert to_violin.values.shape == (60, 3)
     assert np.round(np.mean(to_violin['Feature Value']), 1) == 2.1
