@@ -501,3 +501,5 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
         plt.show()
     else:
         plt.savefig(kwargs['fname'])
+
+    return to_violin
