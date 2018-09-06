@@ -133,3 +133,19 @@ def test_predict_KNN():
         testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
 
     assert np.mean(testp) > 0.95
+
+
+def test_feature_violin():
+
+    np.random.seed(seed=1)
+    dataset = {'label': 10*['yes'] + 10*['no'],
+               0: np.random.normal(0.5, 1, size=20),
+               1: np.random.normal(1, 2, size=20),
+               2: np.random.normal(3, 10, size=20)
+               }
+    df = pd.DataFrame(data=dataset)
+
+    to_violin = feature_violin(df, fname='test.png')
+
+    assert to_violin.values.shape == (60, 3)
+    assert np.round(np.mean(to_violin['Feature Value']), 1) == 2.1

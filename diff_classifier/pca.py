@@ -10,6 +10,7 @@ import random
 import pandas as pd
 import numpy as np
 from scipy import stats, linalg
+import seaborn as sns
 from sklearn import neighbors
 from sklearn.decomposition import PCA as pca
 from sklearn.preprocessing import StandardScaler as stscale
@@ -419,3 +420,84 @@ def predict_KNN(model, X, y):
     pcorrect = np.average(correct)
     # print(pcorrect)
     return pcorrect
+
+
+def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
+    """Creates violinplot of input feature dataset
+
+    Designed to plot PCA components from pca_analysis.
+
+    Parameters
+    ----------
+    df : pandas.core.frames.DataFrame
+        Must contain a group name column, and numerical feature columns.
+    label : string or int
+        Name of group column.
+    lvals : list of string or int
+        All values that group column can take
+    fsubset : int or list of int
+        Features to be plotted. If integer, will plot range(fsubset).
+        If list, will only plot features contained in fsubset.
+    **kwargs : variable
+        figsize : tuple of int or float
+            Dimensions of output figure
+        yrange : list of int or float
+            Range of y axis
+        xlabel : string
+            Label of x axis
+        labelsize : int or float
+            Font size of x label
+        ticksize : int or float
+            Font size of y tick labels
+        fname : None or string
+            Name of output file
+        legendfontsize : int or float
+            Font size of legend
+        legendloc : int
+            Location of legend in plot e.g. 1, 2, 3, 4
+
+    """
+
+    defaults = {'figsize': (12, 5), 'yrange': [-20, 20], 'xlabel': 'Feature',
+                'labelsize': 20, 'ticksize': 16, 'fname': None,
+                'legendfontsize': 12, 'legendloc': 1}
+
+    for defkey in defaults.keys():
+        if defkey not in kwargs.keys():
+            kwargs[defkey] = defaults[defkey]
+
+    # Restacking input data
+    groupsize = []
+    featcol = []
+    valcol = []
+    feattype = []
+
+    if isinstance(fsubset, int):
+        frange = range(fsubset)
+    else:
+        frange = fsubset
+
+    for feat in frange:
+        groupsize.extend(df[label].values)
+        featcol.extend([feat]*df[label].values.shape[0])
+        valcol.extend(df[feat].values)
+
+    to_violind = {'label': groupsize, 'Feature': featcol, 'Feature Value': valcol}
+    to_violin = pd.DataFrame(data=to_violind)
+
+    # Plotting function
+    fig, ax = plt.subplots(figsize=kwargs['figsize'])
+    sns.violinplot(x="Feature", y="Feature Value", hue="label",
+                   data=to_violin,
+                   palette="Pastel1", hue_order=hue_order, figsize=kwargs['figsize'])
+
+    # kwargs
+    ax.tick_params(axis='both', which='major', labelsize=kwargs['ticksize'])
+    plt.xlabel(kwargs['xlabel'], fontsize=kwargs['labelsize'])
+    plt.ylabel('', fontsize=kwargs['labelsize'])
+    plt.ylim(kwargs['yrange'])
+    plt.legend(loc=kwargs['legendloc'], prop={'size': kwargs['legendfontsize']})
+    if kwargs['fname'] is None:
+        plt.show()
+    else:
+        plt.savefig(kwargs['fname'])
