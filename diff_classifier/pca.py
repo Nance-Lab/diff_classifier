@@ -509,7 +509,44 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
 
 def feature_plot_2D(dataset, label, features=[0, 1], randsel=True,
                     randcount=200, **kwargs):
+    """Plots two features against each other from feature dataset.
 
+    Parameters
+    ----------
+    dataset : pandas.core.frames.DataFrame
+        Must comtain a group column and numerical features columns
+    labels : string or int
+        Group column name
+    features : list of int
+        Names of columns to be plotted
+    randsel : bool
+        If True, downsamples from original dataset
+    randcount : int
+        Size of downsampled dataset
+    **kwargs : variable
+        figsize : tuple of int or float
+            Size of output figure
+        dotsize : float or int
+            Size of plotting markers
+        alpha : float or int
+            Transparency factor
+        xlim : list of float or int
+            X range of output plot
+        ylim : list of float or int
+            Y range of output plot
+        legendfontsize : float or int
+            Font size of legend
+        labelfontsize : float or int
+            Font size of labels
+        fname : string
+            Filename of output figure
+
+    Returns
+    -------
+    xy : list of lists
+        Coordinates of data on plot
+
+    """
     defaults = {'figsize': (8, 8), 'dotsize': 70, 'alpha': 0.7, 'xlim': None,
                 'ylim': None, 'legendfontsize': 12, 'labelfontsize': 20,
                 'fname': None}
@@ -521,7 +558,7 @@ def feature_plot_2D(dataset, label, features=[0, 1], randsel=True,
     tgroups = {}
     xy = {}
     counter = 0
-    labels = df[label].unique()
+    labels = dataset[label].unique()
     for lval in labels:
         tgroups[counter] = dataset[dataset[label] == lval]
         counter = counter + 1
