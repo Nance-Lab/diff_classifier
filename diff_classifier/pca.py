@@ -17,6 +17,7 @@ from sklearn.preprocessing import StandardScaler as stscale
 from sklearn.preprocessing import Imputer
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class Bunch:
@@ -482,14 +483,15 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
         featcol.extend([feat]*df[label].values.shape[0])
         valcol.extend(df[feat].values)
 
-    to_violind = {'label': groupsize, 'Feature': featcol, 'Feature Value': valcol}
+    to_violind = {'label': groupsize, 'Feature': featcol,
+                  'Feature Value': valcol}
     to_violin = pd.DataFrame(data=to_violind)
 
     # Plotting function
     fig, ax = plt.subplots(figsize=kwargs['figsize'])
-    sns.violinplot(x="Feature", y="Feature Value", hue="label",
-                   data=to_violin,
-                   palette="Pastel1", hue_order=lvals, figsize=kwargs['figsize'])
+    sns.violinplot(x="Feature", y="Feature Value", hue="label", data=to_violin,
+                   palette="Pastel1", hue_order=lvals,
+                   figsize=kwargs['figsize'])
 
     # kwargs
     ax.tick_params(axis='both', which='major', labelsize=kwargs['ticksize'])
@@ -503,3 +505,62 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
         plt.savefig(kwargs['fname'])
 
     return to_violin
+
+
+def feature_plot_2D(dataset, label, features=[0, 1], randsel=True,
+                    randcount=200, **kwargs):
+
+    defaults = {'figsize': (8, 8), 'dotsize': 70, 'alpha': 0.7, 'xlim': None,
+                'ylim': None, 'legendfontsize': 12, 'labelfontsize': 20,
+                'fname': None}
+
+    for defkey in defaults.keys():
+        if defkey not in kwargs.keys():
+            kwargs[defkey] = defaults[defkey]
+
+    tgroups = {}
+    xy = {}
+    counter = 0
+    labels = df[label].unique()
+    for lval in labels:
+        tgroups[counter] = dataset[dataset[label] == lval]
+        counter = counter + 1
+
+    N = len(tgroups)
+    color = iter(cm.viridis(np.linspace(0, 0.9, N)))
+
+    fig = plt.figure(figsize=kwargs['figsize'])
+    ax1 = fig.add_subplot(111)
+    counter = 0
+    for key in tgroups:
+        c = next(color)
+        xy = []
+        if randsel:
+            to_plot = random.sample(range(0, len(tgroups[key][0].tolist())),
+                                    randcount)
+            for key2 in features:
+                xy.append(list(tgroups[key][key2].tolist()[i] for i in to_plot))
+        else:
+            for key2 in features:
+                xy.append(tgroups[key][key2])
+        ax1 = plt.scatter(xy[0], xy[1], c=c, s=kwargs['dotsize'],
+                          alpha=kwargs['alpha'], label=labels[counter])
+        counter = counter + 1
+
+    if kwargs['xlim'] is not None:
+        plt.xlim(kwargs['xlim'])
+    if kwargs['ylim'] is not None:
+        plt.ylim(kwargs['ylim'])
+
+    plt.legend(fontsize=kwargs['legendfontsize'], frameon=False)
+    plt.xlabel('Prin. Component {}'.format(features[0]),
+               fontsize=kwargs['labelfontsize'])
+    plt.ylabel('Prin. Component {}'.format(features[1]),
+               fontsize=kwargs['labelfontsize'])
+
+    if kwargs['fname'] is None:
+        plt.show()
+    else:
+        plt.savefig(kwargs['fname'])
+
+    return xy
