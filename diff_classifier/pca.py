@@ -489,7 +489,7 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
     fig, ax = plt.subplots(figsize=kwargs['figsize'])
     sns.violinplot(x="Feature", y="Feature Value", hue="label",
                    data=to_violin,
-                   palette="Pastel1", hue_order=hue_order, figsize=kwargs['figsize'])
+                   palette="Pastel1", hue_order=lvals, figsize=kwargs['figsize'])
 
     # kwargs
     ax.tick_params(axis='both', which='major', labelsize=kwargs['ticksize'])
