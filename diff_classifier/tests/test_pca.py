@@ -166,7 +166,7 @@ def test_feature_plot_2D():
     # assert len(xy[1]) == 200
     # assert os.path.isfile('test1.png')
     #
-    xy = pca.feature_plot_2D(df, label='label', features=[0, 1], randsel=False)
+    # xy = pca.feature_plot_2D(df, label='label', features=[0, 1], randsel=False)
     # assert len(xy[1]) == 250
 
 
@@ -185,5 +185,5 @@ def test_feature_plot_3D():
     # assert len(xy[1]) == 200
     # assert os.path.isfile('test1.png')
     #
-    xy = pca.feature_plot_3D(df, label='label', features=[0, 1, 2], randsel=False)
+    # xy = pca.feature_plot_3D(df, label='label', features=[0, 1, 2], randsel=False)
     # assert len(xy[1]) == 250
