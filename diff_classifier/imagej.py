@@ -185,8 +185,9 @@ def track(target, out_file, template=None, fiji_bin=None,
     fid.close()
 
 
-def regress_sys(folder, all_videos, yfit, training_size, frame=0,
-                have_output=True, download=True, bucket_name='ccurtis.data'):
+def regress_sys(folder, all_videos, yfit, training_size, randselect=True,
+                trainingdata=[], frame=0, have_output=True, download=True,
+                bucket_name='ccurtis.data'):
     """Uses regression based on image intensities to select tracking parameters.
 
     This function uses regression methods from the scikit-learn module to
@@ -211,8 +212,14 @@ def regress_sys(folder, all_videos, yfit, training_size, frame=0,
     yfit: numpy.ndarray
         Contains manually acquired quality levels using Trackmate for the
         files contained in the training dataset.
-    training_size: int
+    training_size : int
         Number of files in training dataset.
+    randselect : bool
+        If True, will randomly select training videos from all_videos.
+        If False, will use trainingdata as input training dataset.
+    trainingdata : list of str
+        Optional manually selected prefixes of video filenames to be
+        used as training dataset.
     have_output: bool
         If you have already acquired the quality values (yfit) for the
         training dataset, set to True.  If False, it will output the files
@@ -234,12 +241,15 @@ def regress_sys(folder, all_videos, yfit, training_size, frame=0,
 
     """
 
-    tprefix = []
-    for i in range(0, training_size):
-        random.seed(i+1)
-        tprefix.append(all_videos[random.randint(0, len(all_videos))])
-        if have_output is False:
-            print("Get parameters for: {}".format(tprefix[i]))
+    if randselect:
+        tprefix = []
+        for i in range(0, training_size):
+            random.seed(i+1)
+            tprefix.append(all_videos[random.randint(0, len(all_videos))])
+            if have_output is False:
+                print("Get parameters for: {}".format(tprefix[i]))
+    else:
+        tprefix = trainingdata
 
     if have_output is True:
         # Define descriptors

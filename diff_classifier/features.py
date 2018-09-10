@@ -43,9 +43,9 @@ def unmask_track(track):
     comp_y = ma.compressed(ma.masked_where(x_mask, track['Y']))
     comp_msd = ma.compressed(ma.masked_where(msd_mask, track['MSDs']))
     comp_gauss = ma.compressed(ma.masked_where(msd_mask, track['Gauss']))
-    comp_qual = ma.compressed(ma.masked_where(msd_mask, track['Quality']))
-    comp_snr = ma.compressed(ma.masked_where(msd_mask, track['SN_Ratio']))
-    comp_meani = ma.compressed(ma.masked_where(msd_mask,
+    comp_qual = ma.compressed(ma.masked_where(x_mask, track['Quality']))
+    comp_snr = ma.compressed(ma.masked_where(x_mask, track['SN_Ratio']))
+    comp_meani = ma.compressed(ma.masked_where(x_mask,
                                                track['Mean_Intensity']))
 
     data1 = {'Frame': comp_frame,
@@ -719,7 +719,7 @@ def msd_ratio(track, fram1=3, fram2=100):
     return ratio
 
 
-def calculate_features(dframe, framerate=1, frame=100):
+def calculate_features(dframe, framerate=1, frame=(10, 100)):
     """Calculates multiple features from input MSD dataset and stores in pandas
     dataframe.
 
@@ -776,7 +776,8 @@ def calculate_features(dframe, framerate=1, frame=100):
            'Quality': holder,
            'Mean_Intensity': holder,
            'SN_Ratio': holder,
-           'Deff': holder}
+           'Deff1': holder,
+           'Deff2': holder}
 
     datai = pd.DataFrame(data=die)
 
@@ -813,13 +814,21 @@ def calculate_features(dframe, framerate=1, frame=100):
             datai['MSD_ratio'][particle] = np.nan
 
         try:
-            datai['Deff'][particle] = single_track['MSDs'][frame] / (4*frame)
+            datai['Deff1'][particle] = single_track['MSDs'][frame[0]] / (4*frame[0])
         except:
-            datai['Deff'][particle] = np.nan
+            datai['Deff1'][particle] = np.nan
 
-        datai['Mean_Intensity'] = np.nanmean(single_track['Mean_Intensity'].values)
-        datai['Quality'] = np.nanmean(single_track['Quality'].values)
-        datai['SN_Ratio'] = np.nanmean(single_track['SN_Ratio'].values)
+        try:
+            datai['Deff2'][particle] = single_track['MSDs'][frame[1]] / (4*frame[1])
+        except:
+            datai['Deff2'][particle] = np.nan
+
+        datai['Mean_Intensity'][particle] = np.nanmean(single_track[
+              'Mean_Intensity'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
+        datai['Quality'][particle] = np.nanmean(single_track[
+              'Quality'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
+        datai['SN_Ratio'][particle] = np.nanmean(single_track[
+              'SN_Ratio'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
 
     return datai
 

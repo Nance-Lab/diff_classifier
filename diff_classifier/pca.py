@@ -250,8 +250,32 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     pcadataset.prcomps = pd.DataFrame.from_dict(prim_comps)
     pcadataset.pcavals = pd.DataFrame(pca1.transform(dataset_scaled))
     pcadataset.final = pd.concat([dataset, pcadataset.pcavals], axis=1)
+    pcadataset.pcamodel = pca1
 
     return pcadataset
+
+
+def recycle_pcamodel(pcamodel, df, imputenans=True, scale=True):
+    if imputenans:
+        imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+        imp.fit(df)
+        df_clean = imp.transform(df)
+    else:
+        df_clean = df
+        
+    # Scale inputs
+    if scale:
+        scaler = stscale()
+        scaler.fit(df_clean)
+        df_scaled = scaler.transform(df_clean)
+    else:
+        df_scaled = df_clean
+        
+    pcamodel.fit(df_scaled)
+    pcavals = pd.DataFrame(pcamodel.transform(df_scaled))
+    pcafinal = pd.concat([df, pcavals], axis=1)
+    
+    return pcafinal
 
 
 def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
