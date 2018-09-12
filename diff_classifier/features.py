@@ -43,13 +43,20 @@ def unmask_track(track):
     comp_y = ma.compressed(ma.masked_where(x_mask, track['Y']))
     comp_msd = ma.compressed(ma.masked_where(msd_mask, track['MSDs']))
     comp_gauss = ma.compressed(ma.masked_where(msd_mask, track['Gauss']))
+    comp_qual = ma.compressed(ma.masked_where(x_mask, track['Quality']))
+    comp_snr = ma.compressed(ma.masked_where(x_mask, track['SN_Ratio']))
+    comp_meani = ma.compressed(ma.masked_where(x_mask,
+                                               track['Mean_Intensity']))
 
     data1 = {'Frame': comp_frame,
              'Track_ID': compid,
              'X': comp_x,
              'Y': comp_y,
              'MSDs': comp_msd,
-             'Gauss': comp_gauss
+             'Gauss': comp_gauss,
+             'Quality': comp_qual,
+             'SN_Ratio': comp_snr,
+             'Mean_Intensity': comp_meani
              }
     comp_track = pd.DataFrame(data=data1)
     return comp_track
@@ -712,7 +719,7 @@ def msd_ratio(track, fram1=3, fram2=100):
     return ratio
 
 
-def calculate_features(dframe, framerate=1):
+def calculate_features(dframe, framerate=1, frame=(10, 100)):
     """Calculates multiple features from input MSD dataset and stores in pandas
     dataframe.
 
@@ -727,6 +734,8 @@ def calculate_features(dframe, framerate=1):
         Required for accurate calculation of some features.  Default is 1.
         Possibly not required. Ignore if performing all calcuations without
         units.
+    frame : int
+        Frame at which to calculate Deff
 
     Returns
     -------
@@ -763,7 +772,12 @@ def calculate_features(dframe, framerate=1):
            'MSD_ratio': holder,
            'frames': holder,
            'X': holder,
-           'Y': holder}
+           'Y': holder,
+           'Quality': holder,
+           'Mean_Intensity': holder,
+           'SN_Ratio': holder,
+           'Deff1': holder,
+           'Deff2': holder}
 
     datai = pd.DataFrame(data=die)
 
@@ -799,14 +813,31 @@ def calculate_features(dframe, framerate=1):
         else:
             datai['MSD_ratio'][particle] = np.nan
 
+        try:
+            datai['Deff1'][particle] = single_track['MSDs'][frame[0]] / (4*frame[0])
+        except:
+            datai['Deff1'][particle] = np.nan
+
+        try:
+            datai['Deff2'][particle] = single_track['MSDs'][frame[1]] / (4*frame[1])
+        except:
+            datai['Deff2'][particle] = np.nan
+
+        datai['Mean_Intensity'][particle] = np.nanmean(single_track[
+              'Mean_Intensity'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
+        datai['Quality'][particle] = np.nanmean(single_track[
+              'Quality'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
+        datai['SN_Ratio'][particle] = np.nanmean(single_track[
+              'SN_Ratio'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
+
     return datai
 
 
 def feature_violin(tgroups, feature='boundedness',
                    labels=['sample 1', 'sample 2', 'sample 3'],
-                   points=40, ylim=[0, 1]):
+                   points=40, ylim=[0, 1], nticks=11):
     '''Plots violin plots of features in comparison groups
-    
+
     Parameters
     ----------
     tgroups : dict of pandas.core.frames.DataFrame
@@ -820,33 +851,33 @@ def feature_violin(tgroups, feature='boundedness',
         Determines resolution of violin plot
     ylim : list of int
         Y range of output plot
-    
+
     '''
 
-    majorticks = np.linspace(0, ylim[1], 11)
+    majorticks = np.linspace(ylim[0], ylim[1], nticks)
     to_graph = []
     pos = []
     counter = 1
     for key in tgroups:
-        to_graph.append(tgroups[key][feature].dropna().tolist())
+        to_graph.append(tgroups[key][feature][tgroups[key][feature] < 10000].replace([np.inf, -np.inf], np.nan).dropna().values)
         pos.append(counter)
         counter = counter + 1
-        
+
     def set_axis_style(ax, labels):
         ax.get_xaxis().set_tick_params(direction='out')
         ax.xaxis.set_ticks_position('bottom')
         ax.set_xticks(np.arange(1, len(labels) + 1))
         ax.set_xticklabels(labels)
         ax.set_xlim(0.25, len(labels) + 0.75)
-    
+
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(6, 6))
 
     axes.violinplot(to_graph, pos, points=points, widths=0.9,
                     showmeans=True, showextrema=False)
     set_axis_style(axes, labels)
-    axes.tick_params(axis = 'both', which = 'major',
-                     labelsize = 16)
+    axes.tick_params(axis='both', which='major',
+                     labelsize=16)
     axes.set_ylim(ylim)
     axes.set_yticks(majorticks)
-    
+
     plt.show()

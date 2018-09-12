@@ -26,42 +26,52 @@ bibliography: paper.bib
 
 # Summary
 
-Multi-particle tracking (MPT) is a powerful analytical tool that has been used
-in fields ranging from aeronautics to oceanography to biomedical engineering
-[@Pulford:2005]. However, MPT methods currently resemble more an art than a
-science. MPT can be broken down into two essential components: feature detection
-and frame linking. Different tracking algorithms rely on a variety of methods
-for both steps. A recent competition open to the particle tracking community
-challenged participants to independently apply their self-developed methods and
-algorithms to a shared dataset capturing a variety of scenarios, e.g. Brownian
-motion similar to vesicles in the cytoplasm and directed motion such as
-microtubule transport [@Chenouard:2014]. It was found that no method performed
-near perfectly, and factors impacting image quality during acquisition (e.g.
-non-uniform background, polydispersity, and photobleaching) all hampered
-accuracy.
+The ``diff_classifier`` package seeks to address the issue of scale-up in
+multi-particle tracking (MPT) analyses via a parallelization approach. MPT is a
+powerful analytical tool that has been used in fields ranging from aeronautics
+to oceanography to biomedical engineering [@Pulford:2005]. While a variety of
+tracking algorithms are available to researchers [@Chenouard:2014], a common
+problem is the large time sink in data analysis due to a widespread use of
+graphical user interfaces and the reliance on human input for accurate tracking.
+For example, particle detection often relies on the selection of a quality
+threshold, a numerical quantity distinguishing between “real” particles and
+“fake” particles [@Tineves:2017]. If this threshold is too high, the high number
+of false positives can result in false trajectories that skew results, and in
+extreme cases, cause the code to crash due to a lack of convergence in the
+particle linking step. If the threshold is too low, trajectories will be cut
+short resulting in a bias towards short fast-moving trajectories and could
+result in empty datasets [@Wang:2015].
 
-One aspect of particle tracking that has yet to be fully solved is the element
-of bias introduction by human selection of tracking parameters. Most tracking
-packages require some human input in both particle detection and linking steps,
-and these vary depending on image quality, particle properties, and acquisition
-setup. Not only does this introduce potential sources of error, but it can also
-significantly slow down analysis workflows if human input is required for each
-video. Users must choose between potential error in results by using constant
-parameters across all videos or high time-to-first-results that scale with the
-number of videos to be analyzed.
+Due to variations in experimental conditions and image quality, user-selected
+tracking parameters can vary widely from video to video. As parameter selection
+can also vary from user to user, this also brings up the issue of
+reproducibility. ``Diff_classifier`` addresses these issues with regression
+tools to predict input tracking parameters and parallelized script-based
+implementations in Amazon Web Services (AWS) S3 and Batch services. By manually
+tracking a small subset of the entire video dataset to be analyzed (5-10 videos
+per experiment), users can predict tracking parameters based on intensity
+distributions of input images. This can simultaneously reduce
+time-to-first-result in MPT workflows and provide reproducible MPT results.
 
-In this paper, we present ``diff_classifier`` as a toolset to address the
-scale-up of nanoparticle tracking analysis using the combination of
-parallelization techniques, regression to predict tracking parameters, and
-downstream analysis and visualization tools to minimize time-to-first-result.
+``Diff_classifier`` also includes downstream MPT analysis tools including mean
+squared displacement and feature calculations, visualization tools, and a
+principle component analysis implementation. MPT is commonly used to calculate
+and report ensemble-averaged diffusion coefficients of nanoparticles and other
+objects. We sought to expand the power of MPT analyses by changing the unit of
+analysis to individual particle trajectories. By including a variety of features
+(e.g. aspect ratio, boundedness, fractal dimension), with trajectory-level
+resolution, users can implement a range of data science analysis techniques to
+their MPT datasets.
 
 The source code for ``diff_classifier`` has been archived to Zenodo with the
 linked DOI: [@zenodo]
+
 
 # Acknowledgements
 
 The authors would like to thank the eScience Institute for the resources and
 expertise provided through the Incubator Program that made ``diff_classifier``
-possible.
+possible. The authors would also like to thank funding from the National
+Institute of General Medical Sciences 1R35 GM124677-01 (E. Nance).
 
 # References
