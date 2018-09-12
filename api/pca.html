@@ -1,0 +1,723 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>diff_classifier.pca &mdash; diff_classifier 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="API" href="index.html"/>
+        <link rel="next" title="diff_classifier.knotlets" href="knotlets.html"/>
+        <link rel="prev" title="diff_classifier.heatmaps" href="heatmaps.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_data.html">Example data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interacting_with_S3.html">Uploading and download with s3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="msd.html"><code class="docutils literal"><span class="pre">diff_classifier.msd</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="imagej.html"><code class="docutils literal"><span class="pre">diff_classifier.imagej</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html"><code class="docutils literal"><span class="pre">diff_classifier.features</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws.html"><code class="docutils literal"><span class="pre">diff_classifier.aws</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="heatmaps.html"><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">diff_classifier.pca</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal"><span class="pre">diff_classifier.pca</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="knotlets.html"><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">API</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">diff_classifier.pca</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/pca.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="diff-classifier-pca">
+<h1><a class="reference internal" href="#module-diff_classifier.pca" title="diff_classifier.pca"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.pca</span></code></a><a class="headerlink" href="#diff-classifier-pca" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-diff_classifier.pca" title="diff_classifier.pca"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.pca</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-diff_classifier.pca"></span><p>Performs principle component analysis on input datasets.</p>
+<p>This module performs principle component analysis on input datasets using
+functions from scikit-learn. It is optimized to data formats used in
+diff_classifier, but can potentially be extended to other applications.</p>
+<dl class="class">
+<dt id="diff_classifier.pca.Bunch">
+<em class="property">class </em><code class="descclassname">diff_classifier.pca.</code><code class="descname">Bunch</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#Bunch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.Bunch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.build_KNN_model">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">build_KNN_model</code><span class="sig-paren">(</span><em>rawdata</em>, <em>feature</em>, <em>featvals</em>, <em>equal_sampling=True</em>, <em>tsize=20</em>, <em>n_neighbors=5</em>, <em>from_end=True</em>, <em>input_cols=6</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#build_KNN_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.build_KNN_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a K-nearest neighbor model using an input dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>rawdata</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frames.DataFrame</span></dt>
+<dd><p class="first last">Raw dataset of n samples and p features.</p>
+</dd>
+<dt><strong>feature</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string or int</span></dt>
+<dd><p class="first last">Feature in rawdata containing output values on which KNN
+model is to be based.</p>
+</dd>
+<dt><strong>featvals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string or int</span></dt>
+<dd><p class="first last">All values that feature can take.</p>
+</dd>
+<dt><strong>equal_sampling</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">If True, training dataset will contain an equal number
+of samples that take each value of featvals. If false,
+each sample in training dataset will be taken randomly
+from rawdata.</p>
+</dd>
+<dt><strong>tsize</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Size of training dataset. If equal_sampling is False,
+training dataset will be exactly this size. If True,
+training dataset will contain N x tsize where N is the
+number of unique values in featvals.</p>
+</dd>
+<dt><strong>n_neighbors</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of nearest neighbors to be used in KNN
+algorithm.</p>
+</dd>
+<dt><strong>from_end</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">If True, in_cols will select features to be used as
+training data defined end of rawdata e.g.
+rawdata[:, -6:]. If False, input_cols will be read
+as a tuple e.g. rawdata[:, 10:15].</p>
+</dd>
+<dt><strong>input_col</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int or tuple</span></dt>
+<dd><p class="first last">Defined in from_end above.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>clf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">sklearn.neighbors.classification.KNeighborsClassifier</span></dt>
+<dd><p class="first last">KNN model</p>
+</dd>
+<dt><strong>X</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">training input dataset used to create clf</p>
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">training output dataset used to create clf</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.feature_plot_2D">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">feature_plot_2D</code><span class="sig-paren">(</span><em>dataset, label, features=[0, 1], randsel=True, randcount=200, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#feature_plot_2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.feature_plot_2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots two features against each other from feature dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>dataset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frames.DataFrame</span></dt>
+<dd><p class="first last">Must comtain a group column and numerical features columns</p>
+</dd>
+<dt><strong>labels</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string or int</span></dt>
+<dd><p class="first last">Group column name</p>
+</dd>
+<dt><strong>features</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of int</span></dt>
+<dd><p class="first last">Names of columns to be plotted</p>
+</dd>
+<dt><strong>randsel</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">If True, downsamples from original dataset</p>
+</dd>
+<dt><strong>randcount</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Size of downsampled dataset</p>
+</dd>
+<dt><strong>**kwargs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">variable</span></dt>
+<dd><dl class="first last docutils">
+<dt>figsize <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int or float</span></dt>
+<dd><p class="first last">Size of output figure</p>
+</dd>
+<dt>dotsize <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Size of plotting markers</p>
+</dd>
+<dt>alpha <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Transparency factor</p>
+</dd>
+<dt>xlim <span class="classifier-delimiter">:</span> <span class="classifier">list of float or int</span></dt>
+<dd><p class="first last">X range of output plot</p>
+</dd>
+<dt>ylim <span class="classifier-delimiter">:</span> <span class="classifier">list of float or int</span></dt>
+<dd><p class="first last">Y range of output plot</p>
+</dd>
+<dt>legendfontsize <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Font size of legend</p>
+</dd>
+<dt>labelfontsize <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Font size of labels</p>
+</dd>
+<dt>fname <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Filename of output figure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>xy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of lists</span></dt>
+<dd><p class="first last">Coordinates of data on plot</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.feature_plot_3D">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">feature_plot_3D</code><span class="sig-paren">(</span><em>dataset, label, features=[0, 1, 2], randsel=True, randcount=200, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#feature_plot_3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.feature_plot_3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots three features against each other from feature dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>dataset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frames.DataFrame</span></dt>
+<dd><p class="first last">Must comtain a group column and numerical features columns</p>
+</dd>
+<dt><strong>labels</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string or int</span></dt>
+<dd><p class="first last">Group column name</p>
+</dd>
+<dt><strong>features</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of int</span></dt>
+<dd><p class="first last">Names of columns to be plotted</p>
+</dd>
+<dt><strong>randsel</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">If True, downsamples from original dataset</p>
+</dd>
+<dt><strong>randcount</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Size of downsampled dataset</p>
+</dd>
+<dt><strong>**kwargs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">variable</span></dt>
+<dd><dl class="first last docutils">
+<dt>figsize <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int or float</span></dt>
+<dd><p class="first last">Size of output figure</p>
+</dd>
+<dt>dotsize <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Size of plotting markers</p>
+</dd>
+<dt>alpha <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Transparency factor</p>
+</dd>
+<dt>xlim <span class="classifier-delimiter">:</span> <span class="classifier">list of float or int</span></dt>
+<dd><p class="first last">X range of output plot</p>
+</dd>
+<dt>ylim <span class="classifier-delimiter">:</span> <span class="classifier">list of float or int</span></dt>
+<dd><p class="first last">Y range of output plot</p>
+</dd>
+<dt>zlim <span class="classifier-delimiter">:</span> <span class="classifier">list of float or int</span></dt>
+<dd><p class="first last">Z range of output plot</p>
+</dd>
+<dt>legendfontsize <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Font size of legend</p>
+</dd>
+<dt>labelfontsize <span class="classifier-delimiter">:</span> <span class="classifier">float or int</span></dt>
+<dd><p class="first last">Font size of labels</p>
+</dd>
+<dt>fname <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Filename of output figure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>xy</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of lists</span></dt>
+<dd><p class="first last">Coordinates of data on plot</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.feature_violin">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">feature_violin</code><span class="sig-paren">(</span><em>df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#feature_violin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.feature_violin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates violinplot of input feature dataset</p>
+<p>Designed to plot PCA components from pca_analysis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frames.DataFrame</span></dt>
+<dd><p class="first last">Must contain a group name column, and numerical feature columns.</p>
+</dd>
+<dt><strong>label</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string or int</span></dt>
+<dd><p class="first last">Name of group column.</p>
+</dd>
+<dt><strong>lvals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of string or int</span></dt>
+<dd><p class="first last">All values that group column can take</p>
+</dd>
+<dt><strong>fsubset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int or list of int</span></dt>
+<dd><p class="first last">Features to be plotted. If integer, will plot range(fsubset).
+If list, will only plot features contained in fsubset.</p>
+</dd>
+<dt><strong>**kwargs</strong> <span class="classifier-delimiter">:</span> <span class="classifier">variable</span></dt>
+<dd><dl class="first last docutils">
+<dt>figsize <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int or float</span></dt>
+<dd><p class="first last">Dimensions of output figure</p>
+</dd>
+<dt>yrange <span class="classifier-delimiter">:</span> <span class="classifier">list of int or float</span></dt>
+<dd><p class="first last">Range of y axis</p>
+</dd>
+<dt>xlabel <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Label of x axis</p>
+</dd>
+<dt>labelsize <span class="classifier-delimiter">:</span> <span class="classifier">int or float</span></dt>
+<dd><p class="first last">Font size of x label</p>
+</dd>
+<dt>ticksize <span class="classifier-delimiter">:</span> <span class="classifier">int or float</span></dt>
+<dd><p class="first last">Font size of y tick labels</p>
+</dd>
+<dt>fname <span class="classifier-delimiter">:</span> <span class="classifier">None or string</span></dt>
+<dd><p class="first last">Name of output file</p>
+</dd>
+<dt>legendfontsize <span class="classifier-delimiter">:</span> <span class="classifier">int or float</span></dt>
+<dd><p class="first last">Font size of legend</p>
+</dd>
+<dt>legendloc <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Location of legend in plot e.g. 1, 2, 3, 4</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.kmo">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">kmo</code><span class="sig-paren">(</span><em>dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#kmo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.kmo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Kaiser-Meyer-Olkin measure on an input dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>dataset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape (n, p)</span></dt>
+<dd><p class="first last">Array containing n samples and p features. Must have no NaNs.
+Ideally scaled before performing test.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>kmostat</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">KMO test value</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Based on calculations shown here:</p>
+<p><a class="reference external" href="http://www.statisticshowto.com/kaiser-meyer-olkin/">http://www.statisticshowto.com/kaiser-meyer-olkin/</a></p>
+<blockquote>
+<div>&#8211; 0.00-0.49  unacceptable
+&#8211; 0.50-0.59  miserable
+&#8211; 0.60-0.69  mediocre
+&#8211; 0.70-0.79  middling
+&#8211; 0.80-0.89  meritorious
+&#8211; 0.90-1.00  marvelous</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.partial_corr">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">partial_corr</code><span class="sig-paren">(</span><em>mtrx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#partial_corr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.partial_corr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates linear partial correlation coefficients</p>
+<p>Returns the sample linear partial correlation coefficients between pairs of
+variables in mtrx, controlling for the remaining variables in mtrx.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>mtrx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape (n, p)</span></dt>
+<dd><p class="first last">Array with the different variables. Each column of mtrx is taken as a
+variable</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>P</strong> <span class="classifier-delimiter">:</span> <span class="classifier">array-like, shape (p, p)</span></dt>
+<dd><p class="first last">P[i, j] contains the partial correlation of mtrx[:, i] and mtrx[:, j]
+controlling for the remaining variables in mtrx.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Partial Correlation in Python (clone of Matlab&#8217;s partialcorr)</p>
+<p>This uses the linear regression approach to compute the partial
+correlation (might be slow for a huge number of variables). The
+algorithm is detailed here:</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Partial_correlation#Using_linear_regression">http://en.wikipedia.org/wiki/Partial_correlation#Using_linear_regression</a></p>
+<p>Taking X and Y two variables of interest and Z the matrix with all the
+variable minus {X, Y}, the algorithm can be summarized as</p>
+<ol class="arabic simple">
+<li>perform a normal linear least-squares regression with X as the target
+and Z as the predictor</li>
+<li>calculate the residuals in Step #1</li>
+<li>perform a normal linear least-squares regression with Y as the target and
+Z as the predictor</li>
+<li>calculate the residuals in Step #3</li>
+<li>calculate the correlation coefficient between the residuals from Steps #2
+and #4</li>
+</ol>
+<p>The result is the partial correlation between X and Y while controlling for
+the effect of Z</p>
+<p>Adapted from code by Fabian Pedregosa-Izquierdo:
+Date: Nov 2014
+Author: Fabian Pedregosa-Izquierdo, <a class="reference external" href="mailto:f&#37;&#52;&#48;bianp&#46;net">f<span>&#64;</span>bianp<span>&#46;</span>net</a>
+Testing: Valentina Borghesani, <a class="reference external" href="mailto:valentinaborghesani&#37;&#52;&#48;gmail&#46;com">valentinaborghesani<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.pca_analysis">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">pca_analysis</code><span class="sig-paren">(</span><em>dataset</em>, <em>dropcols=[]</em>, <em>imputenans=True</em>, <em>scale=True</em>, <em>rem_outliers=True</em>, <em>out_thresh=10</em>, <em>n_components=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#pca_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.pca_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a primary component analysis on an input dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>dataset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame, shape (n, p)</span></dt>
+<dd><p class="first last">Input dataset with n samples and p features</p>
+</dd>
+<dt><strong>dropcols</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">Columns to exclude from pca analysis. At a minimum, user must exclude
+non-numeric columns.</p>
+</dd>
+<dt><strong>imputenans</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">If True, impute NaN values as column means.</p>
+</dd>
+<dt><strong>scale</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">If True, columns will be scaled to a mean of zero and a standard
+deviation of 1.</p>
+</dd>
+<dt><strong>n_components</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Desired number of components in principle component analysis.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>pcadataset</strong> <span class="classifier-delimiter">:</span> <span class="classifier">diff_classifier.pca.Bunch</span></dt>
+<dd><p class="first">Contains outputs of PCA analysis, including:
+scaled : numpy.ndarray, shape (n, p)</p>
+<blockquote>
+<div><p>Scaled dataset with n samples and p features</p>
+</div></blockquote>
+<dl class="last docutils">
+<dt>pcavals <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame, shape (n, n_components)</span></dt>
+<dd><p class="first last">Output array of n_component features of each original sample</p>
+</dd>
+<dt>final <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame, shape (n, p+n_components)</span></dt>
+<dd><p class="first last">Output array with principle components append to original array.</p>
+</dd>
+<dt>prcomps <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame, shape (5, n_components)</span></dt>
+<dd><p class="first last">Output array displaying the top 5 features contributing to each
+principle component.</p>
+</dd>
+<dt>prvals <span class="classifier-delimiter">:</span> <span class="classifier">dict of list of str</span></dt>
+<dd><p class="first last">Output dictionary of of the pca scores for the top 5 features
+contributing to each principle component.</p>
+</dd>
+<dt>components <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame, shape (p, n_components)</span></dt>
+<dd><p class="first last">Raw pca scores.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.plot_pca">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">plot_pca</code><span class="sig-paren">(</span><em>datasets, figsize=(8, 8), lwidth=8.0, labels=['Sample1', 'Sample2'], savefig=True, filename='test.png', rticks=array([-2., -1.,  0.,  1.,  2.])</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#plot_pca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.plot_pca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the average output features from a PCA analysis in polar
+coordinates</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>datasets</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict of numpy.ndarray</span></dt>
+<dd><p class="first last">Dictionary with n samples and p features to plot.</p>
+</dd>
+<dt><strong>figize</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">Dimensions of output figure e.g. (8, 8)</p>
+</dd>
+<dt><strong>lwidth</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Width of plotted lines in figure</p>
+</dd>
+<dt><strong>labels</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
+<dd><p class="first last">Labels to display in legend.</p>
+</dd>
+<dt><strong>savefig</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">If True, saves figure</p>
+</dd>
+<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Desired output filename</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.predict_KNN">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">predict_KNN</code><span class="sig-paren">(</span><em>model</em>, <em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#predict_KNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.predict_KNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates fraction correctly predicted using input KNN
+model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>model</strong> <span class="classifier-delimiter">:</span> <span class="classifier">sklearn.neighbors.classification.KNeighborsClassifier</span></dt>
+<dd><p class="first last">KNN model</p>
+</dd>
+<dt><strong>X</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">training input dataset used to create clf</p>
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">training output dataset used to create clf</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>pcorrect</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Fraction of correctly predicted outputs using the
+input KNN model and the input test dataset X and y</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.pca.recycle_pcamodel">
+<code class="descclassname">diff_classifier.pca.</code><code class="descname">recycle_pcamodel</code><span class="sig-paren">(</span><em>pcamodel</em>, <em>df</em>, <em>imputenans=True</em>, <em>scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/pca.html#recycle_pcamodel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.pca.recycle_pcamodel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="knotlets.html" class="btn btn-neutral float-right" title="diff_classifier.knotlets" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="heatmaps.html" class="btn btn-neutral" title="diff_classifier.heatmaps" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

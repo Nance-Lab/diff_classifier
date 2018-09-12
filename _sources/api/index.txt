@@ -11,4 +11,5 @@ This is the diff_classifier documentation, auto generated from the source code.
     features
     aws
     heatmaps
+    pca
     knotlets

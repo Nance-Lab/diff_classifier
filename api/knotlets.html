@@ -32,7 +32,7 @@
   
     <link rel="top" title="diff_classifier 0.1 documentation" href="../index.html"/>
         <link rel="up" title="API" href="index.html"/>
-        <link rel="prev" title="diff_classifier.heatmaps" href="heatmaps.html"/> 
+        <link rel="prev" title="diff_classifier.pca" href="pca.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="features.html"><code class="docutils literal"><span class="pre">diff_classifier.features</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="aws.html"><code class="docutils literal"><span class="pre">diff_classifier.aws</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="heatmaps.html"><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pca.html"><code class="docutils literal"><span class="pre">diff_classifier.pca</span></code></a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a></li>
 </ul>
@@ -223,7 +224,7 @@ correctly splitting.</p>
 
 <dl class="function">
 <dt id="diff_classifier.knotlets.split_track_msds">
-<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">split_track_msds</code><span class="sig-paren">(</span><em>prefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>rows=4</em>, <em>cols=4</em>, <em>ores=(2048</em>, <em>2048)</em>, <em>ires=(512</em>, <em>512)</em>, <em>to_split=False</em>, <em>regress_f='regress.obj'</em>, <em>frames=651</em>, <em>tparams={'quality': 15.0</em>, <em>'track_duration': 20.0</em>, <em>'linking_max_distance': 6.0</em>, <em>'threshold': 0.0</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'snr': 0.0</em>, <em>'radius': 3.0</em>, <em>'median_intensity': 300.0</em>, <em>'max_frame_gap': 3</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'gap_closing_max_distance': 10.0</em>, <em>'do_median_filtering': False}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#split_track_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.split_track_msds" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">split_track_msds</code><span class="sig-paren">(</span><em>prefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>rows=4</em>, <em>cols=4</em>, <em>ores=(2048</em>, <em>2048)</em>, <em>ires=(512</em>, <em>512)</em>, <em>to_split=False</em>, <em>regress_f='regress.obj'</em>, <em>frames=651</em>, <em>tparams={'snr': 0.0</em>, <em>'do_median_filtering': False</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'linking_max_distance': 6.0</em>, <em>'radius': 3.0</em>, <em>'gap_closing_max_distance': 10.0</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'max_frame_gap': 3</em>, <em>'track_duration': 20.0</em>, <em>'threshold': 0.0</em>, <em>'quality': 15.0</em>, <em>'median_intensity': 300.0}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#split_track_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.split_track_msds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Splits images, track particles, and calculates MSDs</p>
 <p>A composite function designed to work with Cloudknot to split images,
 track particles, and calculate MSDs.</p>
@@ -277,7 +278,7 @@ correctly splitting.</p>
 
 <dl class="function">
 <dt id="diff_classifier.knotlets.tracking">
-<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">tracking</code><span class="sig-paren">(</span><em>subprefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>regress_f='regress.obj'</em>, <em>rows=4</em>, <em>cols=4</em>, <em>ires=(512</em>, <em>512)</em>, <em>tparams={'quality': 15.0</em>, <em>'track_duration': 20.0</em>, <em>'linking_max_distance': 6.0</em>, <em>'threshold': 0.0</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'snr': 0.0</em>, <em>'radius': 3.0</em>, <em>'median_intensity': 300.0</em>, <em>'max_frame_gap': 3</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'gap_closing_max_distance': 10.0</em>, <em>'do_median_filtering': False}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.tracking" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.knotlets.</code><code class="descname">tracking</code><span class="sig-paren">(</span><em>subprefix</em>, <em>remote_folder</em>, <em>bucket='nancelab.publicfiles'</em>, <em>regress_f='regress.obj'</em>, <em>rows=4</em>, <em>cols=4</em>, <em>ires=(512</em>, <em>512)</em>, <em>tparams={'snr': 0.0</em>, <em>'do_median_filtering': False</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'linking_max_distance': 6.0</em>, <em>'radius': 3.0</em>, <em>'gap_closing_max_distance': 10.0</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'max_frame_gap': 3</em>, <em>'track_duration': 20.0</em>, <em>'threshold': 0.0</em>, <em>'quality': 15.0</em>, <em>'median_intensity': 300.0}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/knotlets.html#tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.knotlets.tracking" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tracks particles in input image using Trackmate.</p>
 <p>A function based on imagej.track that downloads the image from S3, tracks
 particles using Trackmate, and uploads the resulting trajectory file to S3.</p>
@@ -331,7 +332,7 @@ correctly splitting.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="heatmaps.html" class="btn btn-neutral" title="diff_classifier.heatmaps" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pca.html" class="btn btn-neutral" title="diff_classifier.pca" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

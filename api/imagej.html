@@ -99,6 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="features.html"><code class="docutils literal"><span class="pre">diff_classifier.features</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="aws.html"><code class="docutils literal"><span class="pre">diff_classifier.aws</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="heatmaps.html"><code class="docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pca.html"><code class="docutils literal"><span class="pre">diff_classifier.pca</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="knotlets.html"><code class="docutils literal"><span class="pre">diff_classifier.knotlets</span></code></a></li>
 </ul>
 </li>
@@ -348,7 +349,7 @@ Desired regression method.</p>
 
 <dl class="function">
 <dt id="diff_classifier.imagej.track">
-<code class="descclassname">diff_classifier.imagej.</code><code class="descname">track</code><span class="sig-paren">(</span><em>target</em>, <em>out_file</em>, <em>template=None</em>, <em>fiji_bin=None</em>, <em>tparams={'quality': 15.0</em>, <em>'track_duration': 20.0</em>, <em>'linking_max_distance': 6.0</em>, <em>'threshold': 0.0</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'snr': 0.0</em>, <em>'radius': 3.0</em>, <em>'median_intensity': 300.0</em>, <em>'max_frame_gap': 3</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'gap_closing_max_distance': 10.0</em>, <em>'do_median_filtering': False}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.track" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.imagej.</code><code class="descname">track</code><span class="sig-paren">(</span><em>target</em>, <em>out_file</em>, <em>template=None</em>, <em>fiji_bin=None</em>, <em>tparams={'snr': 0.0</em>, <em>'do_median_filtering': False</em>, <em>'ydims': (1</em>, <em>511)</em>, <em>'linking_max_distance': 6.0</em>, <em>'radius': 3.0</em>, <em>'gap_closing_max_distance': 10.0</em>, <em>'xdims': (0</em>, <em>511)</em>, <em>'max_frame_gap': 3</em>, <em>'track_duration': 20.0</em>, <em>'threshold': 0.0</em>, <em>'quality': 15.0</em>, <em>'median_intensity': 300.0}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/imagej.html#track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.imagej.track" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs particle tracking on input video.</p>
 <p>Particle tracking is performed with the ImageJ plugin Trackmate. Outputs
 a csv file containing analysis settings and particle trajectories.</p>

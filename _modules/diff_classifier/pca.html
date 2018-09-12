@@ -1,0 +1,937 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>diff_classifier.pca &mdash; diff_classifier 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="diff_classifier 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> diff_classifier
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tracking.html">Tracking particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interacting_with_S3.html">Uploading and download with s3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier">code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/issues">bugs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">diff_classifier</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>diff_classifier.pca</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for diff_classifier.pca</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Performs principle component analysis on input datasets.</span>
+
+<span class="sd">This module performs principle component analysis on input datasets using</span>
+<span class="sd">functions from scikit-learn. It is optimized to data formats used in</span>
+<span class="sd">diff_classifier, but can potentially be extended to other applications.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span><span class="p">,</span> <span class="n">linalg</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">neighbors</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span> <span class="k">as</span> <span class="n">pca</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span> <span class="k">as</span> <span class="n">stscale</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">Imputer</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">cm</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
+
+
+<div class="viewcode-block" id="Bunch"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.Bunch">[docs]</a><span class="k">class</span> <span class="nc">Bunch</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwds</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="partial_corr"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.partial_corr">[docs]</a><span class="k">def</span> <span class="nf">partial_corr</span><span class="p">(</span><span class="n">mtrx</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates linear partial correlation coefficients</span>
+
+<span class="sd">    Returns the sample linear partial correlation coefficients between pairs of</span>
+<span class="sd">    variables in mtrx, controlling for the remaining variables in mtrx.</span>
+
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mtrx : array-like, shape (n, p)</span>
+<span class="sd">        Array with the different variables. Each column of mtrx is taken as a</span>
+<span class="sd">        variable</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    P : array-like, shape (p, p)</span>
+<span class="sd">        P[i, j] contains the partial correlation of mtrx[:, i] and mtrx[:, j]</span>
+<span class="sd">        controlling for the remaining variables in mtrx.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Partial Correlation in Python (clone of Matlab&#39;s partialcorr)</span>
+
+<span class="sd">    This uses the linear regression approach to compute the partial</span>
+<span class="sd">    correlation (might be slow for a huge number of variables). The</span>
+<span class="sd">    algorithm is detailed here:</span>
+
+<span class="sd">    http://en.wikipedia.org/wiki/Partial_correlation#Using_linear_regression</span>
+
+<span class="sd">    Taking X and Y two variables of interest and Z the matrix with all the</span>
+<span class="sd">    variable minus {X, Y}, the algorithm can be summarized as</span>
+
+<span class="sd">    1) perform a normal linear least-squares regression with X as the target</span>
+<span class="sd">       and Z as the predictor</span>
+<span class="sd">    2) calculate the residuals in Step #1</span>
+<span class="sd">    3) perform a normal linear least-squares regression with Y as the target and</span>
+<span class="sd">       Z as the predictor</span>
+<span class="sd">    4) calculate the residuals in Step #3</span>
+<span class="sd">    5) calculate the correlation coefficient between the residuals from Steps #2</span>
+<span class="sd">       and #4</span>
+
+<span class="sd">    The result is the partial correlation between X and Y while controlling for</span>
+<span class="sd">    the effect of Z</span>
+
+<span class="sd">    Adapted from code by Fabian Pedregosa-Izquierdo:</span>
+<span class="sd">    Date: Nov 2014</span>
+<span class="sd">    Author: Fabian Pedregosa-Izquierdo, f@bianp.net</span>
+<span class="sd">    Testing: Valentina Borghesani, valentinaborghesani@gmail.com</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mtrx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mtrx</span><span class="p">)</span>
+    <span class="n">pfeat</span> <span class="o">=</span> <span class="n">mtrx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pcorr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">pfeat</span><span class="p">,</span> <span class="n">pfeat</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pfeat</span><span class="p">):</span>
+        <span class="n">pcorr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">pfeat</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">pfeat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+            <span class="n">idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">idx</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">beta_i</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">mtrx</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">],</span> <span class="n">mtrx</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">beta_j</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">mtrx</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">],</span> <span class="n">mtrx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">res_j</span> <span class="o">=</span> <span class="n">mtrx</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">mtrx</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta_i</span><span class="p">)</span>
+            <span class="n">res_i</span> <span class="o">=</span> <span class="n">mtrx</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">mtrx</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta_j</span><span class="p">)</span>
+
+            <span class="n">corr</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">pearsonr</span><span class="p">(</span><span class="n">res_i</span><span class="p">,</span> <span class="n">res_j</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pcorr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">corr</span>
+            <span class="n">pcorr</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">corr</span>
+
+    <span class="k">return</span> <span class="n">pcorr</span>
+
+</div>
+<div class="viewcode-block" id="kmo"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.kmo">[docs]</a><span class="k">def</span> <span class="nf">kmo</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the Kaiser-Meyer-Olkin measure on an input dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : array-like, shape (n, p)</span>
+<span class="sd">        Array containing n samples and p features. Must have no NaNs.</span>
+<span class="sd">        Ideally scaled before performing test.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    kmostat : float</span>
+<span class="sd">        KMO test value</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Based on calculations shown here:</span>
+
+<span class="sd">    http://www.statisticshowto.com/kaiser-meyer-olkin/</span>
+
+<span class="sd">        -- 0.00-0.49  unacceptable</span>
+<span class="sd">        -- 0.50-0.59  miserable</span>
+<span class="sd">        -- 0.60-0.69  mediocre</span>
+<span class="sd">        -- 0.70-0.79  middling</span>
+<span class="sd">        -- 0.80-0.89  meritorious</span>
+<span class="sd">        -- 0.90-1.00  marvelous</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Correlation matrix and the partial covariance matrix.</span>
+    <span class="n">corrmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="n">pcorr</span> <span class="o">=</span> <span class="n">partial_corr</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+    <span class="c1"># Calculation of the KMO statistic</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">corrmatrix</span><span class="p">,</span> <span class="n">corrmatrix</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">rij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+    <span class="n">uij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pcorr</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">pcorr</span><span class="p">)</span>
+    <span class="n">kmostat</span> <span class="o">=</span> <span class="n">rij</span><span class="o">/</span><span class="p">(</span><span class="n">rij</span><span class="o">+</span><span class="n">uij</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">kmostat</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kmostat</span>
+
+</div>
+<div class="viewcode-block" id="pca_analysis"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.pca_analysis">[docs]</a><span class="k">def</span> <span class="nf">pca_analysis</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">dropcols</span><span class="o">=</span><span class="p">[],</span> <span class="n">imputenans</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">rem_outliers</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">out_thresh</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Performs a primary component analysis on an input dataset</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : pandas.core.frame.DataFrame, shape (n, p)</span>
+<span class="sd">        Input dataset with n samples and p features</span>
+<span class="sd">    dropcols : list</span>
+<span class="sd">        Columns to exclude from pca analysis. At a minimum, user must exclude</span>
+<span class="sd">        non-numeric columns.</span>
+<span class="sd">    imputenans : bool</span>
+<span class="sd">        If True, impute NaN values as column means.</span>
+<span class="sd">    scale : bool</span>
+<span class="sd">        If True, columns will be scaled to a mean of zero and a standard</span>
+<span class="sd">        deviation of 1.</span>
+<span class="sd">    n_components : int</span>
+<span class="sd">        Desired number of components in principle component analysis.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pcadataset : diff_classifier.pca.Bunch</span>
+<span class="sd">        Contains outputs of PCA analysis, including:</span>
+<span class="sd">        scaled : numpy.ndarray, shape (n, p)</span>
+<span class="sd">            Scaled dataset with n samples and p features</span>
+<span class="sd">        pcavals : pandas.core.frame.DataFrame, shape (n, n_components)</span>
+<span class="sd">            Output array of n_component features of each original sample</span>
+<span class="sd">        final : pandas.core.frame.DataFrame, shape (n, p+n_components)</span>
+<span class="sd">            Output array with principle components append to original array.</span>
+<span class="sd">        prcomps : pandas.core.frame.DataFrame, shape (5, n_components)</span>
+<span class="sd">            Output array displaying the top 5 features contributing to each</span>
+<span class="sd">            principle component.</span>
+<span class="sd">        prvals : dict of list of str</span>
+<span class="sd">            Output dictionary of of the pca scores for the top 5 features</span>
+<span class="sd">            contributing to each principle component.</span>
+<span class="sd">        components : pandas.core.frame.DataFrame, shape (p, n_components)</span>
+<span class="sd">            Raw pca scores.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c1"># default=&#39;warn&#39;</span>
+    <span class="n">dataset_num</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">dropcols</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rem_outliers</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">dataset_num</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">xmean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dataset_num</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+                <span class="n">xstd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">dataset_num</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+
+                <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dataset_num</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">xmean</span> <span class="o">+</span> <span class="n">out_thresh</span><span class="o">*</span><span class="n">xstd</span><span class="p">:</span>
+                        <span class="n">dataset</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                        <span class="n">dataset_num</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">xmean</span> <span class="o">-</span> <span class="n">out_thresh</span><span class="o">*</span><span class="n">xstd</span><span class="p">:</span>
+                        <span class="n">dataset</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                        <span class="n">dataset_num</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                    <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">dataset_raw</span> <span class="o">=</span> <span class="n">dataset_num</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># Fill in NaN values</span>
+    <span class="k">if</span> <span class="n">imputenans</span><span class="p">:</span>
+        <span class="n">imp</span> <span class="o">=</span> <span class="n">Imputer</span><span class="p">(</span><span class="n">missing_values</span><span class="o">=</span><span class="s1">&#39;NaN&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dataset_raw</span><span class="p">)</span>
+        <span class="n">dataset_clean</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">dataset_raw</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dataset_clean</span> <span class="o">=</span> <span class="n">dataset_raw</span>
+
+    <span class="c1"># Scale inputs</span>
+    <span class="k">if</span> <span class="n">scale</span><span class="p">:</span>
+        <span class="n">scaler</span> <span class="o">=</span> <span class="n">stscale</span><span class="p">()</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dataset_clean</span><span class="p">)</span>
+        <span class="n">dataset_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">dataset_clean</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dataset_scaled</span> <span class="o">=</span> <span class="n">dataset_clean</span>
+
+    <span class="n">pcadataset</span> <span class="o">=</span> <span class="n">Bunch</span><span class="p">(</span><span class="n">scaled</span><span class="o">=</span><span class="n">dataset_scaled</span><span class="p">)</span>
+    <span class="n">pca1</span> <span class="o">=</span> <span class="n">pca</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_components</span><span class="p">)</span>
+    <span class="n">pca1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dataset_scaled</span><span class="p">)</span>
+
+    <span class="c1"># Cumulative explained variance ratio</span>
+    <span class="n">cum_var</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">explained_v</span> <span class="o">=</span> <span class="n">pca1</span><span class="o">.</span><span class="n">explained_variance_ratio_</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Cumulative explained variance:&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_components</span><span class="p">):</span>
+        <span class="n">cum_var</span> <span class="o">=</span> <span class="n">cum_var</span> <span class="o">+</span> <span class="n">explained_v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{} component: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cum_var</span><span class="p">))</span>
+
+    <span class="n">prim_comps</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">pcadataset</span><span class="o">.</span><span class="n">prvals</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">comps</span> <span class="o">=</span> <span class="n">pca1</span><span class="o">.</span><span class="n">components_</span>
+    <span class="n">pcadataset</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">comps</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_components</span><span class="p">):</span>
+        <span class="n">highest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pcadataset</span><span class="o">.</span><span class="n">components</span><span class="p">[</span>
+                         <span class="n">num</span><span class="p">])</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">argsort</span><span class="p">()[</span><span class="o">-</span><span class="mi">5</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">pels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pcadataset</span><span class="o">.</span><span class="n">prvals</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">pcadataset</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">num</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">highest</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">highest</span><span class="p">:</span>
+            <span class="n">pels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset_num</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+        <span class="n">prim_comps</span><span class="p">[</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">pels</span>
+
+    <span class="c1"># Main contributors to each primary component</span>
+    <span class="n">pcadataset</span><span class="o">.</span><span class="n">prcomps</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">prim_comps</span><span class="p">)</span>
+    <span class="n">pcadataset</span><span class="o">.</span><span class="n">pcavals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pca1</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">dataset_scaled</span><span class="p">))</span>
+    <span class="n">pcadataset</span><span class="o">.</span><span class="n">final</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dataset</span><span class="p">,</span> <span class="n">pcadataset</span><span class="o">.</span><span class="n">pcavals</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pcadataset</span><span class="o">.</span><span class="n">pcamodel</span> <span class="o">=</span> <span class="n">pca1</span>
+
+    <span class="k">return</span> <span class="n">pcadataset</span>
+
+</div>
+<div class="viewcode-block" id="recycle_pcamodel"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.recycle_pcamodel">[docs]</a><span class="k">def</span> <span class="nf">recycle_pcamodel</span><span class="p">(</span><span class="n">pcamodel</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">imputenans</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">imputenans</span><span class="p">:</span>
+        <span class="n">imp</span> <span class="o">=</span> <span class="n">Imputer</span><span class="p">(</span><span class="n">missing_values</span><span class="o">=</span><span class="s1">&#39;NaN&#39;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">imp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df_clean</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df_clean</span> <span class="o">=</span> <span class="n">df</span>
+        
+    <span class="c1"># Scale inputs</span>
+    <span class="k">if</span> <span class="n">scale</span><span class="p">:</span>
+        <span class="n">scaler</span> <span class="o">=</span> <span class="n">stscale</span><span class="p">()</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df_clean</span><span class="p">)</span>
+        <span class="n">df_scaled</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df_clean</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df_scaled</span> <span class="o">=</span> <span class="n">df_clean</span>
+        
+    <span class="n">pcamodel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df_scaled</span><span class="p">)</span>
+    <span class="n">pcavals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pcamodel</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df_scaled</span><span class="p">))</span>
+    <span class="n">pcafinal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">pcavals</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">pcafinal</span>
+
+</div>
+<div class="viewcode-block" id="plot_pca"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.plot_pca">[docs]</a><span class="k">def</span> <span class="nf">plot_pca</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">lwidth</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>
+             <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Sample1&#39;</span><span class="p">,</span> <span class="s1">&#39;Sample2&#39;</span><span class="p">],</span> <span class="n">savefig</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;test.png&#39;</span><span class="p">,</span>
+             <span class="n">rticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;Plots the average output features from a PCA analysis in polar</span>
+<span class="sd">    coordinates</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    datasets : dict of numpy.ndarray</span>
+<span class="sd">        Dictionary with n samples and p features to plot.</span>
+<span class="sd">    figize : list</span>
+<span class="sd">        Dimensions of output figure e.g. (8, 8)</span>
+<span class="sd">    lwidth : float</span>
+<span class="sd">        Width of plotted lines in figure</span>
+<span class="sd">    labels : list of str</span>
+<span class="sd">        Labels to display in legend.</span>
+<span class="sd">    savefig : bool</span>
+<span class="sd">        If True, saves figure</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        Desired output filename</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">))))</span>
+
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">radii</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">bars</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">radii</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">bars</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">radii</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">lwidth</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+                            <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">counter</span><span class="p">])</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.90</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+               <span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+    <span class="c1"># # Use custom colors and opacity</span>
+    <span class="c1"># for r, bar in zip(radii, bars):</span>
+    <span class="c1">#     bar.set_facecolor(plt.cm.jet(np.abs(r / 2.5)))</span>
+    <span class="c1">#     bar.set_alpha(0.8)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">)))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">rticks</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">rticks</span><span class="p">)])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">rticks</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="build_KNN_model"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.build_KNN_model">[docs]</a><span class="k">def</span> <span class="nf">build_KNN_model</span><span class="p">(</span><span class="n">rawdata</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">featvals</span><span class="p">,</span> <span class="n">equal_sampling</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                    <span class="n">tsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">from_end</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">input_cols</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Builds a K-nearest neighbor model using an input dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rawdata : pandas.core.frames.DataFrame</span>
+<span class="sd">        Raw dataset of n samples and p features.</span>
+<span class="sd">    feature : string or int</span>
+<span class="sd">        Feature in rawdata containing output values on which KNN</span>
+<span class="sd">        model is to be based.</span>
+<span class="sd">    featvals : string or int</span>
+<span class="sd">        All values that feature can take.</span>
+<span class="sd">    equal_sampling : bool</span>
+<span class="sd">        If True, training dataset will contain an equal number</span>
+<span class="sd">        of samples that take each value of featvals. If false,</span>
+<span class="sd">        each sample in training dataset will be taken randomly</span>
+<span class="sd">        from rawdata.</span>
+<span class="sd">    tsize : int</span>
+<span class="sd">        Size of training dataset. If equal_sampling is False,</span>
+<span class="sd">        training dataset will be exactly this size. If True,</span>
+<span class="sd">        training dataset will contain N x tsize where N is the</span>
+<span class="sd">        number of unique values in featvals.</span>
+<span class="sd">    n_neighbors : int</span>
+<span class="sd">        Number of nearest neighbors to be used in KNN</span>
+<span class="sd">        algorithm.</span>
+<span class="sd">    from_end : int</span>
+<span class="sd">        If True, in_cols will select features to be used as</span>
+<span class="sd">        training data defined end of rawdata e.g.</span>
+<span class="sd">        rawdata[:, -6:]. If False, input_cols will be read</span>
+<span class="sd">        as a tuple e.g. rawdata[:, 10:15].</span>
+<span class="sd">    input_col : int or tuple</span>
+<span class="sd">        Defined in from_end above.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    clf : sklearn.neighbors.classification.KNeighborsClassifier</span>
+<span class="sd">        KNN model</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        training input dataset used to create clf</span>
+<span class="sd">    y : numpy.ndarray</span>
+<span class="sd">        training output dataset used to create clf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">equal_sampling</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">featval</span> <span class="ow">in</span> <span class="n">featvals</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">from_end</span><span class="p">:</span>
+                <span class="n">test</span> <span class="o">=</span> <span class="n">rawdata</span><span class="p">[</span><span class="n">rawdata</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">==</span> <span class="n">featval</span>
+                               <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="o">-</span><span class="n">input_cols</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">test</span> <span class="o">=</span> <span class="n">rawdata</span><span class="p">[</span><span class="n">rawdata</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">==</span> <span class="n">featval</span>
+                               <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="n">input_cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">input_cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">to_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                                   <span class="p">),</span> <span class="n">tsize</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">featval</span> <span class="o">==</span> <span class="n">featvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">X</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="n">to_plot</span><span class="p">,</span> <span class="p">:]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">rawdata</span><span class="p">[</span><span class="n">rawdata</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">==</span> <span class="n">featval</span>
+                            <span class="p">][</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">to_plot</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">test</span><span class="p">[</span><span class="n">to_plot</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">rawdata</span><span class="p">[</span><span class="n">rawdata</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">==</span> <span class="n">featval</span>
+                                         <span class="p">][</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">to_plot</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">from_end</span><span class="p">:</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">rawdata</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="o">-</span><span class="n">input_cols</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">rawdata</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="n">input_cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">input_cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">to_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">tsize</span><span class="p">))</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="n">to_plot</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">rawdata</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">to_plot</span><span class="p">]</span>
+
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="p">)</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+
+</div>
+<div class="viewcode-block" id="predict_KNN"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.predict_KNN">[docs]</a><span class="k">def</span> <span class="nf">predict_KNN</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates fraction correctly predicted using input KNN</span>
+<span class="sd">    model</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : sklearn.neighbors.classification.KNeighborsClassifier</span>
+<span class="sd">        KNN model</span>
+<span class="sd">    X : numpy.ndarray</span>
+<span class="sd">        training input dataset used to create clf</span>
+<span class="sd">    y : numpy.ndarray</span>
+<span class="sd">        training output dataset used to create clf</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pcorrect : float</span>
+<span class="sd">        Fraction of correctly predicted outputs using the</span>
+<span class="sd">        input KNN model and the input test dataset X and y</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">yp</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">yp</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">correct</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">pcorrect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">correct</span><span class="p">)</span>
+    <span class="c1"># print(pcorrect)</span>
+    <span class="k">return</span> <span class="n">pcorrect</span>
+
+</div>
+<div class="viewcode-block" id="feature_violin"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.feature_violin">[docs]</a><span class="k">def</span> <span class="nf">feature_violin</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">lvals</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">],</span> <span class="n">fsubset</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates violinplot of input feature dataset</span>
+
+<span class="sd">    Designed to plot PCA components from pca_analysis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : pandas.core.frames.DataFrame</span>
+<span class="sd">        Must contain a group name column, and numerical feature columns.</span>
+<span class="sd">    label : string or int</span>
+<span class="sd">        Name of group column.</span>
+<span class="sd">    lvals : list of string or int</span>
+<span class="sd">        All values that group column can take</span>
+<span class="sd">    fsubset : int or list of int</span>
+<span class="sd">        Features to be plotted. If integer, will plot range(fsubset).</span>
+<span class="sd">        If list, will only plot features contained in fsubset.</span>
+<span class="sd">    **kwargs : variable</span>
+<span class="sd">        figsize : tuple of int or float</span>
+<span class="sd">            Dimensions of output figure</span>
+<span class="sd">        yrange : list of int or float</span>
+<span class="sd">            Range of y axis</span>
+<span class="sd">        xlabel : string</span>
+<span class="sd">            Label of x axis</span>
+<span class="sd">        labelsize : int or float</span>
+<span class="sd">            Font size of x label</span>
+<span class="sd">        ticksize : int or float</span>
+<span class="sd">            Font size of y tick labels</span>
+<span class="sd">        fname : None or string</span>
+<span class="sd">            Name of output file</span>
+<span class="sd">        legendfontsize : int or float</span>
+<span class="sd">            Font size of legend</span>
+<span class="sd">        legendloc : int</span>
+<span class="sd">            Location of legend in plot e.g. 1, 2, 3, 4</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s1">&#39;yrange&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="s1">&#39;xlabel&#39;</span><span class="p">:</span> <span class="s1">&#39;Feature&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;labelsize&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;ticksize&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;fname&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                <span class="s1">&#39;legendfontsize&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;legendloc&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">defkey</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">defkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">defkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">[</span><span class="n">defkey</span><span class="p">]</span>
+
+    <span class="c1"># Restacking input data</span>
+    <span class="n">groupsize</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">featcol</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">valcol</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">feattype</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fsubset</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">frange</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">fsubset</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">frange</span> <span class="o">=</span> <span class="n">fsubset</span>
+
+    <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">frange</span><span class="p">:</span>
+        <span class="n">groupsize</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">featcol</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">feat</span><span class="p">]</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">valcol</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="n">to_violind</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">groupsize</span><span class="p">,</span> <span class="s1">&#39;Feature&#39;</span><span class="p">:</span> <span class="n">featcol</span><span class="p">,</span>
+                  <span class="s1">&#39;Feature Value&#39;</span><span class="p">:</span> <span class="n">valcol</span><span class="p">}</span>
+    <span class="n">to_violin</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">to_violind</span><span class="p">)</span>
+
+    <span class="c1"># Plotting function</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;figsize&#39;</span><span class="p">])</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Feature&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Feature Value&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">to_violin</span><span class="p">,</span>
+                   <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Pastel1&quot;</span><span class="p">,</span> <span class="n">hue_order</span><span class="o">=</span><span class="n">lvals</span><span class="p">,</span>
+                   <span class="n">figsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;figsize&#39;</span><span class="p">])</span>
+
+    <span class="c1"># kwargs</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ticksize&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;xlabel&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;labelsize&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;labelsize&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;yrange&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;legendloc&#39;</span><span class="p">],</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;legendfontsize&#39;</span><span class="p">]})</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fname&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fname&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">to_violin</span>
+
+</div>
+<div class="viewcode-block" id="feature_plot_2D"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.feature_plot_2D">[docs]</a><span class="k">def</span> <span class="nf">feature_plot_2D</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">randsel</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                    <span class="n">randcount</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plots two features against each other from feature dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : pandas.core.frames.DataFrame</span>
+<span class="sd">        Must comtain a group column and numerical features columns</span>
+<span class="sd">    labels : string or int</span>
+<span class="sd">        Group column name</span>
+<span class="sd">    features : list of int</span>
+<span class="sd">        Names of columns to be plotted</span>
+<span class="sd">    randsel : bool</span>
+<span class="sd">        If True, downsamples from original dataset</span>
+<span class="sd">    randcount : int</span>
+<span class="sd">        Size of downsampled dataset</span>
+<span class="sd">    **kwargs : variable</span>
+<span class="sd">        figsize : tuple of int or float</span>
+<span class="sd">            Size of output figure</span>
+<span class="sd">        dotsize : float or int</span>
+<span class="sd">            Size of plotting markers</span>
+<span class="sd">        alpha : float or int</span>
+<span class="sd">            Transparency factor</span>
+<span class="sd">        xlim : list of float or int</span>
+<span class="sd">            X range of output plot</span>
+<span class="sd">        ylim : list of float or int</span>
+<span class="sd">            Y range of output plot</span>
+<span class="sd">        legendfontsize : float or int</span>
+<span class="sd">            Font size of legend</span>
+<span class="sd">        labelfontsize : float or int</span>
+<span class="sd">            Font size of labels</span>
+<span class="sd">        fname : string</span>
+<span class="sd">            Filename of output figure</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xy : list of lists</span>
+<span class="sd">        Coordinates of data on plot</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="s1">&#39;dotsize&#39;</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s1">&#39;xlim&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                <span class="s1">&#39;ylim&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;legendfontsize&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;labelfontsize&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="s1">&#39;fname&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">defkey</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">defkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">defkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">[</span><span class="n">defkey</span><span class="p">]</span>
+
+    <span class="n">tgroups</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">xy</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">lval</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="n">tgroups</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">==</span> <span class="n">lval</span><span class="p">]</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tgroups</span><span class="p">)</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">N</span><span class="p">)))</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;figsize&#39;</span><span class="p">])</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tgroups</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">randsel</span><span class="p">:</span>
+            <span class="n">to_plot</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())),</span>
+                                    <span class="n">randcount</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+                <span class="n">xy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">key2</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">to_plot</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+                <span class="n">xy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">key2</span><span class="p">])</span>
+        <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dotsize&#39;</span><span class="p">],</span>
+                          <span class="n">alpha</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">counter</span><span class="p">])</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;xlim&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;xlim&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ylim&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ylim&#39;</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;legendfontsize&#39;</span><span class="p">],</span> <span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Prin. Component {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+               <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;labelfontsize&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Prin. Component {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+               <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;labelfontsize&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fname&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fname&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">xy</span>
+
+</div>
+<div class="viewcode-block" id="feature_plot_3D"><a class="viewcode-back" href="../../api/pca.html#diff_classifier.pca.feature_plot_3D">[docs]</a><span class="k">def</span> <span class="nf">feature_plot_3D</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">randsel</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                    <span class="n">randcount</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plots three features against each other from feature dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : pandas.core.frames.DataFrame</span>
+<span class="sd">        Must comtain a group column and numerical features columns</span>
+<span class="sd">    labels : string or int</span>
+<span class="sd">        Group column name</span>
+<span class="sd">    features : list of int</span>
+<span class="sd">        Names of columns to be plotted</span>
+<span class="sd">    randsel : bool</span>
+<span class="sd">        If True, downsamples from original dataset</span>
+<span class="sd">    randcount : int</span>
+<span class="sd">        Size of downsampled dataset</span>
+<span class="sd">    **kwargs : variable</span>
+<span class="sd">        figsize : tuple of int or float</span>
+<span class="sd">            Size of output figure</span>
+<span class="sd">        dotsize : float or int</span>
+<span class="sd">            Size of plotting markers</span>
+<span class="sd">        alpha : float or int</span>
+<span class="sd">            Transparency factor</span>
+<span class="sd">        xlim : list of float or int</span>
+<span class="sd">            X range of output plot</span>
+<span class="sd">        ylim : list of float or int</span>
+<span class="sd">            Y range of output plot</span>
+<span class="sd">        zlim : list of float or int</span>
+<span class="sd">            Z range of output plot</span>
+<span class="sd">        legendfontsize : float or int</span>
+<span class="sd">            Font size of legend</span>
+<span class="sd">        labelfontsize : float or int</span>
+<span class="sd">            Font size of labels</span>
+<span class="sd">        fname : string</span>
+<span class="sd">            Filename of output figure</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xy : list of lists</span>
+<span class="sd">        Coordinates of data on plot</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="s1">&#39;dotsize&#39;</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s1">&#39;xlim&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                <span class="s1">&#39;ylim&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;zlim&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;legendfontsize&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="s1">&#39;labelfontsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;fname&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">defkey</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">defkey</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">defkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">[</span><span class="n">defkey</span><span class="p">]</span>
+
+    <span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">14</span><span class="p">))</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">221</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">222</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">223</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+    <span class="n">angle1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">angle2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">240</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">190</span><span class="p">]</span>
+
+    <span class="n">tgroups</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">xy</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">lval</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="n">tgroups</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">==</span> <span class="n">lval</span><span class="p">]</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tgroups</span><span class="p">)</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">N</span><span class="p">)))</span>
+
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tgroups</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">randsel</span><span class="p">:</span>
+            <span class="n">to_plot</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())),</span>
+                                    <span class="n">randcount</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+                <span class="n">xy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">key2</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">to_plot</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
+                <span class="n">xy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">key2</span><span class="p">])</span>
+
+        <span class="n">acount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;dotsize&#39;</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">counter</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;xlim&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim3d</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;xlim&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ylim&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim3d</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ylim&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;zlim&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_zlim3d</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;zlim&#39;</span><span class="p">])</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">angle1</span><span class="p">[</span><span class="n">acount</span><span class="p">],</span> <span class="n">angle2</span><span class="p">[</span><span class="n">acount</span><span class="p">])</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Prin. Component {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;labelfontsize&#39;</span><span class="p">])</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Prin. Component {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                                <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;labelfontsize&#39;</span><span class="p">])</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Prin. Component {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                <span class="n">fontsize</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;labelfontsize&#39;</span><span class="p">])</span>
+            <span class="n">acount</span> <span class="o">=</span> <span class="n">acount</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># plt.legend(fontsize=kwargs[&#39;legendfontsize&#39;], frameon=False)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fname&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;fname&#39;</span><span class="p">])</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Chad Curtis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
