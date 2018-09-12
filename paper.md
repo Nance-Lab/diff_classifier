@@ -31,8 +31,8 @@ to address the issue of scale-up in multi-particle tracking (MPT) analyses via a
 parallelization approach. MPT is a powerful analytical tool that has been used
 in fields ranging from aeronautics to oceanography to biomedical engineering
 [@Pulford:2005]. While a variety of tracking algorithms are available to
-researchers [@Chenouard:2014], a common problem is the large time sink in data
-analysis due to a widespread use of graphical user interfaces and the reliance
+researchers [@Chenouard:2014], a common problem is that data
+analysis usually depends on the use of graphical user interfaces, and relies
 on human input for accurate tracking. For example, particle detection often
 relies on the selection of a quality threshold, a numerical quantity
 distinguishing between “real” particles and “fake” particles [@Tineves:2017]. If
@@ -47,11 +47,14 @@ tracking parameters can vary widely from video to video. As parameter selection
 can also vary from user to user, this also brings up the issue of
 reproducibility. diff_classifier addresses these issues with regression
 tools to predict input tracking parameters and parallelized script-based
-implementations in Amazon Web Services (AWS) S3 and Batch services. By manually
-tracking a small subset of the entire video dataset to be analyzed (5-10 videos
-per experiment), users can predict tracking parameters based on intensity
-distributions of input images. This can simultaneously reduce
-time-to-first-result in MPT workflows and provide reproducible MPT results.
+implementations in Amazon Web Services (AWS), using the Simple Storage
+Service (S3) and Batch for data storage and computing, respectively, and
+relying on the Cloudknot software library for automating these
+interactions [@cloudknot]. By manually tracking a small subset of the entire
+video dataset to be analyzed (5-10 videos per experiment), users can predict
+tracking parameters based on intensity distributions of input images. This can
+simultaneously reduce time-to-first-result in MPT workflows and provide
+reproducible MPT results.
 
 diff_classifier also includes downstream MPT analysis tools including mean
 squared displacement and feature calculations, visualization tools, and a
@@ -69,9 +72,12 @@ linked DOI: [@zenodo]
 
 # Acknowledgements
 
-The authors would like to thank the eScience Institute for the resources and
-expertise provided through the Incubator Program that made diff_classifier
-possible. The authors would also like to thank funding from the National
-Institute of General Medical Sciences 1R35 GM124677-01 (E. Nance).
+The authors would like to thank the eScience Institute for the resources
+and expertise provided through the Incubator Program that made
+diff_classifier possible. The University of Washington eScience Institute
+is supported through a grant from the Gordon & Betty Moore Foundation and
+the Alfred P. Sloan Foundation. The authors would also like to thank
+funding from the National Institute of General Medical Sciences 1R35
+GM124677-01 (E. Nance).
 
 # References
