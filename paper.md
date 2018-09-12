@@ -32,7 +32,7 @@ parallelization approach. MPT is a powerful analytical tool that has been used
 in fields ranging from aeronautics to oceanography to biomedical engineering
 [@Pulford:2005]. While a variety of tracking algorithms are available to
 researchers [@Chenouard:2014], a common problem is that data
-analysis usually depends on the use of graphical user interfaces, and relys
+analysis usually depends on the use of graphical user interfaces, and relies
 on human input for accurate tracking. For example, particle detection often
 relies on the selection of a quality threshold, a numerical quantity
 distinguishing between “real” particles and “fake” particles [@Tineves:2017]. If
