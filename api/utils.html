@@ -81,8 +81,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a><ul>
@@ -150,28 +152,44 @@
 <h1><a class="reference internal" href="#module-diff_classifier.utils" title="diff_classifier.utils"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.utils</span></code></a><a class="headerlink" href="#diff-classifier-utils" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
 <h2><a class="reference internal" href="#module-diff_classifier.utils" title="diff_classifier.utils"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.utils</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-diff_classifier.utils"></span><dl class="function">
+<span class="target" id="module-diff_classifier.utils"></span><p>Utility functions used throughout diff_classifier.</p>
+<p>This module includes general functions for tasks such as importing files and
+converting between data types. Currently only includes a function to generate
+pandas dataframes for csv output from Trackmate.</p>
+<dl class="function">
 <dt id="diff_classifier.utils.csv_to_pd">
 <code class="descclassname">diff_classifier.utils.</code><code class="descname">csv_to_pd</code><span class="sig-paren">(</span><em>csvfname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/utils.html#csv_to_pd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.utils.csv_to_pd" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>csv_to_pd(csvfname)</p>
-<p>Reads Trackmate csv output file and converts to a pandas dataframe.</p>
-<dl class="docutils">
-<dt>csvfname <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>Output csv from a file similar to trackmate_template.  Must
-include line &#8216;Data starts here.</dd>
-</dl>
-</div></blockquote>
-<p>&#8216; line in order to parse correctly.</p>
+<dd><p>Reads Trackmate csv output file and converts to pandas dataframe.</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
-<dd>Contains all trajectories from csvfname.</dd>
+<div>A specialized function designed specifically for TrackMate output files.
+This edits out the header at the beginning of the file.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>csvfname</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Output csv from a file similar to trackmate_template.  Must
+include line &#8216;Data starts here.</p>
+</dd>
+<dt><strong>&#8216; line in order to parse correctly.</strong></dt>
+<dd></dd>
 </dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
+<dd><p class="first last">Contains all trajectories from csvfname.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">csv_to_pd</span><span class="p">(</span><span class="s1">&#39;../data/test.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div></blockquote>
 </dd></dl>
 
 </div>

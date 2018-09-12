@@ -81,8 +81,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
@@ -150,28 +152,54 @@
 <h1><a class="reference internal" href="#module-diff_classifier.msd" title="diff_classifier.msd"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.msd</span></code></a><a class="headerlink" href="#diff-classifier-msd" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
 <h2><a class="reference internal" href="#module-diff_classifier.msd" title="diff_classifier.msd"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.msd</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-diff_classifier.msd"></span><dl class="function">
+<span class="target" id="module-diff_classifier.msd"></span><p>Functions to calculate mean squared displacements from trajectory data</p>
+<p>This module includes functions to calculate mean squared displacements and
+additional measures from input trajectory datasets as calculated by the
+Trackmate ImageJ plugin.</p>
+<dl class="class">
+<dt id="diff_classifier.msd.Bunch">
+<em class="property">class </em><code class="descclassname">diff_classifier.msd.</code><code class="descname">Bunch</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#Bunch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.Bunch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
 <dt id="diff_classifier.msd.all_msds">
 <code class="descclassname">diff_classifier.msd.</code><code class="descname">all_msds</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#all_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.all_msds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.</p>
-<dl class="docutils">
-<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
-<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
+<dd><p>Calculates mean squared displacements of a trajectory dataset</p>
+<p>Returns numpy array containing MSD data of all tracks in a trajectory
+pandas dataframe.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
 &#8216;Y&#8217; column. Note: it is assumed that frames begins at 1, not 0 with this
-function. Adjust before feeding into function.</dd>
+function. Adjust before feeding into function.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>new_data: pandas dataframe</dt>
-<dd>Similar to input data.  All missing frames of individual trajectories
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>new_data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Similar to input data.  All missing frames of individual trajectories
 are filled in with NaNs, and two new columns, MSDs and Gauss are added:
-MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
-Gauss, calculated Gaussianity</dd>
+MSDs, calculated mean squared displacements using the formula
+MSD = &lt;(xpos-x0)**2&gt;
+Gauss, calculated Gaussianity</p>
+</dd>
 </dl>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
-<span class="go">         &#39;Track_ID&#39;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],</span>
-<span class="go">         &#39;X&#39;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],</span>
-<span class="go">         &#39;Y&#39;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">all_msds</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -180,170 +208,494 @@ Gauss, calculated Gaussianity</dd>
 <dl class="function">
 <dt id="diff_classifier.msd.all_msds2">
 <code class="descclassname">diff_classifier.msd.</code><code class="descname">all_msds2</code><span class="sig-paren">(</span><em>data</em>, <em>frames=651</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#all_msds2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.all_msds2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns numpy array containing MSD data of all tracks in a trajectory pandas dataframe.</p>
-<dl class="docutils">
-<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
-<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
-&#8216;Y&#8217; column. Note: it is assumed that frames begins at 0.</dd>
+<dd><p>Calculates mean squared displacements of input trajectory dataset</p>
+<p>Returns numpy array containing MSD data of all tracks in a trajectory pandas
+dataframe.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
+&#8216;Y&#8217; column. Note: it is assumed that frames begins at 0.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>new_data: pandas dataframe</dt>
-<dd>Similar to input data.  All missing frames of individual trajectories
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>new_data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Similar to input data.  All missing frames of individual trajectories
 are filled in with NaNs, and two new columns, MSDs and Gauss are added:
-MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
-Gauss, calculated Gaussianity</dd>
+MSDs, calculated mean squared displacements using the formula
+MSD = &lt;(xpos-x0)**2&gt;
+Gauss, calculated Gaussianity</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [0, 1, 2, 3, 4, 0, 1, 2, 3, 4],</dt>
-<dd>&#8216;Track_ID&#8217;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-&#8216;X&#8217;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</dd>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">,</span> <span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;MSDs&#39;</span><span class="p">,</span> <span class="s1">&#39;Gauss&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">om</span> <span class="n">flength</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msd</span><span class="o">.</span><span class="n">all_msds2</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="n">length</span><span class="p">)[</span><span class="n">cols</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.binning">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">binning</code><span class="sig-paren">(</span><em>experiments</em>, <em>wells=4</em>, <em>prefix='test'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#binning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.binning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split set of input experiments into groups.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>experiments</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
+<dd><p class="first last">List of experiment names.</p>
+</dd>
+<dt><strong>wells</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of groups to divide experiments into.</p>
+</dd>
 </dl>
-<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
-&gt;&gt;&gt;&gt; cols = [&#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, &#8216;Y&#8217;, &#8216;MSDs&#8217;, &#8216;Gauss&#8217;]
-&gt;&gt;&gt;&gt; length = max(df[&#8216;Frame&#8217;]) + 1
-&gt;&gt;&gt;&gt; msd.all_msds2(df, frames=length)[cols]</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>slices</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of experiments per group.</p>
+</dd>
+<dt><strong>bins</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict of list of str</span></dt>
+<dd><p class="first last">Dictionary, keys corresponding to group names, and elements containing
+lists of experiments in each group.</p>
+</dd>
+<dt><strong>bin_names</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
+<dd><p class="first last">List of group names</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.geomean_msdisp">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">geomean_msdisp</code><span class="sig-paren">(</span><em>prefix</em>, <em>umppx=0.16</em>, <em>fps=100.02</em>, <em>upload=True</em>, <em>remote_folder='01_18_Experiment'</em>, <em>bucket='ccurtis.data'</em>, <em>backup_frames=651</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#geomean_msdisp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.geomean_msdisp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Comptes geometric averages of mean squared displacement datasets</p>
+<p>Calculates geometric averages and stadard errors for MSD datasets. Might
+error out if not formatted as output from all_msds2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</p>
+</dd>
+<dt><strong>umppx</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Microns per pixel of original images.</p>
+</dd>
+<dt><strong>fps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Frames per second of video.</p>
+</dd>
+<dt><strong>upload</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">True if you want to upload to s3.</p>
+</dd>
+<dt><strong>remote_folder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Folder in S3 bucket to upload to.</p>
+</dd>
+<dt><strong>bucket</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Name of S3 bucket to upload to.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>geo_mean</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Geometric mean of trajectory MSDs at all time points.</p>
+</dd>
+<dt><strong>geo_stder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Geometric standard errot of trajectory MSDs at all time points.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.msd.make_xyarray">
 <code class="descclassname">diff_classifier.msd.</code><code class="descname">make_xyarray</code><span class="sig-paren">(</span><em>data</em>, <em>length=651</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#make_xyarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.make_xyarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rearranges xy data from input pandas dataframe into 2D numpy array.</p>
-<dl class="docutils">
-<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
-<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
-&#8216;Y&#8217; column.</dd>
-<dt>length: int</dt>
-<dd>Desired length or number of frames to which to extend trajectories.
+<dd><p>Rearranges xy position data into 2d arrays</p>
+<p>Rearranges xy data from input pandas dataframe into 2D numpy array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Contains, at a minimum a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
+&#8216;Y&#8217; column.</p>
+</dd>
+<dt><strong>length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Desired length or number of frames to which to extend trajectories.
 Any trajectories shorter than the input length will have the extra space
-filled in with NaNs.</dd>
+filled in with NaNs.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>f_array: numpy array of floats of size length x particles</dt>
-<dd>Contains frames data</dd>
-<dt>t_array: numpy array of floats of size length x particles</dt>
-<dd>Contains trajectory ID data</dd>
-<dt>x_array: numpy array of floats of size length x particles</dt>
-<dd>Contains x coordinate data</dd>
-<dt>y_array: numpy array of floats of size length x particles</dt>
-<dd>Contains y coordinate data</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>xyft</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict of np.ndarray</span></dt>
+<dd><p class="first last">Dictionary containing xy position data, frame data, and trajectory ID
+data. Contains the following keys:
+farray, frames data (length x particles)
+tarray, trajectory ID data (length x particles)
+xarray, x position data (length x particles)
+yarray, y position data (length x particles)</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [0, 1, 2, 3, 4, 2, 3, 4, 5, 6],</dt>
-<dd>&#8216;Track_ID&#8217;: [1, 1, 1, 1, 1, 2, 2, 2, 2, 2],
-&#8216;X&#8217;: [5, 6, 7, 8, 9, 1, 2, 3, 4, 5],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10, 2, 3, 4, 5, 6]}</dd>
-</dl>
-<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
-&gt;&gt;&gt;&gt; length = max(df[&#8216;Frame&#8217;]) + 1
-&gt;&gt;&gt;&gt; f_array, t_array, x_array, y_array = msd.make_xyarray(df, length=length)</p>
-<dl class="docutils">
-<dt>(array([[0., 0.],</dt>
-<dd>[1., 1.],
-[2., 2.],
-[3., 3.],
-[4., 4.],
-[5., 5.],
-[6., 6.]]),
-array([[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.],
-[1., 2.]]),
-array([[ 5., nan],
-[ 6., nan],
-[ 7.,  1.],
-[ 8.,  2.],
-[ 9.,  3.],
-[nan,  4.],
-[nan,  5.]]),
-array([[ 6., nan],
-[ 7., nan],
-[ 8.,  2.],
-[ 9.,  3.],
-[10.,  4.],
-[nan,  5.],
-[nan,  6.]]))</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyft</span> <span class="o">=</span> <span class="n">msd</span><span class="o">.</span><span class="n">make_xyarray</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">)</span>
+<span class="go">{&#39;farray&#39;: array([[0., 0.],</span>
+<span class="go">           [1., 1.],</span>
+<span class="go">           [2., 2.],</span>
+<span class="go">           [3., 3.],</span>
+<span class="go">           [4., 4.],</span>
+<span class="go">           [5., 5.],</span>
+<span class="go">           [6., 6.]]),</span>
+<span class="go"> &#39;tarray&#39;: array([[1., 2.],</span>
+<span class="go">           [1., 2.],</span>
+<span class="go">           [1., 2.],</span>
+<span class="go">           [1., 2.],</span>
+<span class="go">           [1., 2.],</span>
+<span class="go">           [1., 2.],</span>
+<span class="go">           [1., 2.]]),</span>
+<span class="go"> &#39;xarray&#39;: array([[ 5., nan],</span>
+<span class="go">           [ 6., nan],</span>
+<span class="go">           [ 7.,  1.],</span>
+<span class="go">           [ 8.,  2.],</span>
+<span class="go">           [ 9.,  3.],</span>
+<span class="go">           [nan,  4.],</span>
+<span class="go"> &#39;yarray&#39;: [nan,  5.]]),</span>
+<span class="go">           array([[ 6., nan],</span>
+<span class="go">           [ 7., nan],</span>
+<span class="go">           [ 8.,  2.],</span>
+<span class="go">           [ 9.,  3.],</span>
+<span class="go">           [10.,  4.],</span>
+<span class="go">           [nan,  5.],</span>
+<span class="go">           [nan,  6.]])}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.msd.msd_calc">
 <code class="descclassname">diff_classifier.msd.</code><code class="descname">msd_calc</code><span class="sig-paren">(</span><em>track</em>, <em>length=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#msd_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.msd_calc" title="Permalink to this definition">¶</a></dt>
-<dd><p>msdcalc(track = pdarray)</p>
+<dd><p>Calculates mean squared displacement of input track.</p>
 <p>Returns numpy array containing MSD data calculated from an individual track.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
-<dd>Contains, at a minimum a &#8216;Frame&#8217;, &#8216;X&#8217;, and &#8216;Y&#8217; column</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Contains, at a minimum a &#8216;Frame&#8217;, &#8216;X&#8217;, and &#8216;Y&#8217; column</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>new_track: pandas dataframe</dt>
-<dd>Similar to input track.  All missing frames of individual trajectories
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>new_track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Similar to input track.  All missing frames of individual trajectories
 are filled in with NaNs, and two new columns, MSDs and Gauss are added:
-MSDs, calculated mean squared displacements using the formula MSD = &lt;(x-x0)**2&gt;
-Gauss, calculated Gaussianity</dd>
+MSDs, calculated mean squared displacements using the formula
+MSD = &lt;(xpos-x0)**2&gt;
+Gauss, calculated Gaussianity</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [1, 2, 3, 4, 5],</dt>
-<dd>&#8216;X&#8217;: [5, 6, 7, 8, 9],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10]}</dd>
-</dl>
-<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
-&gt;&gt;&gt;&gt; new_track = msd.msd_calc(df, 5)</p>
-<dl class="docutils">
-<dt>&gt;&gt;&gt;&gt; d = {&#8216;Frame&#8217;: [1, 2, 3, 4, 5],</dt>
-<dd>&#8216;X&#8217;: [5, 6, 7, 8, 9],
-&#8216;Y&#8217;: [6, 7, 8, 9, 10]}</dd>
-</dl>
-<p>&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
-&gt;&gt;&gt;&gt; new_track = msd.msd_calc(df)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_track</span> <span class="o">=</span> <span class="n">msd</span><span class="o">.</span><span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_track</span> <span class="o">=</span> <span class="n">msd</span><span class="o">.</span><span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.msd.nth_diff">
-<code class="descclassname">diff_classifier.msd.</code><code class="descname">nth_diff</code><span class="sig-paren">(</span><em>dataframe</em>, <em>n=int</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#nth_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.nth_diff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new vector of size N - n containing the nth difference between vector elements.</p>
-<dl class="docutils">
-<dt>dataframe <span class="classifier-delimiter">:</span> <span class="classifier">pandas column of floats or ints</span></dt>
-<dd>input data on which differences are to be calculated.</dd>
-<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int, default is 1</span></dt>
-<dd>Function calculated x(i) - x(i - n) for all values in pandas column</dd>
-<dt>ax <span class="classifier-delimiter">:</span> <span class="classifier">int, 0 or 1</span></dt>
-<dd>Axis along which differences are to be calculated.  Default is 0.  If 0,
-input must be a pandas series.  If 1, input must be a numpy array.</dd>
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">nth_diff</code><span class="sig-paren">(</span><em>dataframe</em>, <em>n=1</em>, <em>axis=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#nth_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.nth_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the nth difference between vector elements</p>
+<p>Returns a new vector of size N - n containing the nth difference between
+vector elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>dataframe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.series.Series of int or float</span></dt>
+<dd><p class="first last">Input data on which differences are to be calculated.</p>
+</dd>
+<dt><strong>n</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Function calculated xpos(i) - xpos(i - n) for all values in pandas
+series.</p>
+</dd>
+<dt><strong>axis</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{0, 1}</span></dt>
+<dd><p class="first last">Axis along which differences are to be calculated.  Default is 0.  If 0,
+input must be a pandas series.  If 1, input must be a numpy array.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>diff <span class="classifier-delimiter">:</span> <span class="classifier">pandas column</span></dt>
-<dd>Pandas column of size N - n, where N is the original size of dataframe.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>diff</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.series.Series of int or float</span></dt>
+<dd><p class="first last">Pandas series of size N - n, where N is the original size of dataframe.</p>
+</dd>
 </dl>
-<p>&gt;&gt;&gt;&gt; d = {&#8216;col1&#8217;: [1, 2, 3, 4, 5]}
-&gt;&gt;&gt;&gt; df = pd.DataFrame(data=d)
-&gt;&gt;&gt;&gt; nth_diff(df)</p>
-<p>0    1
-1    1
-2    1
-3    1
-Name: col1, dtype: int64</p>
-<p>#test2
-&gt;&gt;&gt;&gt; df = np.ones((5, 10))
-&gt;&gt;&gt;&gt; nth_diff(df)</p>
-<dl class="docutils">
-<dt>array([[0., 0., 0., 0., 0., 0., 0., 0., 0.],</dt>
-<dd>[0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0.]])</dd>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="go">array([[0., 0., 0., 0., 0., 0., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 0., 0., 0., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 0., 0., 0., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 0., 0., 0., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 0., 0., 0., 0., 0., 0.]])</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nth_diff</span> <span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="go">array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],</span>
+<span class="go">       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.plot_all_experiments">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">plot_all_experiments</code><span class="sig-paren">(</span><em>experiments</em>, <em>bucket='ccurtis.data'</em>, <em>folder='test'</em>, <em>yrange=(0.1</em>, <em>10)</em>, <em>fps=100.02</em>, <em>xrange=(0.01</em>, <em>1)</em>, <em>upload=True</em>, <em>outfile='test.png'</em>, <em>exponential=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#plot_all_experiments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.plot_all_experiments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots precision-weighted averages of MSD datasets.</p>
+<p>Plots pre-calculated precision-weighted averages of MSD datasets calculated
+from precision_averaging and stored in an AWS S3 bucket.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>group</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
+<dd><p class="first last">List of experiment names to plot. Each experiment must have an MSD and
+SEM file associated with it in s3.</p>
+</dd>
+<dt><strong>bucket</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">S3 bucket from which to download data.</p>
+</dd>
+<dt><strong>folder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Folder in s3 bucket from which to download data.</p>
+</dd>
+<dt><strong>yrange</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of float</span></dt>
+<dd><p class="first last">Y range of plot</p>
+</dd>
+<dt><strong>xrange: list of float</strong></dt>
+<dd><p class="first last">X range of plot</p>
+</dd>
+<dt><strong>upload</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first last">True to upload to S3</p>
+</dd>
+<dt><strong>outfile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Filename of output image</p>
+</dd>
 </dl>
-<p>&gt;&gt;&gt;&gt; df = np.ones((5, 10))
-&gt;&gt;&gt;&gt; nth_diff (df)</p>
-<dl class="docutils">
-<dt>array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],</dt>
-<dd>[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])</dd>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.precision_averaging">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">precision_averaging</code><span class="sig-paren">(</span><em>group</em>, <em>geomean</em>, <em>geo_stder</em>, <em>weights</em>, <em>save=True</em>, <em>bucket='ccurtis.data'</em>, <em>folder='test'</em>, <em>experiment='test'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#precision_averaging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.precision_averaging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates precision-weighted averages of MSD datasets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>group</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
+<dd><p class="first last">List of experiment names to average. Each element corresponds to a key
+in geo_stder and geomean.</p>
+</dd>
+<dt><strong>geomean</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict of numpy.ndarray</span></dt>
+<dd><p class="first last">Each entry in dictionary corresponds to an MSD profiles, they key
+corresponding to an experiment name.</p>
+</dd>
+<dt><strong>geo_stder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict of numpy.ndarray</span></dt>
+<dd><p class="first last">Each entry in dictionary corresponds to the standard errors of an MSD
+profile, the key corresponding to an experiment name.</p>
+</dd>
+<dt><strong>weights</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Precision weights to be used in precision averaging.</p>
+</dd>
 </dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>geo</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Precision-weighted averaged MSDs from experiments specified in group</p>
+</dd>
+<dt><strong>geo_stder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Precision-weighted averaged SEMs from experiments specified in group</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.precision_weight">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">precision_weight</code><span class="sig-paren">(</span><em>group</em>, <em>geo_stder</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#precision_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.precision_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates precision-based weights from input standard error data</p>
+<p>Calculates precision weights to be used in precision-averaged MSD
+calculations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>group</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of str</span></dt>
+<dd><p class="first last">List of experiment names to average. Each element corresponds to a key
+in geo_stder and geomean.</p>
+</dd>
+<dt><strong>geo_stder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict of numpy.ndarray</span></dt>
+<dd><p class="first last">Each entry in dictionary corresponds to the standard errors of an MSD
+profile, the key corresponding to an experiment name.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>weights: numpy.ndarray</strong></dt>
+<dd><p class="first last">Precision weights to be used in precision averaging.</p>
+</dd>
+<dt><strong>w_holder</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Precision values of each video at each time point.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.random_traj_dataset">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">random_traj_dataset</code><span class="sig-paren">(</span><em>nframes=100</em>, <em>nparts=30</em>, <em>seed=1</em>, <em>fsize=(0</em>, <em>512)</em>, <em>ndist=(1</em>, <em>2)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#random_traj_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.random_traj_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a random population of random walks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>nframes</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of frames for each random trajectory.</p>
+</dd>
+<dt><strong>nparts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of particles in trajectory dataset.</p>
+</dd>
+<dt><strong>seed</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Seed for pseudo-random number generator for reproducability.</p>
+</dd>
+<dt><strong>fsize</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int or float</span></dt>
+<dd><p class="first last">Scope of points over which particles may start at.</p>
+</dd>
+<dt><strong>ndist</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int or float</span></dt>
+<dd><p class="first last">Parameters to generate normal distribution, mu and sigma.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dataf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Trajectory data containing a &#8216;Frame&#8217;, &#8216;Track_ID&#8217;, &#8216;X&#8217;, and
+&#8216;Y&#8217; column.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.msd.random_walk">
+<code class="descclassname">diff_classifier.msd.</code><code class="descname">random_walk</code><span class="sig-paren">(</span><em>nsteps=100</em>, <em>seed=1</em>, <em>start=(0</em>, <em>0)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/msd.html#random_walk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.msd.random_walk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates 2d random walk trajectory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>nsteps</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of steps for trajectory to move.</p>
+</dd>
+<dt><strong>seed</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Seed for pseudo-random number generator for reproducability.</p>
+</dd>
+<dt><strong>start</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of int or float</span></dt>
+<dd><p class="first last">Starting xy coordinates at which the random walk begins.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>x</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Array of x coordinates of random walk.</p>
+</dd>
+<dt><strong>y</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Array of y coordinates of random walk.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

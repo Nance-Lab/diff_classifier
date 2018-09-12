@@ -109,7 +109,9 @@ This project is licensed under the
 
 Acknowledgements
 ----------------
-Diff_classifier development is supported by ....
+The authors would like to thank the expertise and resources provided by the
+eScience Institute at the University of Washington during their annual
+Incubator Project that made diff_classifier possible.
 
 .. toctree::
   :maxdepth: 2
@@ -119,7 +121,7 @@ Diff_classifier development is supported by ....
   example_data
   tracking
   features_analysis
-  interacting_with_s3
+  interacting_with_S3
   cloudknot_parallelization
   api/index
   examples <https://github.com/ccurtis7/diff_classifier/tree/master/notebooks>

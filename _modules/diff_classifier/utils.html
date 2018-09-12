@@ -79,8 +79,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
@@ -131,16 +133,21 @@
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.utils</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Utility functions used throughout diff_classifier.</span>
+
+<span class="sd">This module includes general functions for tasks such as importing files and</span>
+<span class="sd">converting between data types. Currently only includes a function to generate</span>
+<span class="sd">pandas dataframes for csv output from Trackmate.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">skimage.io</span> <span class="kn">as</span> <span class="nn">sio</span>
 
 
 <div class="viewcode-block" id="csv_to_pd"><a class="viewcode-back" href="../../api/utils.html#diff_classifier.utils.csv_to_pd">[docs]</a><span class="k">def</span> <span class="nf">csv_to_pd</span><span class="p">(</span><span class="n">csvfname</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    csv_to_pd(csvfname)</span>
+    <span class="sd">&quot;&quot;&quot;Reads Trackmate csv output file and converts to pandas dataframe.</span>
 
-<span class="sd">    Reads Trackmate csv output file and converts to a pandas dataframe.</span>
+<span class="sd">    A specialized function designed specifically for TrackMate output files.</span>
+<span class="sd">    This edits out the header at the beginning of the file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -150,7 +157,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    data : pandas dataframe</span>
+<span class="sd">    data : pandas DataFrame</span>
 <span class="sd">        Contains all trajectories from csvfname.</span>
 
 <span class="sd">    Examples</span>
@@ -173,23 +180,23 @@
         <span class="n">data</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
 
-        <span class="n">part_IDs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Track_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="n">partids</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Track_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">ID</span> <span class="ow">in</span> <span class="n">part_IDs</span><span class="p">:</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">Track_ID</span> <span class="o">==</span> <span class="n">ID</span><span class="p">,</span> <span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">counter</span>
+        <span class="k">for</span> <span class="n">partid</span> <span class="ow">in</span> <span class="n">partids</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">Track_ID</span> <span class="o">==</span> <span class="n">partid</span><span class="p">,</span> <span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">counter</span>
             <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;No data in csv file.&#39;</span><span class="p">)</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="p">[],</span>
-             <span class="s1">&#39;Spot_ID&#39;</span><span class="p">:</span> <span class="p">[],</span>
-             <span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[],</span>
-             <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[],</span>
-             <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[],</span>
-             <span class="s1">&#39;Quality&#39;</span><span class="p">:</span> <span class="p">[],</span>
-             <span class="s1">&#39;SN_Ratio&#39;</span><span class="p">:</span> <span class="p">[],</span>
-             <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="n">rawd</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;Spot_ID&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;Quality&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;SN_Ratio&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Spot_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Quality&#39;</span><span class="p">,</span> <span class="s1">&#39;SN_Ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">]</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">rawd</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[])</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
 

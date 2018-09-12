@@ -81,8 +81,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
@@ -150,50 +152,60 @@
 <h1><a class="reference internal" href="#module-diff_classifier.aws" title="diff_classifier.aws"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.aws</span></code></a><a class="headerlink" href="#diff-classifier-aws" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
 <h2><a class="reference internal" href="#module-diff_classifier.aws" title="diff_classifier.aws"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.aws</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-diff_classifier.aws"></span><dl class="function">
-<dt id="diff_classifier.aws.download_s3">
-<code class="descclassname">diff_classifier.aws.</code><code class="descname">download_s3</code><span class="sig-paren">(</span><em>remote_fname</em>, <em>local_fname</em>, <em>bucket_name='ccurtis7.pup'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/aws.html#download_s3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.aws.download_s3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download a file from S3 to our local file-system</p>
-<dl class="docutils">
-<dt>remote_fname: string</dt>
-<dd>Name of remote file in S3 bucket.</dd>
-<dt>local_fname: string</dt>
-<dd>Desired name to be stored on local computer.</dd>
-<dt>bucket_name: string</dt>
-<dd>Bucket name on S3.</dd>
-</dl>
-</dd></dl>
-
+<span class="target" id="module-diff_classifier.aws"></span><p>IO functions for downloading and uploading files from AWS S3 buckets.</p>
+<p>The diff_classifier module was built to be used with conjunction with AWS
+services. With the exception of Cloudknot parallelization capabilities, most
+functions can be used separate from AWS. These functions faciliate interaction
+with files stores in S3 buckets. Users must have appropriate credentials to
+access desired S3 buckets.</p>
 <dl class="function">
-<dt id="diff_classifier.aws.partition_and_store">
-<code class="descclassname">diff_classifier.aws.</code><code class="descname">partition_and_store</code><span class="sig-paren">(</span><em>remote_fname</em>, <em>local_dir</em>, <em>bucket_name='ccurtis7.pup'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/aws.html#partition_and_store"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.aws.partition_and_store" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download image from S3, partition, and upload partitions to S3.</p>
-<dl class="docutils">
-<dt>remote_fname: string</dt>
-<dd>Target filename in S3 bucket.</dd>
-<dt>local_dir: string</dt>
-<dd>Local directory to store downloaded file.</dd>
-<dt>bucket_name: string</dt>
-<dd>Bucket name on S3.</dd>
+<dt id="diff_classifier.aws.download_s3">
+<code class="descclassname">diff_classifier.aws.</code><code class="descname">download_s3</code><span class="sig-paren">(</span><em>remote_fname</em>, <em>local_fname</em>, <em>bucket_name='ccurtis.data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/aws.html#download_s3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.aws.download_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a file from S3 to local file-system</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>remote_fname: string</strong></dt>
+<dd><p class="first last">Name of remote file in S3 bucket.</p>
+</dd>
+<dt><strong>local_fname: string</strong></dt>
+<dd><p class="first last">Desired name to be stored on local computer.</p>
+</dd>
+<dt><strong>bucket_name: string</strong></dt>
+<dd><p class="first last">Bucket name on S3.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>remote_names: list of strings.</dt>
-<dd>Names of partitioned images in S3.</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.aws.upload_s3">
-<code class="descclassname">diff_classifier.aws.</code><code class="descname">upload_s3</code><span class="sig-paren">(</span><em>local_fname</em>, <em>remote_fname</em>, <em>bucket_name='ccurtis7.pup'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/aws.html#upload_s3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.aws.upload_s3" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.aws.</code><code class="descname">upload_s3</code><span class="sig-paren">(</span><em>local_fname</em>, <em>remote_fname</em>, <em>bucket_name='ccurtis.data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/aws.html#upload_s3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.aws.upload_s3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upload a file from local file-system to S3.</p>
-<dl class="docutils">
-<dt>local_fname: string</dt>
-<dd>Name of local file stored on computer.</dd>
-<dt>remote_fname: string</dt>
-<dd>Desired name to be stored in S3 bucket.</dd>
-<dt>bucket_name: string</dt>
-<dd>Bucket name on S3.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>local_fname: string</strong></dt>
+<dd><p class="first last">Name of local file stored on computer.</p>
+</dd>
+<dt><strong>remote_fname: string</strong></dt>
+<dd><p class="first last">Desired name to be stored in S3 bucket.</p>
+</dd>
+<dt><strong>bucket_name: string</strong></dt>
+<dd><p class="first last">Bucket name on S3.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

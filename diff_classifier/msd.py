@@ -302,6 +302,9 @@ def make_xyarray(data, length=651):
     xyft['yarray'] = np.zeros((length, particles))
     xyft['farray'] = np.zeros((length, particles))
     xyft['tarray'] = np.zeros((length, particles))
+    xyft['qarray'] = np.zeros((length, particles))
+    xyft['snarray'] = np.zeros((length, particles))
+    xyft['iarray'] = np.zeros((length, particles))
 
     track = data[data['Track_ID'] == first_p
                  ].sort_values(['Track_ID', 'Frame'],
@@ -310,18 +313,32 @@ def make_xyarray(data, length=651):
 
     old_frame = track['Frame'].values.astype(float)
     oldxy = [track['X'].values,
-             track['Y'].values]
+             track['Y'].values,
+             track['Quality'].values,
+             track['SN_Ratio'].values,
+             track['Mean_Intensity'].values]
     fxy = [interpolate.interp1d(old_frame, oldxy[0], bounds_error=False,
                                 fill_value=np.nan),
            interpolate.interp1d(old_frame, oldxy[1], bounds_error=False,
+                                fill_value=np.nan),
+           interpolate.interp1d(old_frame, oldxy[2], bounds_error=False,
+                                fill_value=np.nan),
+           interpolate.interp1d(old_frame, oldxy[3], bounds_error=False,
+                                fill_value=np.nan),
+           interpolate.interp1d(old_frame, oldxy[4], bounds_error=False,
                                 fill_value=np.nan)]
-    intxy = [fxy[0](new_frame), fxy[1](new_frame)]
+
+    intxy = [fxy[0](new_frame), fxy[1](new_frame), fxy[2](new_frame),
+             fxy[3](new_frame), fxy[4](new_frame)]
 
     # Fill in entire array
     xyft['xarray'][:, 0] = intxy[0]
     xyft['yarray'][:, 0] = intxy[1]
     xyft['farray'][:, 0] = new_frame
     xyft['tarray'][:, 0] = first_p
+    xyft['qarray'][:, 0] = intxy[2]
+    xyft['snarray'][:, 0] = intxy[3]
+    xyft['iarray'][:, 0] = intxy[4]
 
     for part in range(first_p+1, first_p+particles):
         track = data[data['Track_ID'] == part
@@ -330,19 +347,32 @@ def make_xyarray(data, length=651):
 
         old_frame = track['Frame']
         oldxy = [track['X'].values,
-                 track['Y'].values]
+                 track['Y'].values,
+                 track['Quality'].values,
+                 track['SN_Ratio'].values,
+                 track['Mean_Intensity'].values]
+
         fxy = [interpolate.interp1d(old_frame, oldxy[0], bounds_error=False,
                                     fill_value=np.nan),
                interpolate.interp1d(old_frame, oldxy[1], bounds_error=False,
+                                    fill_value=np.nan),
+               interpolate.interp1d(old_frame, oldxy[2], bounds_error=False,
+                                    fill_value=np.nan),
+               interpolate.interp1d(old_frame, oldxy[3], bounds_error=False,
+                                    fill_value=np.nan),
+               interpolate.interp1d(old_frame, oldxy[4], bounds_error=False,
                                     fill_value=np.nan)]
 
-        intxy = [fxy[0](new_frame),
-                 fxy[1](new_frame)]
+        intxy = [fxy[0](new_frame), fxy[1](new_frame), fxy[2](new_frame),
+                 fxy[3](new_frame), fxy[4](new_frame)]
 
         xyft['xarray'][:, part-first_p] = intxy[0]
         xyft['yarray'][:, part-first_p] = intxy[1]
         xyft['farray'][:, part-first_p] = new_frame
         xyft['tarray'][:, part-first_p] = part
+        xyft['qarray'][:, part-first_p] = intxy[2]
+        xyft['snarray'][:, part-first_p] = intxy[3]
+        xyft['iarray'][:, part-first_p] = intxy[4]
 
     return xyft
 
@@ -404,7 +434,11 @@ def all_msds2(data, frames=651):
                      'X': xyft['xarray'].flatten('F'),
                      'Y': xyft['yarray'].flatten('F'),
                      'MSDs': meansd.flatten('F'),
-                     'Gauss': gauss.flatten('F')}
+                     'Gauss': gauss.flatten('F'),
+                     'Quality': xyft['qarray'].flatten('F'),
+                     'SN_Ratio': xyft['snarray'].flatten('F'),
+                     'Mean_Intensity': xyft['iarray'].flatten('F')}
+
             new_data = pd.DataFrame(data=data1)
         except ValueError:
             data1 = {'Frame': [],
@@ -412,7 +446,10 @@ def all_msds2(data, frames=651):
                      'X': [],
                      'Y': [],
                      'MSDs': [],
-                     'Gauss': []}
+                     'Gauss': [],
+                     'Quality': [],
+                     'SN_Ratio': [],
+                     'Mean_Intensity': []}
             new_data = pd.DataFrame(data=data1)
         except IndexError:
             data1 = {'Frame': [],
@@ -420,7 +457,10 @@ def all_msds2(data, frames=651):
                      'X': [],
                      'Y': [],
                      'MSDs': [],
-                     'Gauss': []}
+                     'Gauss': [],
+                     'Quality': [],
+                     'SN_Ratio': [],
+                     'Mean_Intensity': []}
             new_data = pd.DataFrame(data=data1)
     else:
         data1 = {'Frame': [],
@@ -428,14 +468,18 @@ def all_msds2(data, frames=651):
                  'X': [],
                  'Y': [],
                  'MSDs': [],
-                 'Gauss': []}
+                 'Gauss': [],
+                 'Quality': [],
+                 'SN_Ratio': [],
+                 'Mean_Intensity': []}
         new_data = pd.DataFrame(data=data1)
 
     return new_data
 
 
 def geomean_msdisp(prefix, umppx=0.16, fps=100.02, upload=True,
-                   remote_folder="01_18_Experiment", bucket='ccurtis.data'):
+                   remote_folder="01_18_Experiment", bucket='ccurtis.data',
+                   backup_frames=651):
     """Comptes geometric averages of mean squared displacement datasets
 
     Calculates geometric averages and stadard errors for MSD datasets. Might
@@ -480,8 +524,8 @@ def geomean_msdisp(prefix, umppx=0.16, fps=100.02, upload=True,
                                               nan_policy='omit'), 0.0)
 
     except ValueError:
-        geo_mean = np.nan*np.ones(1+int(max(merged['Frame'])))
-        geo_stder = np.nan*np.ones(1+int(max(merged['Frame'])))
+        geo_mean = np.nan*np.ones(backup_frames)
+        geo_stder = np.nan*np.ones(backup_frames)
 
     np.savetxt('geomean_{}.csv'.format(prefix), geo_mean, delimiter=",")
     np.savetxt('geoSEM_{}.csv'.format(prefix), geo_stder, delimiter=",")
@@ -703,16 +747,16 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
             plt.loglog(xpos, np.exp(geo[counter]), c=c, linewidth=6,
                        label=experiment)
             plt.loglog(xpos, np.exp(geo[counter] - 1.96*gstder[counter]),
-                       c=c, dashes=[6,2], linewidth=4)
+                       c=c, dashes=[6, 2], linewidth=4)
             plt.loglog(xpos, np.exp(geo[counter] + 1.96*gstder[counter]),
-                       c=c, dashes=[6,2], linewidth=4)
+                       c=c, dashes=[6, 2], linewidth=4)
         else:
             plt.loglog(xpos, geo[counter], c=c, linewidth=6,
                        label=experiment)
             plt.loglog(xpos, geo[counter] - 1.96*gstder[counter], c=c,
-                       dashes=[6,2], linewidth=4)
+                       dashes=[6, 2], linewidth=4)
             plt.loglog(xpos, geo[counter] + 1.96*gstder[counter], c=c,
-                       dashes=[6,2], linewidth=4)
+                       dashes=[6, 2], linewidth=4)
 
         counter = counter + 1
 
@@ -818,7 +862,10 @@ def random_traj_dataset(nframes=100, nparts=30, seed=1, fsize=(0, 512),
     datai = {'Frame': frames,
              'Track_ID': trackid,
              'X': x,
-             'Y': y}
+             'Y': y,
+             'Quality': nframes*nparts*[10],
+             'SN_Ratio': nframes*nparts*[0.1],
+             'Mean_Intensity': nframes*nparts*[120]}
     dataf = pd.DataFrame(data=datai)
 
     return dataf

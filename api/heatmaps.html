@@ -81,8 +81,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
@@ -152,146 +154,243 @@
 <h2><a class="reference internal" href="#module-diff_classifier.heatmaps" title="diff_classifier.heatmaps"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.heatmaps</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="module-diff_classifier.heatmaps"></span><dl class="function">
 <dt id="diff_classifier.heatmaps.plot_heatmap">
-<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_heatmap</code><span class="sig-paren">(</span><em>prefix</em>, <em>feature='asymmetry1'</em>, <em>vmin=0</em>, <em>vmax=1</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em>, <em>dpi=None</em>, <em>figsize=(12</em>, <em>10)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_heatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_heatmap" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_heatmap</code><span class="sig-paren">(</span><em>prefix</em>, <em>feature='asymmetry1'</em>, <em>vmin=0</em>, <em>vmax=1</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em>, <em>dpi=None</em>, <em>figsize=(12</em>, <em>10)</em>, <em>remote_folder='01_18_Experiment'</em>, <em>bucket='ccurtis.data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_heatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_heatmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot heatmap of trajectories in video with colors corresponding to features.</p>
-<dl class="docutils">
-<dt>prefix: string</dt>
-<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
-<dt>feature: string</dt>
-<dd>Feature to be plotted.  See features_analysis.py</dd>
-<dt>vmin: float64</dt>
-<dd>Lower intensity bound for heatmap.</dd>
-<dt>vmax: float64</dt>
-<dd>Upper intensity bound for heatmap.</dd>
-<dt>resolution: int</dt>
-<dd>Resolution of base image.  Only needed to calculate bounds of image.</dd>
-<dt>rows: int</dt>
-<dd>Rows of base images used to build tiled image.</dd>
-<dt>cols: int</dt>
-<dd>Columns of base images used to build tiled images.</dd>
-<dt>upload: boolean</dt>
-<dd>True if you want to upload to s3.</dd>
-<dt>dpi: int</dt>
-<dd>Desired dpi of output image.</dd>
-<dt>figsize: list</dt>
-<dd>Desired dimensions of output image.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>prefix: string</strong></dt>
+<dd><p class="first last">Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</p>
+</dd>
+<dt><strong>feature: string</strong></dt>
+<dd><p class="first last">Feature to be plotted.  See features_analysis.py</p>
+</dd>
+<dt><strong>vmin: float64</strong></dt>
+<dd><p class="first last">Lower intensity bound for heatmap.</p>
+</dd>
+<dt><strong>vmax: float64</strong></dt>
+<dd><p class="first last">Upper intensity bound for heatmap.</p>
+</dd>
+<dt><strong>resolution: int</strong></dt>
+<dd><p class="first last">Resolution of base image.  Only needed to calculate bounds of image.</p>
+</dd>
+<dt><strong>rows: int</strong></dt>
+<dd><p class="first last">Rows of base images used to build tiled image.</p>
+</dd>
+<dt><strong>cols: int</strong></dt>
+<dd><p class="first last">Columns of base images used to build tiled images.</p>
+</dd>
+<dt><strong>upload: boolean</strong></dt>
+<dd><p class="first last">True if you want to upload to s3.</p>
+</dd>
+<dt><strong>dpi: int</strong></dt>
+<dd><p class="first last">Desired dpi of output image.</p>
+</dd>
+<dt><strong>figsize: list</strong></dt>
+<dd><p class="first last">Desired dimensions of output image.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.heatmaps.plot_histogram">
-<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_histogram</code><span class="sig-paren">(</span><em>prefix</em>, <em>xlabel='Log Diffusion Coefficient Dist'</em>, <em>ylabel='Trajectory Count'</em>, <em>fps=100.02</em>, <em>umppx=0.16</em>, <em>frames=651</em>, <em>y_range=100</em>, <em>frame_interval=20</em>, <em>frame_range=100</em>, <em>analysis='log'</em>, <em>theta='D'</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_histogram" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_histogram</code><span class="sig-paren">(</span><em>prefix</em>, <em>xlabel='Log Diffusion Coefficient Dist'</em>, <em>ylabel='Trajectory Count'</em>, <em>fps=100.02</em>, <em>umppx=0.16</em>, <em>frames=651</em>, <em>y_range=100</em>, <em>frame_interval=20</em>, <em>frame_range=100</em>, <em>analysis='log'</em>, <em>theta='D'</em>, <em>upload=True</em>, <em>remote_folder='01_18_Experiment'</em>, <em>bucket='ccurtis.data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_histogram" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot heatmap of trajectories in video with colors corresponding to features.</p>
-<dl class="docutils">
-<dt>prefix: string</dt>
-<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
-<dt>xlabel: string</dt>
-<dd>X axis label.</dd>
-<dt>ylabel: string</dt>
-<dd>Y axis label.</dd>
-<dt>fps: float64</dt>
-<dd>Frames per second of video.</dd>
-<dt>umppx: float64</dt>
-<dd>Resolution of video in microns per pixel.</dd>
-<dt>frames: int</dt>
-<dd>Number of frames in video.</dd>
-<dt>y_range: float64 or int</dt>
-<dd>Desire y range of graph.</dd>
-<dt>frame_interval: int</dt>
-<dd>Desired spacing between MSDs/Deffs to be plotted.</dd>
-<dt>analysis: string</dt>
-<dd>Desired output format.  If log, will plot log(MSDs/Deffs)</dd>
-<dt>theta: string</dt>
-<dd>Desired output.  D for diffusion coefficients.  Anything else, MSDs.</dd>
-<dt>upload: boolean</dt>
-<dd>True if you want to upload to s3.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>prefix: string</strong></dt>
+<dd><p class="first last">Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</p>
+</dd>
+<dt><strong>xlabel: string</strong></dt>
+<dd><p class="first last">X axis label.</p>
+</dd>
+<dt><strong>ylabel: string</strong></dt>
+<dd><p class="first last">Y axis label.</p>
+</dd>
+<dt><strong>fps: float64</strong></dt>
+<dd><p class="first last">Frames per second of video.</p>
+</dd>
+<dt><strong>umppx: float64</strong></dt>
+<dd><p class="first last">Resolution of video in microns per pixel.</p>
+</dd>
+<dt><strong>frames: int</strong></dt>
+<dd><p class="first last">Number of frames in video.</p>
+</dd>
+<dt><strong>y_range: float64 or int</strong></dt>
+<dd><p class="first last">Desire y range of graph.</p>
+</dd>
+<dt><strong>frame_interval: int</strong></dt>
+<dd><p class="first last">Desired spacing between MSDs/Deffs to be plotted.</p>
+</dd>
+<dt><strong>analysis: string</strong></dt>
+<dd><p class="first last">Desired output format.  If log, will plot log(MSDs/Deffs)</p>
+</dd>
+<dt><strong>theta: string</strong></dt>
+<dd><p class="first last">Desired output.  D for diffusion coefficients.  Anything else, MSDs.</p>
+</dd>
+<dt><strong>upload: boolean</strong></dt>
+<dd><p class="first last">True if you want to upload to s3.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.heatmaps.plot_individual_msds">
-<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_individual_msds</code><span class="sig-paren">(</span><em>prefix</em>, <em>x_range=100</em>, <em>y_range=20</em>, <em>umppx=0.16</em>, <em>fps=100.02</em>, <em>alpha=0.01</em>, <em>upload=True</em>, <em>folder='.'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_individual_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_individual_msds" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_individual_msds</code><span class="sig-paren">(</span><em>prefix</em>, <em>x_range=100</em>, <em>y_range=20</em>, <em>umppx=0.16</em>, <em>fps=100.02</em>, <em>alpha=0.01</em>, <em>folder='.'</em>, <em>upload=True</em>, <em>remote_folder='01_18_Experiment'</em>, <em>bucket='ccurtis.data'</em>, <em>figsize=(10</em>, <em>10)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_individual_msds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_individual_msds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot MSDs of trajectories and the geometric average.</p>
-<dl class="docutils">
-<dt>prefix: string</dt>
-<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
-<dt>x_range: float64 or int</dt>
-<dd>Desire x range of graph.</dd>
-<dt>y_range: float64 or int</dt>
-<dd>Desire y range of graph.</dd>
-<dt>fps: float64</dt>
-<dd>Frames per second of video.</dd>
-<dt>umppx: float64</dt>
-<dd>Resolution of video in microns per pixel.</dd>
-<dt>alpha: float64</dt>
-<dd>Transparency factor.  Between 0 and 1.</dd>
-<dt>upload: boolean</dt>
-<dd>True if you want to upload to s3.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>prefix: string</strong></dt>
+<dd><p class="first last">Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</p>
+</dd>
+<dt><strong>x_range: float64 or int</strong></dt>
+<dd><p class="first last">Desire x range of graph.</p>
+</dd>
+<dt><strong>y_range: float64 or int</strong></dt>
+<dd><p class="first last">Desire y range of graph.</p>
+</dd>
+<dt><strong>fps: float64</strong></dt>
+<dd><p class="first last">Frames per second of video.</p>
+</dd>
+<dt><strong>umppx: float64</strong></dt>
+<dd><p class="first last">Resolution of video in microns per pixel.</p>
+</dd>
+<dt><strong>alpha: float64</strong></dt>
+<dd><p class="first last">Transparency factor.  Between 0 and 1.</p>
+</dd>
+<dt><strong>upload: boolean</strong></dt>
+<dd><p class="first last">True if you want to upload to s3.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>geo_mean: numpy array</dt>
-<dd>Geometric mean of trajectory MSDs at all time points.</dd>
-<dt>geo_SEM: numpy array</dt>
-<dd>Geometric standard errot of trajectory MSDs at all time points.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>geo_mean: numpy array</strong></dt>
+<dd><p class="first last">Geometric mean of trajectory MSDs at all time points.</p>
+</dd>
+<dt><strong>geo_SEM: numpy array</strong></dt>
+<dd><p class="first last">Geometric standard errot of trajectory MSDs at all time points.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.heatmaps.plot_particles_in_frame">
-<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_particles_in_frame</code><span class="sig-paren">(</span><em>prefix</em>, <em>x_range=600</em>, <em>y_range=2000</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_particles_in_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_particles_in_frame" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_particles_in_frame</code><span class="sig-paren">(</span><em>prefix</em>, <em>x_range=600</em>, <em>y_range=2000</em>, <em>upload=True</em>, <em>remote_folder='01_18_Experiment'</em>, <em>bucket='ccurtis.data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_particles_in_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_particles_in_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot number of particles per frame as a function of time.</p>
-<dl class="docutils">
-<dt>prefix: string</dt>
-<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
-<dt>x_range: float64 or int</dt>
-<dd>Desire x range of graph.</dd>
-<dt>y_range: float64 or int</dt>
-<dd>Desire y range of graph.</dd>
-<dt>upload: boolean</dt>
-<dd>True if you want to upload to s3.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>prefix: string</strong></dt>
+<dd><p class="first last">Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</p>
+</dd>
+<dt><strong>x_range: float64 or int</strong></dt>
+<dd><p class="first last">Desire x range of graph.</p>
+</dd>
+<dt><strong>y_range: float64 or int</strong></dt>
+<dd><p class="first last">Desire y range of graph.</p>
+</dd>
+<dt><strong>upload: boolean</strong></dt>
+<dd><p class="first last">True if you want to upload to s3.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.heatmaps.plot_scatterplot">
-<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_scatterplot</code><span class="sig-paren">(</span><em>prefix</em>, <em>feature='asymmetry1'</em>, <em>vmin=0</em>, <em>vmax=1</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_scatterplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_scatterplot" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_scatterplot</code><span class="sig-paren">(</span><em>prefix</em>, <em>feature='asymmetry1'</em>, <em>vmin=0</em>, <em>vmax=1</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>dotsize=10</em>, <em>figsize=(12</em>, <em>10)</em>, <em>upload=True</em>, <em>remote_folder='01_18_Experiment'</em>, <em>bucket='ccurtis.data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_scatterplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_scatterplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot scatterplot of trajectories in video with colors corresponding to features.</p>
-<dl class="docutils">
-<dt>prefix: string</dt>
-<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
-<dt>feature: string</dt>
-<dd>Feature to be plotted.  See features_analysis.py</dd>
-<dt>vmin: float64</dt>
-<dd>Lower intensity bound for heatmap.</dd>
-<dt>vmax: float64</dt>
-<dd>Upper intensity bound for heatmap.</dd>
-<dt>resolution: int</dt>
-<dd>Resolution of base image.  Only needed to calculate bounds of image.</dd>
-<dt>rows: int</dt>
-<dd>Rows of base images used to build tiled image.</dd>
-<dt>cols: int</dt>
-<dd>Columns of base images used to build tiled images.</dd>
-<dt>upload: boolean</dt>
-<dd>True if you want to upload to s3.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>prefix: string</strong></dt>
+<dd><p class="first last">Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</p>
+</dd>
+<dt><strong>feature: string</strong></dt>
+<dd><p class="first last">Feature to be plotted.  See features_analysis.py</p>
+</dd>
+<dt><strong>vmin: float64</strong></dt>
+<dd><p class="first last">Lower intensity bound for heatmap.</p>
+</dd>
+<dt><strong>vmax: float64</strong></dt>
+<dd><p class="first last">Upper intensity bound for heatmap.</p>
+</dd>
+<dt><strong>resolution: int</strong></dt>
+<dd><p class="first last">Resolution of base image.  Only needed to calculate bounds of image.</p>
+</dd>
+<dt><strong>rows: int</strong></dt>
+<dd><p class="first last">Rows of base images used to build tiled image.</p>
+</dd>
+<dt><strong>cols: int</strong></dt>
+<dd><p class="first last">Columns of base images used to build tiled images.</p>
+</dd>
+<dt><strong>upload: boolean</strong></dt>
+<dd><p class="first last">True if you want to upload to s3.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.heatmaps.plot_trajectories">
-<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_trajectories</code><span class="sig-paren">(</span><em>prefix</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_trajectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_trajectories" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">plot_trajectories</code><span class="sig-paren">(</span><em>prefix</em>, <em>resolution=512</em>, <em>rows=4</em>, <em>cols=4</em>, <em>upload=True</em>, <em>remote_folder='01_18_Experiment'</em>, <em>bucket='ccurtis.data'</em>, <em>figsize=(12</em>, <em>12)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#plot_trajectories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.plot_trajectories" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot trajectories in video.</p>
-<dl class="docutils">
-<dt>prefix: string</dt>
-<dd>Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</dd>
-<dt>resolution: int</dt>
-<dd>Resolution of base image.  Only needed to calculate bounds of image.</dd>
-<dt>rows: int</dt>
-<dd>Rows of base images used to build tiled image.</dd>
-<dt>cols: int</dt>
-<dd>Columns of base images used to build tiled images.</dd>
-<dt>upload: boolean</dt>
-<dd>True if you want to upload to s3.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>prefix: string</strong></dt>
+<dd><p class="first last">Prefix of file name to be plotted e.g. features_P1.csv prefix is P1.</p>
+</dd>
+<dt><strong>resolution: int</strong></dt>
+<dd><p class="first last">Resolution of base image.  Only needed to calculate bounds of image.</p>
+</dd>
+<dt><strong>rows: int</strong></dt>
+<dd><p class="first last">Rows of base images used to build tiled image.</p>
+</dd>
+<dt><strong>cols: int</strong></dt>
+<dd><p class="first last">Columns of base images used to build tiled images.</p>
+</dd>
+<dt><strong>upload: boolean</strong></dt>
+<dd><p class="first last">True if you want to upload to s3.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -299,20 +398,34 @@
 <code class="descclassname">diff_classifier.heatmaps.</code><code class="descname">voronoi_finite_polygons_2d</code><span class="sig-paren">(</span><em>vor</em>, <em>radius=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/heatmaps.html#voronoi_finite_polygons_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.heatmaps.voronoi_finite_polygons_2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconstruct infinite voronoi regions in a 2D diagram to finite
 regions.</p>
-<dl class="docutils">
-<dt>vor <span class="classifier-delimiter">:</span> <span class="classifier">Voronoi</span></dt>
-<dd>Input diagram</dd>
-<dt>radius <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
-<dd>Distance to &#8216;points at infinity&#8217;.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>vor</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Voronoi</span></dt>
+<dd><p class="first last">Input diagram</p>
+</dd>
+<dt><strong>radius</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Distance to &#8216;points at infinity&#8217;.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>regions <span class="classifier-delimiter">:</span> <span class="classifier">list of tuples</span></dt>
-<dd>Indices of vertices in each revised Voronoi regions.</dd>
-<dt>vertices <span class="classifier-delimiter">:</span> <span class="classifier">list of tuples</span></dt>
-<dd>Coordinates for revised Voronoi vertices. Same as coordinates
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>regions</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of tuples</span></dt>
+<dd><p class="first last">Indices of vertices in each revised Voronoi regions.</p>
+</dd>
+<dt><strong>vertices</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of tuples</span></dt>
+<dd><p class="first last">Coordinates for revised Voronoi vertices. Same as coordinates
 of input vertices, with &#8216;points at infinity&#8217; appended to the
-end.</dd>
+end.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

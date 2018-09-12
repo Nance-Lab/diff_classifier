@@ -79,8 +79,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
@@ -131,125 +133,129 @@
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.features</h1><div class="highlight"><pre>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
-<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
+<span class="sd">&quot;&quot;&quot;Functions to calculate trajectory features from input trajectory data</span>
+
+<span class="sd">This module provides functions to calculate trajectory features based off the</span>
+<span class="sd">ImageJ plugin TrajClassifer by Thorsten Wagner. See details at</span>
+<span class="sd">https://imagej.net/TraJClassifier.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">struct</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">diff_classifier.utils</span> <span class="kn">as</span> <span class="nn">ut</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">diff_classifier.msd</span> <span class="kn">as</span> <span class="nn">msd</span>
 
 
 <div class="viewcode-block" id="unmask_track"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.unmask_track">[docs]</a><span class="k">def</span> <span class="nf">unmask_track</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Removes empty frames from a track in an MSD pandas dataframe.</span>
+    <span class="sd">&quot;&quot;&quot;Removes empty frames from inpute trajectory datset.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    track : pandas Dataframe</span>
+<span class="sd">    track : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain a Frame, Track_ID, X, Y, MSDs, and</span>
 <span class="sd">        Gauss column.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    comp_track : pandas Dataframe</span>
+<span class="sd">    comp_track : pandas.core.frame.DataFrame</span>
 <span class="sd">        Similar to track, but has all masked components removed.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span>
-    <span class="n">msd</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">])</span>
-    <span class="n">x_mask</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">msd_mask</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">msd</span><span class="p">)</span>
+    <span class="n">xpos</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span>
+    <span class="n">msds</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">])</span>
+    <span class="n">x_mask</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">xpos</span><span class="p">)</span>
+    <span class="n">msd_mask</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">msds</span><span class="p">)</span>
     <span class="n">comp_frame</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">msd_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]))</span>
-    <span class="n">comp_ID</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">msd_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]))</span>
+    <span class="n">compid</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">msd_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]))</span>
     <span class="n">comp_x</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">x_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]))</span>
     <span class="n">comp_y</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">x_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]))</span>
     <span class="n">comp_msd</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">msd_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">]))</span>
     <span class="n">comp_gauss</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">msd_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]))</span>
+    <span class="n">comp_qual</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">x_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Quality&#39;</span><span class="p">]))</span>
+    <span class="n">comp_snr</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">x_mask</span><span class="p">,</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;SN_Ratio&#39;</span><span class="p">]))</span>
+    <span class="n">comp_meani</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">x_mask</span><span class="p">,</span>
+                                               <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">]))</span>
 
-    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">comp_frame</span><span class="p">,</span>
-         <span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="n">comp_ID</span><span class="p">,</span>
-         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">comp_x</span><span class="p">,</span>
-         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">comp_y</span><span class="p">,</span>
-         <span class="s1">&#39;MSDs&#39;</span><span class="p">:</span> <span class="n">comp_msd</span><span class="p">,</span>
-         <span class="s1">&#39;Gauss&#39;</span><span class="p">:</span> <span class="n">comp_gauss</span>
-         <span class="p">}</span>
-    <span class="n">comp_track</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">comp_frame</span><span class="p">,</span>
+             <span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="n">compid</span><span class="p">,</span>
+             <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">comp_x</span><span class="p">,</span>
+             <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">comp_y</span><span class="p">,</span>
+             <span class="s1">&#39;MSDs&#39;</span><span class="p">:</span> <span class="n">comp_msd</span><span class="p">,</span>
+             <span class="s1">&#39;Gauss&#39;</span><span class="p">:</span> <span class="n">comp_gauss</span><span class="p">,</span>
+             <span class="s1">&#39;Quality&#39;</span><span class="p">:</span> <span class="n">comp_qual</span><span class="p">,</span>
+             <span class="s1">&#39;SN_Ratio&#39;</span><span class="p">:</span> <span class="n">comp_snr</span><span class="p">,</span>
+             <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">:</span> <span class="n">comp_meani</span>
+             <span class="p">}</span>
+    <span class="n">comp_track</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">comp_track</span>
 
 </div>
 <div class="viewcode-block" id="alpha_calc"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.alpha_calc">[docs]</a><span class="k">def</span> <span class="nf">alpha_calc</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the parameter alpha by fitting track MSD data to a function.</span>
+    <span class="sd">&quot;&quot;&quot;Calculates alpha, the exponential fit parameter for MSD data</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    track : pandas DataFrame</span>
+<span class="sd">    track : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain a Frames and a MSDs column.  The function</span>
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    a : numpy.float64</span>
+<span class="sd">    alph : numpy.float64</span>
 <span class="sd">        The anomalous exponent derived by fitting MSD values to the function,</span>
-<span class="sd">        &lt;r**2(n)&gt; = 4*D*(n*delt)**a</span>
-<span class="sd">    D : numpy.float64</span>
+<span class="sd">        &lt;rad**2(n)&gt; = 4*dcoef*(n*delt)**alph</span>
+<span class="sd">    dcoef : numpy.float64</span>
 <span class="sd">        The fitted diffusion coefficient derived by fitting MSD values to the</span>
 <span class="sd">        function above.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 5</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; alpha_calc(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; alpha_calc(dframe)</span>
 <span class="sd">    (2.0000000000000004, 0.4999999999999999)</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="sd">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; alpha_calc(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; alpha_calc(dframe)</span>
 <span class="sd">    (0.023690002018364065, 0.5144436515510022)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># assert type(track) == pd.core.frame.DataFrame, &quot;track must be a pandas dataframe.&quot;</span>
-    <span class="c1"># assert type(track[&#39;MSDs&#39;]) == pd.core.series.Series, &quot;track must contain MSDs column.&quot;</span>
-    <span class="c1"># assert type(track[&#39;Frame&#39;]) == pd.core.series.Series, &quot;track must contain Frame column.&quot;</span>
-    <span class="c1"># assert track.shape[0] &gt; 0, &quot;track must not be empty.&quot;</span>
+    <span class="n">ypos</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">]</span>
+    <span class="n">xpos</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span>
 
-    <span class="n">y</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">]</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">msd_alpha</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
-        <span class="k">return</span> <span class="mi">4</span><span class="o">*</span><span class="n">D</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">msd_alpha</span><span class="p">(</span><span class="n">xpos</span><span class="p">,</span> <span class="n">alph</span><span class="p">,</span> <span class="n">dcoef</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">4</span><span class="o">*</span><span class="n">dcoef</span><span class="o">*</span><span class="p">(</span><span class="n">xpos</span><span class="o">**</span><span class="n">alph</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">msd_alpha</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">msd_alpha</span><span class="p">,</span> <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span>
+        <span class="n">alph</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dcoef</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Optimal parameters not found. Print NaN instead.&#39;</span><span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">D</span>
+        <span class="n">alph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">dcoef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">alph</span><span class="p">,</span> <span class="n">dcoef</span>
 
 </div>
 <div class="viewcode-block" id="gyration_tensor"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.gyration_tensor">[docs]</a><span class="k">def</span> <span class="nf">gyration_tensor</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the eigenvalues and eigenvectors of the gyration tensor of the</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the eigenvalues and eigenvectors of the gyration tensor of the</span>
 <span class="sd">    input trajectory.</span>
 
 <span class="sd">    Parameters</span>
@@ -260,116 +266,128 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    l1 : numpy.float64</span>
+<span class="sd">    eig1 : numpy.float64</span>
 <span class="sd">        Dominant eigenvalue of the gyration tensor.</span>
-<span class="sd">    l2 : numpy.float64</span>
+<span class="sd">    eig2 : numpy.float64</span>
 <span class="sd">        Secondary eigenvalue of the gyration tensor.</span>
-<span class="sd">    v1 : 2 x 1 numpy.ndarray of numpy.float64 objects</span>
+<span class="sd">    eigv1 : numpy.ndarray</span>
 <span class="sd">        Dominant eigenvector of the gyration tensor.</span>
-<span class="sd">    v2 : 2 x 1 numpy.ndarray of numpy.float64 objects</span>
+<span class="sd">    eigv2 : numpy.ndarray</span>
 <span class="sd">        Secondary eigenvector of the gyration tensor.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 5</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; gyration_tensor(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; gyration_tensor(dframe)</span>
 <span class="sd">    (4.0,</span>
 <span class="sd">    4.4408920985006262e-16,</span>
 <span class="sd">    array([ 0.70710678, -0.70710678]),</span>
 <span class="sd">    array([ 0.70710678,  0.70710678]))</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="sd">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; gyration_tensor(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; gyration_tensor(dframe)</span>
 <span class="sd">    (0.53232560128104522,</span>
 <span class="sd">    0.42766829138901619,</span>
 <span class="sd">    array([ 0.6020119 , -0.79848711]),</span>
 <span class="sd">    array([-0.79848711, -0.6020119 ]))</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">df</span> <span class="o">=</span> <span class="n">track</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="s2">&quot;track must be a pandas dataframe.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain X column.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain Y column.&quot;</span>
-    <span class="k">assert</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span> <span class="s2">&quot;track must be a pandas</span><span class="se">\</span>
+<span class="s2">     dataframe.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     X column.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     Y column.&quot;</span>
+    <span class="k">assert</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
 
-    <span class="n">Ta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">Tb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">Tab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]))</span><span class="o">*</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])))</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">matrixa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                     <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">matrixb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                     <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">matrixab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                      <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]))</span><span class="o">*</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                                     <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])))</span><span class="o">/</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">Ta</span><span class="p">,</span> <span class="n">Tab</span><span class="p">],</span> <span class="p">[</span><span class="n">Tab</span><span class="p">,</span> <span class="n">Tb</span><span class="p">]]))</span>
-    <span class="n">dom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
-    <span class="n">rec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
-    <span class="n">l1</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">dom</span><span class="p">]</span>
-    <span class="n">l2</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-    <span class="n">v1</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">dom</span><span class="p">]</span>
-    <span class="n">v2</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span>
+    <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">matrixa</span><span class="p">,</span> <span class="n">matrixab</span><span class="p">],</span>
+                                       <span class="p">[</span><span class="n">matrixab</span><span class="p">,</span> <span class="n">matrixb</span><span class="p">]]))</span>
+    <span class="n">dom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigvals</span><span class="p">))</span>
+    <span class="n">rec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigvals</span><span class="p">))</span>
+    <span class="n">eig1</span> <span class="o">=</span> <span class="n">eigvals</span><span class="p">[</span><span class="n">dom</span><span class="p">]</span>
+    <span class="n">eig2</span> <span class="o">=</span> <span class="n">eigvals</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+    <span class="n">eigv1</span> <span class="o">=</span> <span class="n">eigvecs</span><span class="p">[</span><span class="n">dom</span><span class="p">]</span>
+    <span class="n">eigv2</span> <span class="o">=</span> <span class="n">eigvecs</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">eigv1</span><span class="p">,</span> <span class="n">eigv2</span>
 
 </div>
 <div class="viewcode-block" id="kurtosis"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.kurtosis">[docs]</a><span class="k">def</span> <span class="nf">kurtosis</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the kurtosis of input track.</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the kurtosis of input track.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    track : pandas DataFrame</span>
+<span class="sd">    track : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain an X and Y column.  The function</span>
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    kurt : numpy.float64</span>
-<span class="sd">        Kurtosis of the input track.  Calculation based on projected 2D positions</span>
-<span class="sd">        on the dominant eigenvector of the radius of gyration tensor.</span>
+<span class="sd">        Kurtosis of the input track.  Calculation based on projected 2D</span>
+<span class="sd">        positions on the dominant eigenvector of the radius of gyration tensor.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 5</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; kurtosis(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; kurtosis(dframe)</span>
 <span class="sd">    2.5147928994082829</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="sd">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; kurtosis(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; kurtosis(dframe)</span>
 <span class="sd">    1.8515139698652476</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">df</span> <span class="o">=</span> <span class="n">track</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="s2">&quot;track must be a pandas dataframe.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain X column.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain Y column.&quot;</span>
-    <span class="k">assert</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span> <span class="s2">&quot;track must be a pandas</span><span class="se">\</span>
+<span class="s2">     dataframe.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     X column.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     Y column.&quot;</span>
+    <span class="k">assert</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
 
-    <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">gyration_tensor</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-    <span class="n">projection</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">v1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">v1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">eigv1</span><span class="p">,</span> <span class="n">eigv2</span> <span class="o">=</span> <span class="n">gyration_tensor</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+    <span class="n">projection</span> <span class="o">=</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">eigv1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">eigv1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="n">kurt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">projection</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">projection</span><span class="p">))</span><span class="o">**</span><span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">kurt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">projection</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+                   <span class="n">projection</span><span class="p">))</span><span class="o">**</span><span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">kurt</span>
 
 </div>
 <div class="viewcode-block" id="asymmetry"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.asymmetry">[docs]</a><span class="k">def</span> <span class="nf">asymmetry</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the asymmetry of the trajectory.</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the asymmetry of the trajectory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -379,64 +397,67 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    l1 : numpy.float64</span>
+<span class="sd">    eig1 : numpy.float64</span>
 <span class="sd">        Dominant eigenvalue of the gyration tensor.</span>
-<span class="sd">    l2 : numpy.float64</span>
+<span class="sd">    eig2 : numpy.float64</span>
 <span class="sd">        Secondary eigenvalue of the gyration tensor.</span>
-<span class="sd">    a1 : numpy.float64</span>
-<span class="sd">        asymmetry of the input track.  Equal to 0 for circularly symmetric tracks,</span>
-<span class="sd">        and 1 for linear tracks.</span>
-<span class="sd">    a2 : numpy.float64</span>
+<span class="sd">    asym1 : numpy.float64</span>
+<span class="sd">        asymmetry of the input track.  Equal to 0 for circularly symmetric</span>
+<span class="sd">        tracks, and 1 for linear tracks.</span>
+<span class="sd">    asym2 : numpy.float64</span>
 <span class="sd">        alternate definition of asymmetry.  Equal to 1 for circularly</span>
 <span class="sd">        symmetric tracks, and 0 for linear tracks.</span>
-<span class="sd">    a3 : numpy.float64</span>
+<span class="sd">    asym3 : numpy.float64</span>
 <span class="sd">        alternate definition of asymmetry.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; asymmetry(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; asymmetry(dframe)</span>
 <span class="sd">    (16.5, 0.0, 1.0, 0.0, 0.69314718055994529)</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="sd">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; asymmetry(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; asymmetry(dframe)</span>
 <span class="sd">    (0.53232560128104522,</span>
 <span class="sd">    0.42766829138901619,</span>
 <span class="sd">    0.046430119259539708,</span>
 <span class="sd">    0.80339606128247354,</span>
 <span class="sd">    0.0059602683290953052)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span> <span class="s2">&quot;track must be a pandas</span><span class="se">\</span>
+<span class="s2">     dataframe.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     X column.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     Y column.&quot;</span>
+    <span class="k">assert</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
 
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="s2">&quot;track must be a pandas dataframe.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain X column.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain Y column.&quot;</span>
-    <span class="k">assert</span> <span class="n">track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
+    <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">eigv1</span><span class="p">,</span> <span class="n">eigv2</span> <span class="o">=</span> <span class="n">gyration_tensor</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+    <span class="n">asym1</span> <span class="o">=</span> <span class="p">(</span><span class="n">eig1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">eig2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">eig1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">eig2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">asym2</span> <span class="o">=</span> <span class="n">eig2</span><span class="o">/</span><span class="n">eig1</span>
+    <span class="n">asym3</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">((</span><span class="n">eig1</span><span class="o">-</span><span class="n">eig2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">eig1</span><span class="o">+</span><span class="n">eig2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
-    <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">gyration_tensor</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
-    <span class="n">a1</span> <span class="o">=</span> <span class="p">(</span><span class="n">l1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">l2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">l1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">l2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
-    <span class="n">a2</span> <span class="o">=</span> <span class="n">l2</span><span class="o">/</span><span class="n">l1</span>
-    <span class="n">a3</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">((</span><span class="n">l1</span><span class="o">-</span><span class="n">l2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">l1</span><span class="o">+</span><span class="n">l2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span>
+    <span class="k">return</span> <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">asym1</span><span class="p">,</span> <span class="n">asym2</span><span class="p">,</span> <span class="n">asym3</span>
 
 </div>
-<div class="viewcode-block" id="minBoundingRect"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.minBoundingRect">[docs]</a><span class="k">def</span> <span class="nf">minBoundingRect</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the minimum bounding rectangle of an input trajectory.</span>
+<div class="viewcode-block" id="minboundrect"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.minboundrect">[docs]</a><span class="k">def</span> <span class="nf">minboundrect</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the minimum bounding rectangle of an input trajectory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    df : pandas DataFrame</span>
+<span class="sd">    dframe : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain an X and Y column.  The function</span>
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
@@ -450,20 +471,20 @@
 <span class="sd">        Width of the bounding box.</span>
 <span class="sd">    height : numpy.float64</span>
 <span class="sd">        Height of the bounding box.</span>
-<span class="sd">    center_point : 2 x 1 numpy.ndarray of numpy.float64 objects</span>
+<span class="sd">    center_point : numpy.ndarray</span>
 <span class="sd">        Center point of the bounding box.</span>
-<span class="sd">    corner_points : 4 x 2 numpy.ndarray of numpy.float64 objects</span>
+<span class="sd">    corner_pts : numpy.ndarray</span>
 <span class="sd">        Corner points of the bounding box.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; minBoundingRect(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; minboundrect(dframe)</span>
 <span class="sd">    (-2.3561944901923448,</span>
 <span class="sd">    2.8261664256307952e-14,</span>
 <span class="sd">    12.727922061357855,</span>
@@ -475,12 +496,12 @@
 <span class="sd">           [  6.,   4.]]))</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="sd">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; minBoundingRect(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; minboundrect(dframe)</span>
 <span class="sd">    (0.78318530717958657,</span>
 <span class="sd">    3.6189901131223992,</span>
 <span class="sd">    1.9949899732081091,</span>
@@ -494,17 +515,23 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Based off of code from the following repo:</span>
-<span class="sd">    https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/python/min_bounding_rect.py</span>
+<span class="sd">    https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/</span>
+<span class="sd">    python/min_bounding_rect.py</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="s2">&quot;track must be a pandas dataframe.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain X column.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain Y column.&quot;</span>
-    <span class="k">assert</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span> <span class="s2">&quot;track must be a pandas</span><span class="se">\</span>
+<span class="s2">     dataframe.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     X column.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     Y column.&quot;</span>
+    <span class="k">assert</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
 
-    <span class="n">df2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-    <span class="n">df2</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">df2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">df2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">df2</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">dframe</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">df2</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">dframe</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">hull_points_2d</span> <span class="o">=</span> <span class="n">df2</span>
 
     <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">hull_points_2d</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
@@ -520,13 +547,15 @@
         <span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="n">edge_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">)</span>
 
-    <span class="n">start_area</span> <span class="o">=</span> <span class="n">platform_c_maxint</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">Struct</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">start_area</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">Struct</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">min_bbox</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start_area</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">)):</span>
-        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))],</span>
-                     <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">])]])</span>
+        <span class="n">rads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                          <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))],</span>
+                        <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span>
+                         <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">])]])</span>
 
-        <span class="n">rot_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">hull_points_2d</span><span class="p">))</span>
+        <span class="n">rot_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rads</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">hull_points_2d</span><span class="p">))</span>
 
         <span class="n">min_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">rot_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">max_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">rot_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -537,12 +566,13 @@
         <span class="n">height</span> <span class="o">=</span> <span class="n">max_y</span> <span class="o">-</span> <span class="n">min_y</span>
         <span class="n">area</span> <span class="o">=</span> <span class="n">width</span><span class="o">*</span><span class="n">height</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">area</span> <span class="o">&lt;</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">min_bbox</span> <span class="o">=</span> <span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">area</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">min_x</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">area</span> <span class="o">&lt;</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">min_bbox</span> <span class="o">=</span> <span class="p">(</span><span class="n">edge_angles</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">area</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span>
+                        <span class="n">min_x</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_y</span><span class="p">)</span>
 
     <span class="n">angle</span> <span class="o">=</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="o">-</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))],</span> <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="o">+</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)]])</span>
-    <span class="n">proj_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">hull_points_2d</span><span class="p">))</span>
+    <span class="n">rads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="o">-</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">))],</span>
+                     <span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="o">+</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)]])</span>
 
     <span class="n">min_x</span> <span class="o">=</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
     <span class="n">max_x</span> <span class="o">=</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
@@ -551,80 +581,84 @@
 
     <span class="n">center_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_x</span> <span class="o">+</span> <span class="n">max_x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="n">center_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_y</span> <span class="o">+</span> <span class="n">max_y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-    <span class="n">center_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">center_x</span><span class="p">,</span> <span class="n">center_y</span><span class="p">],</span> <span class="n">R</span><span class="p">)</span>
+    <span class="n">center_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">center_x</span><span class="p">,</span> <span class="n">center_y</span><span class="p">],</span> <span class="n">rads</span><span class="p">)</span>
 
-    <span class="n">corner_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-    <span class="n">corner_points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">max_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">],</span> <span class="n">R</span><span class="p">)</span>
-    <span class="n">corner_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">],</span> <span class="n">R</span><span class="p">)</span>
-    <span class="n">corner_points</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">min_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">],</span> <span class="n">R</span><span class="p">)</span>
-    <span class="n">corner_points</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">],</span> <span class="n">R</span><span class="p">)</span>
+    <span class="n">corner_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">corner_pts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">max_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">],</span> <span class="n">rads</span><span class="p">)</span>
+    <span class="n">corner_pts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">],</span> <span class="n">rads</span><span class="p">)</span>
+    <span class="n">corner_pts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">min_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">],</span> <span class="n">rads</span><span class="p">)</span>
+    <span class="n">corner_pts</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">],</span> <span class="n">rads</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">center_point</span><span class="p">,</span> <span class="n">corner_points</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+            <span class="n">center_point</span><span class="p">,</span> <span class="n">corner_pts</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="aspectratio"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.aspectratio">[docs]</a><span class="k">def</span> <span class="nf">aspectratio</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the aspect ratio of the rectangle containing the input track.</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the aspect ratio of the rectangle containing the input track.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    track : pandas DataFrame</span>
+<span class="sd">    track : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain an X and Y column.  The function</span>
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ar : numpy.float64</span>
+<span class="sd">    aspratio : numpy.float64</span>
 <span class="sd">        aspect ratio of the trajectory.  Always &gt;= 1.</span>
 <span class="sd">    elong : numpy.float64</span>
-<span class="sd">        elongation of the trajectory.  A transformation of the aspect ratio given</span>
-<span class="sd">        by 1 - ar**-1.</span>
+<span class="sd">        elongation of the trajectory.  A transformation of the aspect ratio</span>
+<span class="sd">        given by 1 - aspratio**-1.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; aspectratio(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; aspectratio(dframe)</span>
 <span class="sd">    (5732146505273195.0, 0.99999999999999978)</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="sd">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; aspectratio(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; aspectratio(dframe)</span>
 <span class="sd">    (1.0997501702946164, 0.090702573174318291)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="s2">&quot;track must be a pandas dataframe.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain X column.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain Y column.&quot;</span>
-    <span class="k">assert</span> <span class="n">track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span> <span class="s2">&quot;track must be a pandas</span><span class="se">\</span>
+<span class="s2">     dataframe.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     X column.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     Y column.&quot;</span>
+    <span class="k">assert</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
 
-    <span class="n">rot_angle</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">center_point</span><span class="p">,</span> <span class="n">corner_points</span> <span class="o">=</span> <span class="n">minBoundingRect</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
-    <span class="n">ar</span> <span class="o">=</span> <span class="n">width</span><span class="o">/</span><span class="n">height</span>
-    <span class="k">if</span> <span class="n">ar</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">counter</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">rangle</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">center_point</span><span class="p">,</span> <span class="n">corner_pts</span> <span class="o">=</span> <span class="n">minboundrect</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+    <span class="n">aspratio</span> <span class="o">=</span> <span class="n">width</span><span class="o">/</span><span class="n">height</span>
+    <span class="k">if</span> <span class="n">aspratio</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">aspratio</span> <span class="o">=</span> <span class="n">aspratio</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">ar</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">ar</span>
-    <span class="n">elong</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">ar</span><span class="p">)</span>
+        <span class="n">aspratio</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">aspratio</span>
+    <span class="n">elong</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">aspratio</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">ar</span><span class="p">,</span> <span class="n">elong</span><span class="p">,</span> <span class="n">center_point</span>
+    <span class="k">return</span> <span class="n">aspratio</span><span class="p">,</span> <span class="n">elong</span><span class="p">,</span> <span class="n">center_point</span>
 
 </div>
 <div class="viewcode-block" id="boundedness"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.boundedness">[docs]</a><span class="k">def</span> <span class="nf">boundedness</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the boundedness, fractal dimension, and trappedness of the input track.</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the boundedness, fractal dimension, and trappedness of the</span>
+<span class="sd">    input track.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    track : pandas DataFrame</span>
+<span class="sd">    track : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain a Frames and a MSDs column.  The function</span>
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 <span class="sd">    framerate : framrate of the video being analyzed.  Actually cancels out. So</span>
@@ -632,208 +666,230 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    B : numpy.float64</span>
+<span class="sd">    bound : float</span>
 <span class="sd">        Boundedness of the input track.  Quantifies how much a particle with</span>
-<span class="sd">        diffusion coefficient D is restricted by a circular confinement of radius</span>
-<span class="sd">        r when it diffuses for a time duration N*delt.  Defined as B = D*N*delt/r**2.</span>
-<span class="sd">        For this case, D is the short time diffusion coefficient (after 2 frames),</span>
-<span class="sd">        and r is half the maximum distance between any two positions.</span>
-<span class="sd">    Df : numpy.float64</span>
-<span class="sd">        The fractal path dimension defined as Df = log(N)/log(N*d*l**-1) where L</span>
-<span class="sd">        is the total length (sum over all steplengths), N is the number of steps,</span>
-<span class="sd">        and d is the largest distance between any two positions.</span>
-<span class="sd">    pf : numpy.float64</span>
-<span class="sd">        The probability that a particle with diffusion coefficient D and traced</span>
-<span class="sd">        for a period of time N*delt is trapped in region r0.  Given by</span>
-<span class="sd">        pt = 1 - exp(0.2048 - 0.25117*(D*N*delt/r0**2))</span>
-<span class="sd">        For this case, D is the short time diffusion coefficient, and r0 is half</span>
-<span class="sd">        the maximum distance between any two positions.</span>
+<span class="sd">        diffusion coefficient dcoef is restricted by a circular confinement of</span>
+<span class="sd">        radius rad when it diffuses for a time duration N*delt.  Defined as</span>
+<span class="sd">        bound = dcoef*N*delt/rad**2. For this case, dcoef is the short time</span>
+<span class="sd">        diffusion coefficient (after 2 frames), and rad is half the maximum</span>
+<span class="sd">        distance between any two positions.</span>
+<span class="sd">    fractd : float</span>
+<span class="sd">        The fractal path dimension defined as fractd = log(N)/log(N*data1*l**-1)</span>
+<span class="sd">        where netdisp is the total length (sum over all steplengths), N is the</span>
+<span class="sd">        number of steps, and data1 is the largest distance between any two</span>
+<span class="sd">        positions.</span>
+<span class="sd">    probf : float</span>
+<span class="sd">        The probability that a particle with diffusion coefficient dcoef and</span>
+<span class="sd">        traced for a period of time N*delt is trapped in region r0.  Given by</span>
+<span class="sd">        pt = 1 - exp(0.2048 - 0.25117*(dcoef*N*delt/r0**2)). For this case,</span>
+<span class="sd">        dcoef is the short time diffusion coefficient, and r0 is half the</span>
+<span class="sd">        maximum distance between any two positions.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; boundedness(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; boundedness(dframe)</span>
 <span class="sd">    (1.0, 1.0000000000000002, 0.045311337970735499)</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="sd">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; boundedness(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; boundedness(dframe)</span>
 <span class="sd">    (0.96037058689895005, 2.9989749477908401, 0.03576118370932313)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="s2">&quot;track must be a pandas dataframe.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain MSDs column.&quot;</span>
-    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="s2">&quot;track must contain Frame column.&quot;</span>
-    <span class="k">assert</span> <span class="n">track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span> <span class="s2">&quot;track must be a pandas</span><span class="se">\</span>
+<span class="s2">     dataframe.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     X column.&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">Series</span><span class="p">),</span> <span class="s2">&quot;track must contain</span><span class="se">\</span>
+<span class="s2">     Y column.&quot;</span>
+    <span class="k">assert</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;track must not be empty.&quot;</span>
 
-    <span class="n">df</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
 
-    <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">length</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="n">length</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">distance</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">length</span><span class="o">-</span><span class="n">frame</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">frame</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">frame</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="n">distance</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">length</span><span class="o">-</span><span class="n">frame</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>\
+             <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">frame</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+              <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">frame</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
-        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
-        <span class="n">N</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">N</span><span class="o">*</span><span class="n">framerate</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">netdisp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                                  <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+        <span class="n">rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">fram</span> <span class="o">=</span> <span class="n">N</span><span class="o">*</span><span class="n">framerate</span>
+        <span class="n">dcoef</span> <span class="o">=</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">fram</span><span class="p">)</span>
 
-        <span class="n">B</span> <span class="o">=</span> <span class="n">D</span><span class="o">*</span><span class="n">f</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">Df</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">/</span><span class="n">L</span><span class="p">)</span>
-        <span class="n">pf</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.2048</span> <span class="o">-</span> <span class="mf">0.25117</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">f</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+        <span class="n">bound</span> <span class="o">=</span> <span class="n">dcoef</span><span class="o">*</span><span class="n">fram</span><span class="o">/</span><span class="p">(</span><span class="n">rad</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">fractd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">rad</span><span class="o">/</span><span class="n">netdisp</span><span class="p">)</span>
+        <span class="n">probf</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.2048</span> <span class="o">-</span> <span class="mf">0.25117</span><span class="o">*</span><span class="p">(</span><span class="n">dcoef</span><span class="o">*</span><span class="n">fram</span><span class="o">/</span><span class="p">(</span><span class="n">rad</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="n">Df</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="n">pf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">bound</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">fractd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">probf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-    <span class="k">return</span> <span class="n">B</span><span class="p">,</span> <span class="n">Df</span><span class="p">,</span> <span class="n">pf</span>
+    <span class="k">return</span> <span class="n">bound</span><span class="p">,</span> <span class="n">fractd</span><span class="p">,</span> <span class="n">probf</span>
 
 </div>
 <div class="viewcode-block" id="efficiency"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.efficiency">[docs]</a><span class="k">def</span> <span class="nf">efficiency</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the efficiency and straitness of the input track</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the efficiency and straitness of the input track</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    track : pandas DataFrame</span>
+<span class="sd">    track : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain a Frames and a MSDs column.  The function</span>
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    eff : numpy.float64</span>
+<span class="sd">    eff : float</span>
 <span class="sd">        Efficiency of the input track.  Relates the sum of squared step</span>
 <span class="sd">        lengths.  Based on Helmuth et al. (2007) and defined as:</span>
-<span class="sd">        E = |x(N-1)-x(0)|**2/SUM(|x(i) - x(i-1)|**2</span>
-<span class="sd">    strait : numpy.float64</span>
-<span class="sd">        Relates the net displacement L to teh sum of step lengths and is</span>
+<span class="sd">        E = |xpos(N-1)-xpos(0)|**2/SUM(|xpos(i) - xpos(i-1)|**2</span>
+<span class="sd">    strait : float</span>
+<span class="sd">        Relates the net displacement netdisp to the sum of step lengths and is</span>
 <span class="sd">        defined as:</span>
-<span class="sd">        S = |x(N-1)-x(0)|/SUM(|x(i) - x(i-1)|</span>
+<span class="sd">        S = |xpos(N-1)-xpos(0)|/SUM(|xpos(i) - xpos(i-1)|</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">                   &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">                   &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; ft.efficiency(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; ft.efficiency(dframe)</span>
 <span class="sd">    (9.0, 0.9999999999999999)</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">                   &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="sd">                   &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; ft.efficiency(df)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; ft.efficiency(dframe)</span>
 <span class="sd">    (0.46192924086141945, 0.22655125514290225)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">df</span> <span class="o">=</span> <span class="n">track</span>
-    <span class="n">length</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">dframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span>
+                        <span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span>
+                                                    <span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">num2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
 
-    <span class="n">den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">den2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">den</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span>
+                              <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">den2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span>
+                          <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">msd</span><span class="o">.</span><span class="n">nth_diff</span><span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
     <span class="n">eff</span> <span class="o">=</span> <span class="n">num</span><span class="o">/</span><span class="n">den</span>
     <span class="n">strait</span> <span class="o">=</span> <span class="n">num2</span><span class="o">/</span><span class="n">den2</span>
     <span class="k">return</span> <span class="n">eff</span><span class="p">,</span> <span class="n">strait</span>
 
 </div>
-<div class="viewcode-block" id="msd_ratio"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.msd_ratio">[docs]</a><span class="k">def</span> <span class="nf">msd_ratio</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">n1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n2</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the MSD ratio of the input track at the specified frames.</span>
+<div class="viewcode-block" id="msd_ratio"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.msd_ratio">[docs]</a><span class="k">def</span> <span class="nf">msd_ratio</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">fram1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fram2</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the MSD ratio of the input track at the specified frames.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    track : pandas DataFrame</span>
+<span class="sd">    track : pandas.core.frame.DataFrame</span>
 <span class="sd">        At a minimum, must contain a Frames and a MSDs column.  The function</span>
 <span class="sd">        msd_calc can be used to generate the correctly formatted pd dataframe.</span>
-<span class="sd">    n1 : int</span>
+<span class="sd">    fram1 : int</span>
 <span class="sd">        First frame at which to calculate the MSD ratio.</span>
-<span class="sd">    n2 : int</span>
+<span class="sd">    fram2 : int</span>
 <span class="sd">        Last frame at which to calculate the MSD ratio.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ratio: numpy.float64</span>
 <span class="sd">        MSD ratio as defined by</span>
-<span class="sd">        [MSD(n1)/MSD(n2)] - [n1/n2]</span>
-<span class="sd">        where n1 &lt; n2.  For Brownian motion, it is 0; for restricted motion it</span>
-<span class="sd">        is &lt; 0.  For directed motion it is &gt; 0.</span>
+<span class="sd">        [MSD(fram1)/MSD(fram2)] - [fram1/fram2]</span>
+<span class="sd">        where fram1 &lt; fram2.  For Brownian motion, it is 0; for restricted</span>
+<span class="sd">        motion it is &lt; 0.  For directed motion it is &gt; 0.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="sd">             &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; ft.msd_ratio(df, 1, 9)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; ft.msd_ratio(dframe, 1, 9)</span>
 <span class="sd">    -0.18765432098765433</span>
 
 <span class="sd">    &gt;&gt;&gt; frames = 10</span>
-<span class="sd">    &gt;&gt;&gt; d = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
-<span class="sd">             &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="sd">             &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="sd">    &gt;&gt;&gt; df = pd.DataFrame(data=d)</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;MSDs&#39;], df[&#39;Gauss&#39;] = msd_calc(df)</span>
-<span class="sd">    &gt;&gt;&gt; ft.msd_ratio(df, 1, 9)</span>
+<span class="sd">    &gt;&gt;&gt; data1 = {&#39;Frame&#39;: np.linspace(1, frames, frames),</span>
+<span class="sd">    ...          &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
+<span class="sd">    ...          &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
+<span class="sd">    &gt;&gt;&gt; dframe = pd.DataFrame(data=data1)</span>
+<span class="sd">    &gt;&gt;&gt; dframe[&#39;MSDs&#39;], dframe[&#39;Gauss&#39;] = msd_calc(dframe)</span>
+<span class="sd">    &gt;&gt;&gt; ft.msd_ratio(dframe, 1, 9)</span>
 <span class="sd">    0.04053708075268797</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">df</span> <span class="o">=</span> <span class="n">track</span>
-    <span class="k">assert</span> <span class="n">n1</span> <span class="o">&lt;</span> <span class="n">n2</span><span class="p">,</span> <span class="s2">&quot;n1 must be less than n2&quot;</span>
-    <span class="n">ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">n1</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">n2</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">n1</span><span class="p">]</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">n2</span><span class="p">])</span>
+    <span class="n">dframe</span> <span class="o">=</span> <span class="n">track</span>
+    <span class="k">assert</span> <span class="n">fram1</span> <span class="o">&lt;</span> <span class="n">fram2</span><span class="p">,</span> <span class="s2">&quot;fram1 must be less than fram2&quot;</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">fram1</span><span class="p">]</span><span class="o">/</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">fram2</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span>
+             <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">fram1</span><span class="p">]</span><span class="o">/</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">fram2</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">ratio</span>
 
 </div>
-<div class="viewcode-block" id="calculate_features"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.calculate_features">[docs]</a><span class="k">def</span> <span class="nf">calculate_features</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates multiple features from input MSD dataset and stores in pandas dataframe.</span>
+<div class="viewcode-block" id="calculate_features"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.calculate_features">[docs]</a><span class="k">def</span> <span class="nf">calculate_features</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates multiple features from input MSD dataset and stores in pandas</span>
+<span class="sd">    dataframe.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    df : pandas dataframe</span>
-<span class="sd">        Output from msd.all_msds2.  Must have at a minimum the following columns:</span>
+<span class="sd">    dframe : pandas.core.frame.DataFrame</span>
+<span class="sd">        Output from msd.all_msds2.  Must have at a minimum the following</span>
+<span class="sd">        columns:</span>
 <span class="sd">        Track_ID, Frame, X, Y, and MSDs.</span>
-<span class="sd">    framerate : int or float64</span>
-<span class="sd">        Framerate of the input videos from which trajectories were calculated.  Required</span>
-<span class="sd">        for accurate calculation of some features.  Default is 1.  Possibly not required.</span>
-<span class="sd">        Ignore if performing all calcuations without units.</span>
+<span class="sd">    framerate : int or float</span>
+<span class="sd">        Framerate of the input videos from which trajectories were calculated.</span>
+<span class="sd">        Required for accurate calculation of some features.  Default is 1.</span>
+<span class="sd">        Possibly not required. Ignore if performing all calcuations without</span>
+<span class="sd">        units.</span>
+<span class="sd">    frame : int</span>
+<span class="sd">        Frame at which to calculate Deff</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    di: pandas dataframe</span>
-<span class="sd">        Contains a row for each trajectory in df.  Holds the following features of each</span>
-<span class="sd">        trajetory: Track_ID, alpha, D_fit, kurtosis, asymmetry1, asymmetry2, asymmetry3,</span>
-<span class="sd">        aspect ratio (AR), elongation, boundedness, fractal dimension (fractal_dim),</span>
-<span class="sd">        trappedness, efficiency, straightness, MSD ratio, frames, X, and Y.</span>
+<span class="sd">    datai: pandas.core.frame.DataFrame</span>
+<span class="sd">        Contains a row for each trajectory in dframe.  Holds the following</span>
+<span class="sd">        features of each trajetory: Track_ID, alpha, D_fit, kurtosis,</span>
+<span class="sd">        asymmetry1, asymmetry2, asymmetry3, aspect ratio (AR), elongation,</span>
+<span class="sd">        boundedness, fractal dimension (fractal_dim), trappedness, efficiency,</span>
+<span class="sd">        straightness, MSD ratio, frames, X, and Y.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    See example outputs from individual feature functions.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Skeleton of Trajectory features metadata table.</span>
     <span class="c1"># Builds entry for each unique Track ID.</span>
-    <span class="n">holder</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Track_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">holder</span> <span class="o">=</span> <span class="n">dframe</span><span class="o">.</span><span class="n">Track_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">die</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
            <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
            <span class="s1">&#39;D_fit&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
@@ -851,30 +907,115 @@
            <span class="s1">&#39;MSD_ratio&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
            <span class="s1">&#39;frames&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
            <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
-           <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">}</span>
+           <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
+           <span class="s1">&#39;Quality&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
+           <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
+           <span class="s1">&#39;SN_Ratio&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
+           <span class="s1">&#39;Deff1&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">,</span>
+           <span class="s1">&#39;Deff2&#39;</span><span class="p">:</span> <span class="n">holder</span><span class="p">}</span>
 
-    <span class="n">di</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">die</span><span class="p">)</span>
+    <span class="n">datai</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">die</span><span class="p">)</span>
 
-    <span class="n">trackids</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Track_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">trackids</span> <span class="o">=</span> <span class="n">dframe</span><span class="o">.</span><span class="n">Track_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
     <span class="n">partcount</span> <span class="o">=</span> <span class="n">trackids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">partcount</span><span class="p">):</span>
-        <span class="n">single_track_masked</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">trackids</span><span class="p">[</span><span class="n">particle</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span>
-                                     <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">single_track_masked</span> <span class="o">=</span>\
+         <span class="n">dframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">==</span>
+                    <span class="n">trackids</span><span class="p">[</span><span class="n">particle</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span>
+                                                    <span class="n">ascending</span><span class="o">=</span><span class="p">[</span>
+                                                    <span class="mi">1</span><span class="p">,</span>
+                                                    <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">single_track</span> <span class="o">=</span> <span class="n">unmask_track</span><span class="p">(</span><span class="n">single_track_masked</span><span class="p">)</span>
-        <span class="n">di</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;D_fit&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha_calc</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
-        <span class="n">di</span><span class="p">[</span><span class="s1">&#39;kurtosis&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">kurtosis</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
-        <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;asymmetry1&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;asymmetry2&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;asymmetry3&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">asymmetry</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
-        <span class="n">di</span><span class="p">[</span><span class="s1">&#39;AR&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;elongation&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="p">(</span><span class="n">di</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">])</span> <span class="o">=</span> <span class="n">aspectratio</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
-        <span class="n">di</span><span class="p">[</span><span class="s1">&#39;boundedness&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;fractal_dim&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;trappedness&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundedness</span><span class="p">(</span><span class="n">single_track</span><span class="p">,</span> <span class="n">framerate</span><span class="p">)</span>
-        <span class="n">di</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">di</span><span class="p">[</span><span class="s1">&#39;straightness&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">efficiency</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
-        <span class="n">di</span><span class="p">[</span><span class="s1">&#39;frames&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">(</span><span class="n">datai</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
+         <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;D_fit&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">])</span> <span class="o">=</span> <span class="n">alpha_calc</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
+        <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;kurtosis&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">kurtosis</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;asymmetry1&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
+         <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;asymmetry2&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
+         <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;asymmetry3&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">])</span> <span class="o">=</span> <span class="n">asymmetry</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">datai</span><span class="p">[</span><span class="s1">&#39;AR&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;elongation&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
+         <span class="p">(</span><span class="n">datai</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
+          <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]))</span> <span class="o">=</span> <span class="n">aspectratio</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">datai</span><span class="p">[</span><span class="s1">&#39;boundedness&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span> <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;fractal_dim&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
+         <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;trappedness&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">])</span> <span class="o">=</span> <span class="n">boundedness</span><span class="p">(</span><span class="n">single_track</span><span class="p">,</span> <span class="n">framerate</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">datai</span><span class="p">[</span><span class="s1">&#39;efficiency&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
+         <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;straightness&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">])</span> <span class="o">=</span> <span class="n">efficiency</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
+        <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;frames&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">single_track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">single_track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">di</span><span class="p">[</span><span class="s1">&#39;MSD_ratio&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_ratio</span><span class="p">(</span><span class="n">single_track</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">single_track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">single_track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;MSD_ratio&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_ratio</span><span class="p">(</span><span class="n">single_track</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>
+                                                     <span class="n">single_track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span>
+                                                      <span class="n">single_track</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">di</span><span class="p">[</span><span class="s1">&#39;MSD_ratio&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;MSD_ratio&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-    <span class="k">return</span> <span class="n">di</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;Deff1&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">frame</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">frame</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;Deff1&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;Deff2&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">frame</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">frame</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;Deff2&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">single_track</span><span class="p">[</span>
+              <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;Quality&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">single_track</span><span class="p">[</span>
+              <span class="s1">&#39;Quality&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;SN_Ratio&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">single_track</span><span class="p">[</span>
+              <span class="s1">&#39;SN_Ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">datai</span>
+
+</div>
+<div class="viewcode-block" id="feature_violin"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.feature_violin">[docs]</a><span class="k">def</span> <span class="nf">feature_violin</span><span class="p">(</span><span class="n">tgroups</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="s1">&#39;boundedness&#39;</span><span class="p">,</span>
+                   <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sample 1&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 2&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 3&#39;</span><span class="p">],</span>
+                   <span class="n">points</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">nticks</span><span class="o">=</span><span class="mi">11</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Plots violin plots of features in comparison groups</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tgroups : dict of pandas.core.frames.DataFrame</span>
+<span class="sd">        Dictionary containing pandas dataframes containing trajectory</span>
+<span class="sd">        features of subgroups to be plotted</span>
+<span class="sd">    feature : string</span>
+<span class="sd">        Feature to be compared</span>
+<span class="sd">    labels : list of strings</span>
+<span class="sd">        Labels of subgroups to be plotted.</span>
+<span class="sd">    points : int</span>
+<span class="sd">        Determines resolution of violin plot</span>
+<span class="sd">    ylim : list of int</span>
+<span class="sd">        Y range of output plot</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">majorticks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nticks</span><span class="p">)</span>
+    <span class="n">to_graph</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tgroups</span><span class="p">:</span>
+        <span class="n">to_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">feature</span><span class="p">][</span><span class="n">tgroups</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">feature</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">10000</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">set_axis_style</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_tick_params</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s1">&#39;out&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.75</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+    <span class="n">axes</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">to_graph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">widths</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                    <span class="n">showmeans</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">showextrema</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">set_axis_style</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span>
+                     <span class="n">labelsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
+    <span class="n">axes</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">majorticks</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 </pre></div>
 
            </div>

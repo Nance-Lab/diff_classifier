@@ -79,8 +79,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
@@ -131,23 +133,42 @@
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.imagej</h1><div class="highlight"><pre>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="sd">&quot;&quot;&quot;Tools to perform particle tracking with Trackmate ImageJ plugin.</span>
+
+<span class="sd">This module includes functions for prepping images and performing tracking</span>
+<span class="sd">using the TrackMate ImageJ plugin [1]_.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] Tinevez, JY,; Perry, N. &amp; Schindelin, J. et al. (2016), &quot;TrackMate: an</span>
+<span class="sd">   open and extensible platoform for single-particle tracking.&quot;, Methods 115:</span>
+<span class="sd">   80-90, PMID 27713081 (on Google Scholar).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">skimage.io</span> <span class="kn">as</span> <span class="nn">sio</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">skimage.io</span> <span class="kn">as</span> <span class="nn">sio</span>
+
 <span class="kn">import</span> <span class="nn">diff_classifier</span> <span class="kn">as</span> <span class="nn">dc</span>
-<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="kn">as</span> <span class="nn">aws</span>
+
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">svm</span>
 
 
-<div class="viewcode-block" id="partition_im"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.partition_im">[docs]</a><span class="k">def</span> <span class="nf">partition_im</span><span class="p">(</span><span class="n">tiffname</span><span class="p">,</span> <span class="n">irows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">icols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ires</span><span class="o">=</span><span class="mi">512</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    partition_im(tiffname, irows=int, icols=int, ires=int)</span>
+<div class="viewcode-block" id="partition_im"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.partition_im">[docs]</a><span class="k">def</span> <span class="nf">partition_im</span><span class="p">(</span><span class="n">tiffname</span><span class="p">,</span> <span class="n">irows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">icols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ores</span><span class="o">=</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">2048</span><span class="p">),</span>
+                 <span class="n">ires</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;Partitions image into smaller images.</span>
 
-<span class="sd">    Partitions a 2048x2044 image into irows x icols images of size ires x ires and saved them.</span>
+<span class="sd">    Partitions a large image into irows x icols images of size ires and saves</span>
+<span class="sd">    them. Also forces image to be square. Default input image sizes are from</span>
+<span class="sd">    a Nikon/Hamamatsu camera setup (2048 x 2044 pixels).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -157,24 +178,28 @@
 <span class="sd">        Number of rows of size ires pixels to be partitioned from source image.</span>
 <span class="sd">    icols : int</span>
 <span class="sd">        Number of columns of size ires pixels to be partitioned from source image.</span>
-<span class="sd">    ires : int</span>
-<span class="sd">        Output images are of size ires x ires pixels.</span>
+<span class="sd">    ores : tuple of int</span>
+<span class="sd">        Input images are scaled to size ores pixels prior to splitting.</span>
+<span class="sd">    ires : tuple of int</span>
+<span class="sd">        Output images are of size ires pixels.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; partition_im(&#39;your/sample/image.tif&#39;, irows=8, icols=8, ires=256)</span>
+<span class="sd">    &gt;&gt;&gt; partition_im(&#39;your/sample/image.tif&#39;, irows=8, icols=8, ires=(256, 256))</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">test</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">tiffname</span><span class="p">)</span>
-    <span class="n">test2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2048</span><span class="p">,</span> <span class="mi">2048</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-    <span class="n">test2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2044</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">test</span>
+    <span class="n">oshape</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">test2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">oshape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ores</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ores</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">test2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">oshape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">:</span><span class="n">oshape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">test</span>
 
-    <span class="n">new_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ires</span><span class="p">,</span> <span class="n">ires</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">new_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">oshape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ires</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ires</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">test</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">irows</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">icols</span><span class="p">):</span>
-            <span class="n">new_image</span> <span class="o">=</span> <span class="n">test2</span><span class="p">[:,</span> <span class="n">row</span><span class="o">*</span><span class="n">ires</span><span class="p">:(</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ires</span><span class="p">,</span> <span class="n">col</span><span class="o">*</span><span class="n">ires</span><span class="p">:(</span><span class="n">col</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ires</span><span class="p">]</span>
+            <span class="n">new_image</span> <span class="o">=</span> <span class="n">test2</span><span class="p">[:,</span> <span class="n">row</span><span class="o">*</span><span class="n">ires</span><span class="p">[</span><span class="mi">0</span><span class="p">]:(</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ires</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="n">col</span><span class="o">*</span><span class="n">ires</span><span class="p">[</span><span class="mi">1</span><span class="p">]:(</span><span class="n">col</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">ires</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
             <span class="n">current</span> <span class="o">=</span> <span class="n">tiffname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.tif&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.tif&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
             <span class="n">sio</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">new_image</span><span class="p">)</span>
             <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
@@ -182,27 +207,84 @@
     <span class="k">return</span> <span class="n">names</span>
 
 </div>
-<div class="viewcode-block" id="mean_intensity"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.mean_intensity">[docs]</a><span class="k">def</span> <span class="nf">mean_intensity</span><span class="p">(</span><span class="n">local_im</span><span class="p">):</span>
+<div class="viewcode-block" id="mean_intensity"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.mean_intensity">[docs]</a><span class="k">def</span> <span class="nf">mean_intensity</span><span class="p">(</span><span class="n">local_im</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates mean intensity of first frame of input image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    local_im : string</span>
+<span class="sd">        Location of input image.</span>
+<span class="sd">    frame : int</span>
+<span class="sd">        Frame at which to perform mean.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    test_intensity : float</span>
+<span class="sd">        Mean intensity of input image.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mean_intensity(&#39;your/sample/image&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">test_image</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">local_im</span><span class="p">)</span>
-    <span class="n">test_intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+    <span class="n">test_intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
 
     <span class="k">return</span> <span class="n">test_intensity</span>
 
 </div>
-<div class="viewcode-block" id="track"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.track">[docs]</a><span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
-          <span class="n">do_median_filtering</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">511</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">511</span><span class="p">,</span> <span class="n">ylo</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">median_intensity</span><span class="o">=</span><span class="mf">55000.0</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-          <span class="n">linking_max_distance</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">gap_closing_max_distance</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">max_frame_gap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-          <span class="n">track_displacement</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="track"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.track">[docs]</a><span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+          <span class="n">tparams</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;do_median_filtering&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+           <span class="s1">&#39;quality&#39;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span> <span class="s1">&#39;xdims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span> <span class="s1">&#39;ydims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span>
+           <span class="s1">&#39;median_intensity&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;snr&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;linking_max_distance&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
+           <span class="s1">&#39;gap_closing_max_distance&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;max_frame_gap&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+           <span class="s1">&#39;track_duration&#39;</span><span class="p">:</span> <span class="mf">20.0</span><span class="p">}):</span>
+    <span class="sd">&quot;&quot;&quot;Performs particle tracking on input video.</span>
 
+<span class="sd">    Particle tracking is performed with the ImageJ plugin Trackmate. Outputs</span>
+<span class="sd">    a csv file containing analysis settings and particle trajectories.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    target : str</span>
-<span class="sd">        Full path to a tif file to do tracking on.</span>
-<span class="sd">        Can also be a URL (e.g., &#39;http://fiji.sc/samples/FakeTracks.tif&#39;)</span>
+<span class="sd">        Full path to a tif file to do tracking on. Can also be a URL</span>
+<span class="sd">        (e.g., &#39;http://fiji.sc/samples/FakeTracks.tif&#39;)</span>
 <span class="sd">    out_file : str</span>
 <span class="sd">        Full path to a csv file to store the results.</span>
 <span class="sd">    template : str, optional</span>
 <span class="sd">        The full path of a template for tracking. Defaults to use</span>
 <span class="sd">        `data/trackmate_template.py` stored in the diff_classifier source-code.</span>
+<span class="sd">    fiji_bin : str</span>
+<span class="sd">        The full path to ImageJ executable file. Includes default search</span>
+<span class="sd">        locations for Mac and Linux systems.</span>
+<span class="sd">    radius : float</span>
+<span class="sd">        Estimated radius of particles in image.</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        Threshold value for particle detection step.</span>
+<span class="sd">    do_median_filtering : bool</span>
+<span class="sd">        If True, performs a median filter on video prior to tracking.</span>
+<span class="sd">    quality : float</span>
+<span class="sd">        Lower quality cutoff value for particle filtering.</span>
+<span class="sd">    xdims : tuple of int</span>
+<span class="sd">        Upper and lower x limits for particle filtering.</span>
+<span class="sd">    ydims : tuple of int</span>
+<span class="sd">        Upper and lower y limits for particle filtering.</span>
+<span class="sd">    median_intensity : float</span>
+<span class="sd">        Lower median intensity cutoff value for particle filtering.</span>
+<span class="sd">    snr : float</span>
+<span class="sd">        Lower signal to noise ratio cutoff value for particle filtering.</span>
+<span class="sd">    limking_max_distance : float</span>
+<span class="sd">        Maximum allowable distance in pixels between two frames to join</span>
+<span class="sd">        particles in track.</span>
+<span class="sd">    gap_closing_max_distance : float</span>
+<span class="sd">        Maximum allowable distance in pixels between more than two frames to</span>
+<span class="sd">        join particles in track.</span>
+<span class="sd">    max_frame_gap : int</span>
+<span class="sd">        Maximum allowable number of frames a particle is allowed to leave video</span>
+<span class="sd">        and be counted as same trajectory.</span>
+<span class="sd">    track_duration : float</span>
+<span class="sd">        Lower duration cutoff in frames for trajectory filtering.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">template</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
@@ -217,75 +299,111 @@
             <span class="n">fiji_bin</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;Fiji.app/ImageJ-linux64&#39;</span><span class="p">)</span>
 
     <span class="n">script</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
-    <span class="n">tf</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">)</span>
-    <span class="n">fid</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target_file</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">radius</span><span class="p">),</span> <span class="n">threshold</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">threshold</span><span class="p">),</span>
-                            <span class="n">do_median_filtering</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">do_median_filtering</span><span class="p">),</span> <span class="n">quality</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">quality</span><span class="p">),</span>
-                            <span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">y</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">ylo</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ylo</span><span class="p">),</span>
-                            <span class="n">median_intensity</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">median_intensity</span><span class="p">),</span> <span class="n">snr</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">snr</span><span class="p">),</span>
-                            <span class="n">linking_max_distance</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">linking_max_distance</span><span class="p">),</span>
-                            <span class="n">gap_closing_max_distance</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">gap_closing_max_distance</span><span class="p">),</span>
-                            <span class="n">max_frame_gap</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">max_frame_gap</span><span class="p">),</span> <span class="n">track_displacement</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">track_displacement</span><span class="p">)))</span>
+    <span class="n">tpfile</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">)</span>
+    <span class="n">fid</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">tpfile</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target_file</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;radius&#39;</span><span class="p">]),</span>
+                            <span class="n">threshold</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">]),</span>
+                            <span class="n">do_median_filtering</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;do_median_filtering&#39;</span><span class="p">]),</span>
+                            <span class="n">quality</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;quality&#39;</span><span class="p">]),</span>
+                            <span class="n">xd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;xdims&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span> <span class="n">yd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;ydims&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span> <span class="n">ylo</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;ydims&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+                            <span class="n">median_intensity</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;median_intensity&#39;</span><span class="p">]),</span> <span class="n">snr</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;snr&#39;</span><span class="p">]),</span>
+                            <span class="n">linking_max_distance</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;linking_max_distance&#39;</span><span class="p">]),</span>
+                            <span class="n">gap_closing_max_distance</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;gap_closing_max_distance&#39;</span><span class="p">]),</span>
+                            <span class="n">max_frame_gap</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;max_frame_gap&#39;</span><span class="p">]),</span>
+                            <span class="n">track_duration</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;track_duration&#39;</span><span class="p">])))</span>
     <span class="n">fid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> --ij2 --headless --run </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fiji_bin</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> --ij2 --headless --run </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fiji_bin</span><span class="p">,</span> <span class="n">tpfile</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-    <span class="n">sp</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">subp</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">fid</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">subp</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
     <span class="n">fid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 </div>
-<div class="viewcode-block" id="regress_sys"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.regress_sys">[docs]</a><span class="k">def</span> <span class="nf">regress_sys</span><span class="p">(</span><span class="n">all_videos</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">training_size</span><span class="p">,</span> <span class="n">have_output</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Uses regression techniques to select the best tracking parameters.</span>
-<span class="sd">    Regression again intensities of input images.</span>
+<div class="viewcode-block" id="regress_sys"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.regress_sys">[docs]</a><span class="k">def</span> <span class="nf">regress_sys</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">all_videos</span><span class="p">,</span> <span class="n">yfit</span><span class="p">,</span> <span class="n">training_size</span><span class="p">,</span> <span class="n">randselect</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                <span class="n">trainingdata</span><span class="o">=</span><span class="p">[],</span> <span class="n">frame</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">have_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                <span class="n">bucket_name</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Uses regression based on image intensities to select tracking parameters.</span>
+
+<span class="sd">    This function uses regression methods from the scikit-learn module to</span>
+<span class="sd">    predict the lower quality cutoff values for particle filtering in TrackMate</span>
+<span class="sd">    based on the intensity distributions of input images. Currently only uses</span>
+<span class="sd">    the first frame of videos for analysis, and is limited to predicting</span>
+<span class="sd">    quality values.</span>
+
+<span class="sd">    In practice, users will run regress_sys twice in different modes to build</span>
+<span class="sd">    a regression system. First, set have_output to False. Function will return</span>
+<span class="sd">    list of randomly selected videos to include in the training dataset. The</span>
+<span class="sd">    user should then manually track particles using the Trackmate GUI, and enter</span>
+<span class="sd">    these values in during the next round as the input yfit variable.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    all_videos: list</span>
+<span class="sd">    folder : str</span>
+<span class="sd">        S3 directory containing video files specified in all_videos.</span>
+<span class="sd">    all_videos: list of str</span>
 <span class="sd">        Contains prefixes of video filenames of entire video set to be</span>
 <span class="sd">        tracked.  Training dataset will be some subset of these videos.</span>
-<span class="sd">    y: numpy array</span>
+<span class="sd">    yfit: numpy.ndarray</span>
 <span class="sd">        Contains manually acquired quality levels using Trackmate for the</span>
 <span class="sd">        files contained in the training dataset.</span>
-<span class="sd">    training_size: int</span>
+<span class="sd">    training_size : int</span>
 <span class="sd">        Number of files in training dataset.</span>
-<span class="sd">    have_output: boolean</span>
-<span class="sd">        If you have already acquired the quality values (y) for the</span>
+<span class="sd">    randselect : bool</span>
+<span class="sd">        If True, will randomly select training videos from all_videos.</span>
+<span class="sd">        If False, will use trainingdata as input training dataset.</span>
+<span class="sd">    trainingdata : list of str</span>
+<span class="sd">        Optional manually selected prefixes of video filenames to be</span>
+<span class="sd">        used as training dataset.</span>
+<span class="sd">    have_output: bool</span>
+<span class="sd">        If you have already acquired the quality values (yfit) for the</span>
 <span class="sd">        training dataset, set to True.  If False, it will output the files</span>
 <span class="sd">        the user will need to acquire quality values for.</span>
+<span class="sd">    bucket_name : str</span>
+<span class="sd">        S3 bucket containing videos to be downloaded for regression</span>
+<span class="sd">        calculations.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    regress_object: list of sklearn regression objects.</span>
+<span class="sd">    regress_object : list of sklearn.svm.classes.</span>
 <span class="sd">        Contains list of regression objects assembled from the training</span>
 <span class="sd">        datasets.  Uses the mean, 10th percentile, 90th percentile, and</span>
 <span class="sd">        standard deviation intensities to predict the quality parameter</span>
 <span class="sd">        in Trackmate.</span>
+<span class="sd">    tprefix : list of str</span>
+<span class="sd">        Contains randomly selected images from all_videos to be included in</span>
+<span class="sd">        training dataset.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">tprefix</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tnum</span><span class="p">):</span>
-        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">tprefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">all_videos</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_videos</span><span class="p">))])</span>
-        <span class="k">if</span> <span class="n">have_output</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Get parameters for: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tprefix</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">randselect</span><span class="p">:</span>
+        <span class="n">tprefix</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">training_size</span><span class="p">):</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">tprefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">all_videos</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_videos</span><span class="p">))])</span>
+            <span class="k">if</span> <span class="n">have_output</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Get parameters for: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tprefix</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tprefix</span> <span class="o">=</span> <span class="n">trainingdata</span>
 
     <span class="k">if</span> <span class="n">have_output</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
         <span class="c1"># Define descriptors</span>
-        <span class="n">descriptors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tnum</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">descriptors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">training_size</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">tprefix</span><span class="p">:</span>
             <span class="n">local_im</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.tif&#39;</span>
+            <span class="n">remote_im</span> <span class="o">=</span> <span class="s2">&quot;{}/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">local_im</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+                <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="n">remote_im</span><span class="p">,</span> <span class="n">local_im</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">)</span>
             <span class="n">test_image</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">local_im</span><span class="p">)</span>
-            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">10</span><span class="p">)</span>
-            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">90</span><span class="p">)</span>
+            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="n">descriptors</span><span class="p">[</span><span class="n">counter</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">90</span><span class="p">)</span>
             <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="c1"># Define regression techniques</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">descriptors</span>
+        <span class="n">xfit</span> <span class="o">=</span> <span class="n">descriptors</span>
         <span class="n">classifiers</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">svm</span><span class="o">.</span><span class="n">SVR</span><span class="p">(),</span>
             <span class="n">linear_model</span><span class="o">.</span><span class="n">SGDRegressor</span><span class="p">(),</span>
@@ -299,61 +417,71 @@
         <span class="n">regress_object</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
             <span class="n">clf</span> <span class="o">=</span> <span class="n">item</span>
-            <span class="n">regress_object</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <span class="n">regress_object</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">xfit</span><span class="p">,</span> <span class="n">yfit</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">regress_object</span>
 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tprefix</span>
+
 </div>
-<div class="viewcode-block" id="regress_tracking_params"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.regress_tracking_params">[docs]</a><span class="k">def</span> <span class="nf">regress_tracking_params</span><span class="p">(</span><span class="n">regress_object</span><span class="p">,</span> <span class="n">to_track</span><span class="p">,</span> <span class="n">regmethod</span><span class="o">=</span><span class="s1">&#39;LinearRegression&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="regress_tracking_params"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.regress_tracking_params">[docs]</a><span class="k">def</span> <span class="nf">regress_tracking_params</span><span class="p">(</span><span class="n">regress_object</span><span class="p">,</span> <span class="n">to_track</span><span class="p">,</span>
+                            <span class="n">regmethod</span><span class="o">=</span><span class="s1">&#39;LinearRegression&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Predicts quality values to be used in particle tracking.</span>
+
 <span class="sd">    Uses the regress object from regress_sys to predict tracking</span>
-<span class="sd">    parameters for TrackMate.</span>
+<span class="sd">    parameters for TrackMate analysis.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    regress_object: list of regression objects</span>
+<span class="sd">    regress_object: list of sklearn.svm.classes.</span>
 <span class="sd">        Obtained from regress_sys</span>
 <span class="sd">    to_track: string</span>
 <span class="sd">        Prefix of video files to be tracked.</span>
-<span class="sd">    regmethod: string</span>
-<span class="sd">        Desired regression method (LinearRegression, SVR, SGDRegressor,</span>
-<span class="sd">        BayesianRidge, LassoLars, ARDRegression, PassiveAggressiveRegressor,</span>
-<span class="sd">        TheilSenRegressor)</span>
+<span class="sd">    regmethod: {&#39;LinearRegression&#39;, &#39;SVR&#39;, &#39;SGDRegressor&#39;, &#39;BayesianRidge&#39;,</span>
+<span class="sd">        &#39;LassoLars&#39;, &#39;ARDRegression&#39;, &#39;PassiveAggressiveRegressor&#39;,</span>
+<span class="sd">        &#39;TheilSenRegressor&#39;}</span>
+<span class="sd">        Desired regression method.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    quality: float64</span>
+<span class="sd">    fqual: float</span>
 <span class="sd">        Predicted quality factor used in TrackMate analysis.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">local_im</span> <span class="o">=</span> <span class="n">to_track</span> <span class="o">+</span> <span class="s1">&#39;.tif&#39;</span>
     <span class="n">pX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
     <span class="n">test_image</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">local_im</span><span class="p">)</span>
-    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
-    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">10</span><span class="p">)</span>
-    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="mi">0</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">90</span><span class="p">)</span>
+    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">pX</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="mi">90</span><span class="p">)</span>
 
     <span class="n">quality</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">regress_object</span><span class="p">:</span>
         <span class="n">quality</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">pX</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;SVR&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;SGDRegressor&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;BayesianRidge&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;LassoLars&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;ARDRegression&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;PassiveAggressiveRegressor&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;TheilSenRegressor&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">regmethod</span> <span class="o">==</span> <span class="s1">&#39;LinearRegression&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">quality</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span></div>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="n">quality</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fqual</span> <span class="o">=</span> <span class="mf">3.0</span>
+
+    <span class="k">return</span> <span class="n">fqual</span></div>
 </pre></div>
 
            </div>

@@ -81,8 +81,10 @@
                 <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with diff_classifier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features_analysis.html">Calculating features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../interacting_with_S3.html">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">diff_classifier.utils</span></code></a></li>
@@ -150,40 +152,58 @@
 <h1><a class="reference internal" href="#module-diff_classifier.features" title="diff_classifier.features"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.features</span></code></a><a class="headerlink" href="#diff-classifier-features" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
 <h2><a class="reference internal" href="#module-diff_classifier.features" title="diff_classifier.features"><code class="xref py py-mod docutils literal"><span class="pre">diff_classifier.features</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-diff_classifier.features"></span><dl class="function">
+<span class="target" id="module-diff_classifier.features"></span><p>Functions to calculate trajectory features from input trajectory data</p>
+<p>This module provides functions to calculate trajectory features based off the
+ImageJ plugin TrajClassifer by Thorsten Wagner. See details at
+<a class="reference external" href="https://imagej.net/TraJClassifier">https://imagej.net/TraJClassifier</a>.</p>
+<dl class="function">
 <dt id="diff_classifier.features.alpha_calc">
 <code class="descclassname">diff_classifier.features.</code><code class="descname">alpha_calc</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#alpha_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.alpha_calc" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the parameter alpha by fitting track MSD data to a function.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
+<dd><p>Calculates alpha, the exponential fit parameter for MSD data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain a Frames and a MSDs column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>a <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>The anomalous exponent derived by fitting MSD values to the function,
-&lt;r**2(n)&gt; = 4*D*(n*delt)**a</dd>
-<dt>D <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>The fitted diffusion coefficient derived by fitting MSD values to the
-function above.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>alph</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">The anomalous exponent derived by fitting MSD values to the function,
+&lt;rad**2(n)&gt; = 4*dcoef*(n*delt)**alph</p>
+</dd>
+<dt><strong>dcoef</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">The fitted diffusion coefficient derived by fitting MSD values to the
+function above.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">alpha_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alpha_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(2.0000000000000004, 0.4999999999999999)</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">           &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="go">           &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">alpha_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alpha_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(0.023690002018364065, 0.5144436515510022)</span>
 </pre></div>
 </div>
@@ -193,35 +213,49 @@ function above.</dd>
 <dt id="diff_classifier.features.aspectratio">
 <code class="descclassname">diff_classifier.features.</code><code class="descname">aspectratio</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#aspectratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.aspectratio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the aspect ratio of the rectangle containing the input track.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain an X and Y column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>ar <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>aspect ratio of the trajectory.  Always &gt;= 1.</dd>
-<dt>elong <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>elongation of the trajectory.  A transformation of the aspect ratio given
-by 1 - ar**-1.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>aspratio</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">aspect ratio of the trajectory.  Always &gt;= 1.</p>
+</dd>
+<dt><strong>elong</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">elongation of the trajectory.  A transformation of the aspect ratio
+given by 1 - aspratio**-1.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">aspectratio</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aspectratio</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(5732146505273195.0, 0.99999999999999978)</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">           &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="go">           &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">aspectratio</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aspectratio</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(1.0997501702946164, 0.090702573174318291)</span>
 </pre></div>
 </div>
@@ -231,42 +265,59 @@ by 1 - ar**-1.</dd>
 <dt id="diff_classifier.features.asymmetry">
 <code class="descclassname">diff_classifier.features.</code><code class="descname">asymmetry</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#asymmetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.asymmetry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the asymmetry of the trajectory.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain an X and Y column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>l1 <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Dominant eigenvalue of the gyration tensor.</dd>
-<dt>l2 <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Secondary eigenvalue of the gyration tensor.</dd>
-<dt>a1 <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>asymmetry of the input track.  Equal to 0 for circularly symmetric tracks,
-and 1 for linear tracks.</dd>
-<dt>a2 <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>alternate definition of asymmetry.  Equal to 1 for circularly
-symmetric tracks, and 0 for linear tracks.</dd>
-<dt>a3 <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>alternate definition of asymmetry.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>eig1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Dominant eigenvalue of the gyration tensor.</p>
+</dd>
+<dt><strong>eig2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Secondary eigenvalue of the gyration tensor.</p>
+</dd>
+<dt><strong>asym1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">asymmetry of the input track.  Equal to 0 for circularly symmetric
+tracks, and 1 for linear tracks.</p>
+</dd>
+<dt><strong>asym2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">alternate definition of asymmetry.  Equal to 1 for circularly
+symmetric tracks, and 0 for linear tracks.</p>
+</dd>
+<dt><strong>asym3</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">alternate definition of asymmetry.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">asymmetry</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asymmetry</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(16.5, 0.0, 1.0, 0.0, 0.69314718055994529)</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">           &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="go">           &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">asymmetry</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">asymmetry</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(0.53232560128104522,</span>
 <span class="go">0.42766829138901619,</span>
 <span class="go">0.046430119259539708,</span>
@@ -279,49 +330,68 @@ symmetric tracks, and 0 for linear tracks.</dd>
 <dl class="function">
 <dt id="diff_classifier.features.boundedness">
 <code class="descclassname">diff_classifier.features.</code><code class="descname">boundedness</code><span class="sig-paren">(</span><em>track</em>, <em>framerate=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#boundedness"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.boundedness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the boundedness, fractal dimension, and trappedness of the input track.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
-<dt>framerate <span class="classifier-delimiter">:</span> <span class="classifier">framrate of the video being analyzed.  Actually cancels out. So</span></dt>
-<dd>why did I include this. Default is 1.</dd>
+<dd><p>Calculates the boundedness, fractal dimension, and trappedness of the
+input track.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain a Frames and a MSDs column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
+<dt><strong>framerate</strong> <span class="classifier-delimiter">:</span> <span class="classifier">framrate of the video being analyzed.  Actually cancels out. So</span></dt>
+<dd><p class="first last">why did I include this. Default is 1.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>B <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Boundedness of the input track.  Quantifies how much a particle with
-diffusion coefficient D is restricted by a circular confinement of radius
-r when it diffuses for a time duration N*delt.  Defined as B = D*N*delt/r**2.
-For this case, D is the short time diffusion coefficient (after 2 frames),
-and r is half the maximum distance between any two positions.</dd>
-<dt>Df <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>The fractal path dimension defined as Df = log(N)/log(N*d*l**-1) where L
-is the total length (sum over all steplengths), N is the number of steps,
-and d is the largest distance between any two positions.</dd>
-<dt>pf <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>The probability that a particle with diffusion coefficient D and traced
-for a period of time N*delt is trapped in region r0.  Given by
-pt = 1 - exp(0.2048 - 0.25117*(D*N*delt/r0**2))
-For this case, D is the short time diffusion coefficient, and r0 is half
-the maximum distance between any two positions.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>bound</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Boundedness of the input track.  Quantifies how much a particle with
+diffusion coefficient dcoef is restricted by a circular confinement of
+radius rad when it diffuses for a time duration N*delt.  Defined as
+bound = dcoef*N*delt/rad**2. For this case, dcoef is the short time
+diffusion coefficient (after 2 frames), and rad is half the maximum
+distance between any two positions.</p>
+</dd>
+<dt><strong>fractd</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">The fractal path dimension defined as fractd = log(N)/log(N*data1*l**-1)
+where netdisp is the total length (sum over all steplengths), N is the
+number of steps, and data1 is the largest distance between any two
+positions.</p>
+</dd>
+<dt><strong>probf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">The probability that a particle with diffusion coefficient dcoef and
+traced for a period of time N*delt is trapped in region r0.  Given by
+pt = 1 - exp(0.2048 - 0.25117*(dcoef*N*delt/r0**2)). For this case,
+dcoef is the short time diffusion coefficient, and r0 is half the
+maximum distance between any two positions.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">boundedness</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">boundedness</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(1.0, 1.0000000000000002, 0.045311337970735499)</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">           &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="go">           &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">boundedness</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">boundedness</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(0.96037058689895005, 2.9989749477908401, 0.03576118370932313)</span>
 </pre></div>
 </div>
@@ -329,24 +399,45 @@ the maximum distance between any two positions.</dd>
 
 <dl class="function">
 <dt id="diff_classifier.features.calculate_features">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">calculate_features</code><span class="sig-paren">(</span><em>df</em>, <em>framerate=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#calculate_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.calculate_features" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates multiple features from input MSD dataset and stores in pandas dataframe.</p>
-<dl class="docutils">
-<dt>df <span class="classifier-delimiter">:</span> <span class="classifier">pandas dataframe</span></dt>
-<dd>Output from msd.all_msds2.  Must have at a minimum the following columns:
-Track_ID, Frame, X, Y, and MSDs.</dd>
-<dt>framerate <span class="classifier-delimiter">:</span> <span class="classifier">int or float64</span></dt>
-<dd>Framerate of the input videos from which trajectories were calculated.  Required
-for accurate calculation of some features.  Default is 1.  Possibly not required.
-Ignore if performing all calcuations without units.</dd>
+<code class="descclassname">diff_classifier.features.</code><code class="descname">calculate_features</code><span class="sig-paren">(</span><em>dframe</em>, <em>framerate=1</em>, <em>frame=(10</em>, <em>100)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#calculate_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.calculate_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates multiple features from input MSD dataset and stores in pandas
+dataframe.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>dframe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Output from msd.all_msds2.  Must have at a minimum the following
+columns:
+Track_ID, Frame, X, Y, and MSDs.</p>
+</dd>
+<dt><strong>framerate</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int or float</span></dt>
+<dd><p class="first last">Framerate of the input videos from which trajectories were calculated.
+Required for accurate calculation of some features.  Default is 1.
+Possibly not required. Ignore if performing all calcuations without
+units.</p>
+</dd>
+<dt><strong>frame</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Frame at which to calculate Deff</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>di: pandas dataframe</dt>
-<dd>Contains a row for each trajectory in df.  Holds the following features of each
-trajetory: Track_ID, alpha, D_fit, kurtosis, asymmetry1, asymmetry2, asymmetry3,
-aspect ratio (AR), elongation, boundedness, fractal dimension (fractal_dim),
-trappedness, efficiency, straightness, MSD ratio, frames, X, and Y.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>datai: pandas.core.frame.DataFrame</strong></dt>
+<dd><p class="first last">Contains a row for each trajectory in dframe.  Holds the following
+features of each trajetory: Track_ID, alpha, D_fit, kurtosis,
+asymmetry1, asymmetry2, asymmetry3, aspect ratio (AR), elongation,
+boundedness, fractal dimension (fractal_dim), trappedness, efficiency,
+straightness, MSD ratio, frames, X, and Y.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <p>See example outputs from individual feature functions.</p>
 </dd></dl>
 
@@ -354,41 +445,87 @@ trappedness, efficiency, straightness, MSD ratio, frames, X, and Y.</dd>
 <dt id="diff_classifier.features.efficiency">
 <code class="descclassname">diff_classifier.features.</code><code class="descname">efficiency</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#efficiency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.efficiency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the efficiency and straitness of the input track</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain a Frames and a MSDs column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>eff <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Efficiency of the input track.  Relates the sum of squared step
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>eff</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Efficiency of the input track.  Relates the sum of squared step
 lengths.  Based on Helmuth et al. (2007) and defined as:
-E = <a href="#id2"><span class="problematic" id="id3">|</span></a>x(N-1)-x(0)|**2/SUM(<a href="#id4"><span class="problematic" id="id5">|</span></a>x(i) - x(i-1)|**2</dd>
-<dt>strait <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Relates the net displacement L to teh sum of step lengths and is
+E = <a href="#id2"><span class="problematic" id="id3">|</span></a>xpos(N-1)-xpos(0)|**2/SUM(<a href="#id4"><span class="problematic" id="id5">|</span></a>xpos(i) - xpos(i-1)|**2</p>
+</dd>
+<dt><strong>strait</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Relates the net displacement netdisp to the sum of step lengths and is
 defined as:
-S = <a href="#id6"><span class="problematic" id="id7">|x(N-1)-x(0)|</span></a>/SUM(<a href="#id8"><span class="problematic" id="id9">|x(i) - x(i-1)|</span></a></dd>
+S = <a href="#id6"><span class="problematic" id="id7">|xpos(N-1)-xpos(0)|</span></a>/SUM(<a href="#id8"><span class="problematic" id="id9">|xpos(i) - xpos(i-1)|</span></a></p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">               &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">               &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">efficiency</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">efficiency</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(9.0, 0.9999999999999999)</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">               &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="go">               &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">efficiency</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">efficiency</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(0.46192924086141945, 0.22655125514290225)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="diff_classifier.features.feature_violin">
+<code class="descclassname">diff_classifier.features.</code><code class="descname">feature_violin</code><span class="sig-paren">(</span><em>tgroups, feature='boundedness', labels=['sample 1', 'sample 2', 'sample 3'], points=40, ylim=[0, 1], nticks=11</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#feature_violin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.feature_violin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots violin plots of features in comparison groups</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>tgroups</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict of pandas.core.frames.DataFrame</span></dt>
+<dd><p class="first last">Dictionary containing pandas dataframes containing trajectory
+features of subgroups to be plotted</p>
+</dd>
+<dt><strong>feature</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Feature to be compared</p>
+</dd>
+<dt><strong>labels</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
+<dd><p class="first last">Labels of subgroups to be plotted.</p>
+</dd>
+<dt><strong>points</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Determines resolution of violin plot</p>
+</dd>
+<dt><strong>ylim</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of int</span></dt>
+<dd><p class="first last">Y range of output plot</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -396,28 +533,44 @@ S = <a href="#id6"><span class="problematic" id="id7">|x(N-1)-x(0)|</span></a>/S
 <code class="descclassname">diff_classifier.features.</code><code class="descname">gyration_tensor</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#gyration_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.gyration_tensor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the eigenvalues and eigenvectors of the gyration tensor of the
 input trajectory.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain an X and Y column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>l1 <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Dominant eigenvalue of the gyration tensor.</dd>
-<dt>l2 <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Secondary eigenvalue of the gyration tensor.</dd>
-<dt>v1 <span class="classifier-delimiter">:</span> <span class="classifier">2 x 1 numpy.ndarray of numpy.float64 objects</span></dt>
-<dd>Dominant eigenvector of the gyration tensor.</dd>
-<dt>v2 <span class="classifier-delimiter">:</span> <span class="classifier">2 x 1 numpy.ndarray of numpy.float64 objects</span></dt>
-<dd>Secondary eigenvector of the gyration tensor.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>eig1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Dominant eigenvalue of the gyration tensor.</p>
+</dd>
+<dt><strong>eig2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Secondary eigenvalue of the gyration tensor.</p>
+</dd>
+<dt><strong>eigv1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Dominant eigenvector of the gyration tensor.</p>
+</dd>
+<dt><strong>eigv2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Secondary eigenvector of the gyration tensor.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gyration_tensor</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gyration_tensor</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(4.0,</span>
 <span class="go">4.4408920985006262e-16,</span>
 <span class="go">array([ 0.70710678, -0.70710678]),</span>
@@ -425,12 +578,12 @@ msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">           &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="go">           &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gyration_tensor</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gyration_tensor</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(0.53232560128104522,</span>
 <span class="go">0.42766829138901619,</span>
 <span class="go">array([ 0.6020119 , -0.79848711]),</span>
@@ -443,68 +596,103 @@ msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
 <dt id="diff_classifier.features.kurtosis">
 <code class="descclassname">diff_classifier.features.</code><code class="descname">kurtosis</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#kurtosis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.kurtosis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the kurtosis of input track.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain an X and Y column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>kurt <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Kurtosis of the input track.  Calculation based on projected 2D positions
-on the dominant eigenvector of the radius of gyration tensor.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>kurt</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Kurtosis of the input track.  Calculation based on projected 2D
+positions on the dominant eigenvector of the radius of gyration tensor.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kurtosis</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kurtosis</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">2.5147928994082829</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">           &#39;X&#39;: np.sin(np.linspace(1, frames, frames)+3),</span>
-<span class="go">           &#39;Y&#39;: np.cos(np.linspace(1, frames, frames)+3)}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kurtosis</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kurtosis</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">1.8515139698652476</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="function">
-<dt id="diff_classifier.features.minBoundingRect">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">minBoundingRect</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#minBoundingRect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.minBoundingRect" title="Permalink to this definition">¶</a></dt>
+<dt id="diff_classifier.features.minboundrect">
+<code class="descclassname">diff_classifier.features.</code><code class="descname">minboundrect</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#minboundrect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.minboundrect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the minimum bounding rectangle of an input trajectory.</p>
-<dl class="docutils">
-<dt>df <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain an X and Y column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>dframe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain an X and Y column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>rot_angle <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Angle of rotation of the bounding box.</dd>
-<dt>area <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Area of the bounding box.</dd>
-<dt>width <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Width of the bounding box.</dd>
-<dt>height <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
-<dd>Height of the bounding box.</dd>
-<dt>center_point <span class="classifier-delimiter">:</span> <span class="classifier">2 x 1 numpy.ndarray of numpy.float64 objects</span></dt>
-<dd>Center point of the bounding box.</dd>
-<dt>corner_points <span class="classifier-delimiter">:</span> <span class="classifier">4 x 2 numpy.ndarray of numpy.float64 objects</span></dt>
-<dd>Corner points of the bounding box.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>rot_angle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Angle of rotation of the bounding box.</p>
+</dd>
+<dt><strong>area</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Area of the bounding box.</p>
+</dd>
+<dt><strong>width</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Width of the bounding box.</p>
+</dd>
+<dt><strong>height</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.float64</span></dt>
+<dd><p class="first last">Height of the bounding box.</p>
+</dd>
+<dt><strong>center_point</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Center point of the bounding box.</p>
+</dd>
+<dt><strong>corner_pts</strong> <span class="classifier-delimiter">:</span> <span class="classifier">numpy.ndarray</span></dt>
+<dd><p class="first last">Corner points of the bounding box.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Based off of code from the following repo:
+<a class="reference external" href="https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/">https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/</a>
+python/min_bounding_rect.py</p>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">minBoundingRect</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">minboundrect</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(-2.3561944901923448,</span>
 <span class="go">2.8261664256307952e-14,</span>
 <span class="go">12.727922061357855,</span>
@@ -517,12 +705,12 @@ msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">           &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="go">           &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">minBoundingRect</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">minboundrect</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
 <span class="go">(0.78318530717958657,</span>
 <span class="go">3.6189901131223992,</span>
 <span class="go">1.9949899732081091,</span>
@@ -534,47 +722,60 @@ msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
 <span class="go">       [ 3.08772466,  4.32568917]]))</span>
 </pre></div>
 </div>
-<p>Based off of code from the following repo:
-<a class="reference external" href="https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/python/min_bounding_rect.py">https://github.com/dbworth/minimum-area-bounding-rectangle/blob/master/python/min_bounding_rect.py</a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="diff_classifier.features.msd_ratio">
-<code class="descclassname">diff_classifier.features.</code><code class="descname">msd_ratio</code><span class="sig-paren">(</span><em>track</em>, <em>n1=3</em>, <em>n2=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#msd_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.msd_ratio" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">diff_classifier.features.</code><code class="descname">msd_ratio</code><span class="sig-paren">(</span><em>track</em>, <em>fram1=3</em>, <em>fram2=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#msd_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.msd_ratio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the MSD ratio of the input track at the specified frames.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas DataFrame</span></dt>
-<dd>At a minimum, must contain a Frames and a MSDs column.  The function
-msd_calc can be used to generate the correctly formatted pd dataframe.</dd>
-<dt>n1 <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd>First frame at which to calculate the MSD ratio.</dd>
-<dt>n2 <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd>Last frame at which to calculate the MSD ratio.</dd>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain a Frames and a MSDs column.  The function
+msd_calc can be used to generate the correctly formatted pd dataframe.</p>
+</dd>
+<dt><strong>fram1</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">First frame at which to calculate the MSD ratio.</p>
+</dd>
+<dt><strong>fram2</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Last frame at which to calculate the MSD ratio.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>ratio: numpy.float64</dt>
-<dd>MSD ratio as defined by
-[MSD(n1)/MSD(n2)] - [n1/n2]
-where n1 &lt; n2.  For Brownian motion, it is 0; for restricted motion it
-is &lt; 0.  For directed motion it is &gt; 0.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ratio: numpy.float64</strong></dt>
+<dd><p class="first last">MSD ratio as defined by
+[MSD(fram1)/MSD(fram2)] - [fram1/fram2]
+where fram1 &lt; fram2.  For Brownian motion, it is 0; for restricted
+motion it is &lt; 0.  For directed motion it is &gt; 0.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.linspace(1, frames, frames)+5,</span>
-<span class="go">         &#39;Y&#39;: np.linspace(1, frames, frames)+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">msd_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">msd_ratio</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
 <span class="go">-0.18765432098765433</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">frames</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
-<span class="go">         &#39;X&#39;: np.sin(np.linspace(1, frames, frames))+3,</span>
-<span class="go">         &#39;Y&#39;: np.cos(np.linspace(1, frames, frames))+3}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">msd_ratio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Frame&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">))</span><span class="o">+</span><span class="mi">3</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">],</span> <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">msd_calc</span><span class="p">(</span><span class="n">dframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ft</span><span class="o">.</span><span class="n">msd_ratio</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
 <span class="go">0.04053708075268797</span>
 </pre></div>
 </div>
@@ -583,16 +784,28 @@ is &lt; 0.  For directed motion it is &gt; 0.</dd>
 <dl class="function">
 <dt id="diff_classifier.features.unmask_track">
 <code class="descclassname">diff_classifier.features.</code><code class="descname">unmask_track</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/diff_classifier/features.html#unmask_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#diff_classifier.features.unmask_track" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes empty frames from a track in an MSD pandas dataframe.</p>
-<dl class="docutils">
-<dt>track <span class="classifier-delimiter">:</span> <span class="classifier">pandas Dataframe</span></dt>
-<dd>At a minimum, must contain a Frame, Track_ID, X, Y, MSDs, and
-Gauss column.</dd>
+<dd><p>Removes empty frames from inpute trajectory datset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">At a minimum, must contain a Frame, Track_ID, X, Y, MSDs, and
+Gauss column.</p>
+</dd>
 </dl>
-<dl class="docutils">
-<dt>comp_track <span class="classifier-delimiter">:</span> <span class="classifier">pandas Dataframe</span></dt>
-<dd>Similar to track, but has all masked components removed.</dd>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>comp_track</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas.core.frame.DataFrame</span></dt>
+<dd><p class="first last">Similar to track, but has all masked components removed.</p>
+</dd>
 </dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
