@@ -6,6 +6,7 @@
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/ccurtis7/diff_classifier.svg)](http://isitmaintained.com/project/ccurtis7/diff_classifier "Percentage of issues still open")
 [![GitHub license](
 https://img.shields.io/github/license/ccurtis7/diff_classifier.svg)](https://github.com/ccurtis7/diff_classifier/blob/master/LICENSE)
+[![DOI](https://zenodo.org/badge/116980257.svg)](https://zenodo.org/badge/latestdoi/116980257)
 
 
 diff_classifier is a python package for analyzing and visualizing 2D
