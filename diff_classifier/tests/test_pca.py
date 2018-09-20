@@ -163,7 +163,7 @@ def test_feature_plot_2D():
     df = pd.DataFrame(data=dataset)
 
     xy = pca.feature_plot_2D(df, label='label', features=[0, 1], randsel=True,
-                             fname='test1.png')
+                             lvals=['yes', 'no'], fname='test1.png')
     # assert len(xy[1]) == 200
     # assert os.path.isfile('test1.png')
     #
@@ -181,7 +181,8 @@ def test_feature_plot_3D():
                }
     df = pd.DataFrame(data=dataset)
 
-    xy = pca.feature_plot_3D(df, label='label', features=[0, 1, 2], randsel=True,
+    xy = pca.feature_plot_3D(df, label='label', features=[0, 1, 2],
+                             lvals=['yes', 'no'], randsel=True,
                              fname='test1.png')
     # assert len(xy[1]) == 200
     # assert os.path.isfile('test1.png')
