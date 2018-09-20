@@ -531,8 +531,8 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
     return to_violin
 
 
-def feature_plot_2D(dataset, label, features=[0, 1], randsel=True,
-                    randcount=200, **kwargs):
+def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
+                    randsel=True, randcount=200, **kwargs):
     """Plots two features against each other from feature dataset.
 
     Parameters
@@ -583,7 +583,7 @@ def feature_plot_2D(dataset, label, features=[0, 1], randsel=True,
     xy = {}
     counter = 0
     labels = dataset[label].unique()
-    for lval in labels:
+    for lval in lvals:
         tgroups[counter] = dataset[dataset[label] == lval]
         counter = counter + 1
 
@@ -627,8 +627,8 @@ def feature_plot_2D(dataset, label, features=[0, 1], randsel=True,
     return xy
 
 
-def feature_plot_3D(dataset, label, features=[0, 1, 2], randsel=True,
-                    randcount=200, **kwargs):
+def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
+                    randsel=True, randcount=200, **kwargs):
     """Plots three features against each other from feature dataset.
 
     Parameters
@@ -691,7 +691,7 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], randsel=True,
     xy = {}
     counter = 0
     labels = dataset[label].unique()
-    for lval in labels:
+    for lval in lvals:
         tgroups[counter] = dataset[dataset[label] == lval]
         counter = counter + 1
 

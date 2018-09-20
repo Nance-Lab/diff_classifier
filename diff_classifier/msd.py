@@ -760,7 +760,7 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
 
         counter = counter + 1
 
-    plt.legend(frameon=False, prop={'size': 16})
+    plt.legend(frameon=False, loc=2, prop={'size': 16})
 
     if upload:
         fig.savefig(outfile, bbox_inches='tight')

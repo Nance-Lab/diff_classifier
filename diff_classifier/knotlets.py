@@ -393,3 +393,45 @@ def split_track_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
 #     aws.upload_s3(msd_image, '{}/{}'.format(s_folder, msd_image))
 #
 #     print('Successful parameter calculations for {}'.format(iter_name))
+
+
+def geomean_msd(prefix, umppx=0.16, fps=100.02, upload=True,
+                   remote_folder="01_18_Experiment", bucket='ccurtis.data',
+                   backup_frames=651):
+
+    import pandas as pd
+    import numpy as np
+    import numpy.ma as ma
+    import diff_classifier.aws as aws
+    import scipy.stats as stats
+    
+    merged = pd.read_csv('msd_{}.csv'.format(prefix))
+    try:
+        particles = int(max(merged['Track_ID']))
+        frames = int(max(merged['Frame']))
+        ypos = np.zeros((particles+1, frames+1))
+
+        for i in range(0, particles+1):
+            ypos[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
+            xpos = merged.loc[merged.Track_ID == i, 'Frame']/fps
+
+        geo_mean = np.nanmean(ma.log(ypos), axis=0)
+        geo_stder = ma.masked_equal(stats.sem(ma.log(ypos), axis=0,
+                                              nan_policy='omit'), 0.0)
+
+    except ValueError:
+        geo_mean = np.nan*np.ones(backup_frames)
+        geo_stder = np.nan*np.ones(backup_frames)
+
+    np.savetxt('geomean_{}.csv'.format(prefix), geo_mean, delimiter=",")
+    np.savetxt('geoSEM_{}.csv'.format(prefix), geo_stder, delimiter=",")
+
+    if upload:
+        aws.upload_s3('geomean_{}.csv'.format(prefix),
+                      remote_folder+'/'+'geomean_{}.csv'.format(prefix),
+                      bucket_name=bucket)
+        aws.upload_s3('geoSEM_{}.csv'.format(prefix),
+                      remote_folder+'/'+'geoSEM_{}.csv'.format(prefix),
+                      bucket_name=bucket)
+
+    return geo_mean, geo_stder
