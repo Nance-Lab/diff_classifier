@@ -405,6 +405,8 @@ def geomean_msd(prefix, umppx=0.16, fps=100.02, upload=True,
     import diff_classifier.aws as aws
     import scipy.stats as stats
     
+    aws.download_s3('{}/msd_{}.csv'.format(remote_folder, prefix),
+                    'msd_{}.csv'.format(prefix), bucket_name=bucket)
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
     try:
         particles = int(max(merged['Track_ID']))
