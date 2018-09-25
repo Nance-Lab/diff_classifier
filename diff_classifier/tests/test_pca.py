@@ -15,31 +15,31 @@ is_travis = "CI" in os.environ.keys()
 def test_partial_corr():
     dataf = msd.random_traj_dataset()
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds)
+    feat = ft.calculate_features(msds, mean_values=False)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(24.0, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10)
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds)
+    feat = ft.calculate_features(msds, mean_values=False)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(47.9, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10, seed=9)
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds)
+    feat = ft.calculate_features(msds, mean_values=False)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(33.4, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10, nframes=40, seed=9)
     msds = msd.all_msds2(dataf, frames=40)
-    feat = ft.calculate_features(msds)
+    feat = ft.calculate_features(msds, mean_values=False)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(17.4, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10, nframes=40, ndist=(3, 5), seed=9)
     msds = msd.all_msds2(dataf, frames=40)
-    feat = ft.calculate_features(msds)
+    feat = ft.calculate_features(msds, mean_values=False)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(35.7, np.round(np.sum(pcorr), 1))
 
@@ -49,7 +49,7 @@ def test_partial_corr():
 def test_kmo():
     dataf = msd.random_traj_dataset(nparts=10, ndist=(1, 1), seed=3)
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds)
+    feat = ft.calculate_features(msds, mean_values=False)
     dataset = feat.drop(['frames', 'Track_ID'], axis=1)
     corrmatrix = np.corrcoef(dataset.transpose())
     npt.assert_equal(np.round(np.sum(corrmatrix), 1), 7.3)
@@ -58,7 +58,7 @@ def test_kmo():
 def test_pca_analysis():
     dataf = msd.random_traj_dataset(nparts=10, ndist=(2, 6))
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds)
+    feat = ft.calculate_features(msds, mean_values=False)
     pcadataset = pca.pca_analysis(feat, dropcols=['frames', 'Track_ID'],
                                   n_components=5)
     

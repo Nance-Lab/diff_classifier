@@ -736,7 +736,7 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
 
         acount = 0
         for ax in axes:
-            axes[ax].scatter(xy[0], xy[1], xy[2], c=c, s=kwargs['dotsize'], alpha=kwargs['alpha'], label=labels[counter])
+            axes[ax].scatter(xy[0], xy[1], xy[2], c=c, s=kwargs['dotsize'], alpha=kwargs['alpha'])#, label=labels[counter])
             if kwargs['xlim'] is not None:
                 axes[ax].set_xlim3d(kwargs['xlim'][0], kwargs['xlim'][1])
             if kwargs['ylim'] is not None:
