@@ -69,7 +69,7 @@ def test_plot_pca():
     print()
 
 
-def test_build_KNN_model():
+def test_build_model():
     output = ['F']*1000 + ['M']*1000
     data = {'output': output,
             0: np.append(np.random.normal(1, 1, size=1000),
@@ -78,7 +78,7 @@ def test_build_KNN_model():
                          np.random.normal(0.2, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
-    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+    model, X, Y = pca.build_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
 
@@ -86,7 +86,7 @@ def test_build_KNN_model():
     assert Y.shape == (25,)
 
 
-def test_predict_KNN():
+def test_predict_model():
     output = ['F']*1000 + ['M']*1000
     data = {'output': output,
             0: np.append(np.random.normal(1, 1, size=1000),
@@ -95,19 +95,19 @@ def test_predict_KNN():
                          np.random.normal(0.2, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
-    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+    model, X, Y = pca.build_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
 
     testp = np.array([])
     for i in range(0, 30):
-        KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+        KNNmod, X, y = pca.build_model(dataf, 'output', ['F', 'M'],
                                            equal_sampling=True, tsize=25,
                                            n_neighbors=5, input_cols=2)
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
-        testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
+        testp = np.append(testp, pca.predict_model(KNNmod, X2, y2))
 
     assert np.mean(testp) > 0.6
 
@@ -119,19 +119,19 @@ def test_predict_KNN():
                          np.random.normal(100, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
-    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+    model, X, Y = pca.build_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
 
     testp = np.array([])
     for i in range(0, 30):
-        KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
+        KNNmod, X, y = pca.build_model(dataf, 'output', ['F', 'M'],
                                            equal_sampling=True, tsize=25,
                                            n_neighbors=5, input_cols=2)
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
-        testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
+        testp = np.append(testp, pca.predict_model(KNNmod, X2, y2))
 
     assert np.mean(testp) > 0.95
 
