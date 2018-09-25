@@ -15,6 +15,8 @@ from sklearn import neighbors
 from sklearn.decomposition import PCA as pca
 from sklearn.preprocessing import StandardScaler as stscale
 from sklearn.preprocessing import Imputer
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 from mpl_toolkits.mplot3d import Axes3D
@@ -337,8 +339,9 @@ def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
     plt.show()
 
 
-def build_KNN_model(rawdata, feature, featvals, equal_sampling=True,
-                    tsize=20, n_neighbors=5, from_end=True, input_cols=6):
+def build_model(rawdata, feature, featvals, equal_sampling=True,
+                    tsize=20, from_end=True, input_cols=6, model='KNN',
+                    **kwargs):
     """Builds a K-nearest neighbor model using an input dataset.
 
     Parameters
@@ -382,6 +385,14 @@ def build_KNN_model(rawdata, feature, featvals, equal_sampling=True,
 
     """
 
+    defaults = {'n_neighbors': 5, 'NNsolver': 'lbfgs', 'NNalpha': 1e-5,
+                'NNhidden_layer': (5, 2), 'NNrandom_state': 1,
+                'n_estimators': 10}
+
+    for defkey in defaults.keys():
+        if defkey not in kwargs.keys():
+            kwargs[defkey] = defaults[defkey]
+    
     if equal_sampling:
         for featval in featvals:
             if from_end:
@@ -410,13 +421,21 @@ def build_KNN_model(rawdata, feature, featvals, equal_sampling=True,
         X = test[to_plot, :]
         y = rawdata[feature].values[to_plot]
 
-    clf = neighbors.KNeighborsClassifier(n_neighbors)
+    if model is 'KNN':
+        clf = neighbors.KNeighborsClassifier(kwargs['n_neighbors'])
+    elif model is 'MLP':
+        clf = MLPClassifier(solver=kwargs['NNsolver'], alpha=kwargs['NNalpha'],
+                            hidden_layer_sizes=kwargs['NNhidden_layer'],
+                            random_state=kwargs['NNrandom_state'])
+    else:
+        clf = RandomForestClassifier(n_estimators=kwargs['n_estimators'])
+    
     clf.fit(X, y)
 
     return clf, X, y
 
 
-def predict_KNN(model, X, y):
+def predict_model(model, X, y):
     """Calculates fraction correctly predicted using input KNN
     model
 
@@ -669,6 +688,7 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
         Coordinates of data on plot
 
     """
+
     defaults = {'figsize': (8, 8), 'dotsize': 70, 'alpha': 0.7, 'xlim': None,
                 'ylim': None, 'zlim': None, 'legendfontsize': 12,
                 'labelfontsize': 10, 'fname': None}
@@ -690,9 +710,11 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
     tgroups = {}
     xy = {}
     counter = 0
-    labels = dataset[label].unique()
+    #labels = dataset[label].unique()
     for lval in lvals:
         tgroups[counter] = dataset[dataset[label] == lval]
+        #print(lval)
+        #print(tgroups[counter].shape)
         counter = counter + 1
 
     N = len(tgroups)
@@ -703,6 +725,7 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
         c = next(color)
         xy = []
         if randsel:
+            #print(range(0, len(tgroups[key][0].tolist())))
             to_plot = random.sample(range(0, len(tgroups[key][0].tolist())),
                                     randcount)
             for key2 in features:
@@ -715,11 +738,11 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
         for ax in axes:
             axes[ax].scatter(xy[0], xy[1], xy[2], c=c, s=kwargs['dotsize'], alpha=kwargs['alpha'], label=labels[counter])
             if kwargs['xlim'] is not None:
-                axes[ax].set_xlim3d(kwargs['xlim'])
+                axes[ax].set_xlim3d(kwargs['xlim'][0], kwargs['xlim'][1])
             if kwargs['ylim'] is not None:
-                axes[ax].set_ylim3d(kwargs['ylim'])
+                axes[ax].set_ylim3d(kwargs['ylim'][0], kwargs['ylim'][1])
             if kwargs['zlim'] is not None:
-                axes[ax].set_zlim3d(kwargs['zlim'])
+                axes[ax].set_zlim3d(kwargs['zlim'][0], kwargs['zlim'][1])
             axes[ax].view_init(angle1[acount], angle2[acount])
             axes[ax].set_xlabel('Prin. Component {}'.format(features[0]),
                                 fontsize=kwargs['labelfontsize'])

@@ -719,7 +719,7 @@ def msd_ratio(track, fram1=3, fram2=100):
     return ratio
 
 
-def calculate_features(dframe, framerate=1, frame=(10, 100)):
+def calculate_features(dframe, framerate=1, frame=(10, 100), mean_values=True):
     """Calculates multiple features from input MSD dataset and stores in pandas
     dataframe.
 
@@ -829,6 +829,24 @@ def calculate_features(dframe, framerate=1, frame=(10, 100)):
               'Quality'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
         datai['SN_Ratio'][particle] = np.nanmean(single_track[
               'SN_Ratio'].replace([np.inf, -np.inf], np.nan).dropna(how="all").values)
+    
+    if mean_values:
+        nonnum = ['Track_ID']
+        for col in datai.columns:
+            if col not in nonnum:
+                datai['Mean ' + col] = np.nan
+                datai['Std ' + col] = np.nan
+
+        for xrange in range(0, 16):
+            for yrange in range(0, 16):
+                bitesize = datai[(datai['X'] >= 128*xrange) & (datai['X'] < 128*(xrange+1)) &
+                                 (datai['Y'] >= 128*yrange) & (datai['Y'] < 128*(yrange+1))]
+                bitesize.replace([np.inf, -np.inf], np.nan)
+                print(bitesize.shape)
+                for col in bitesize.columns:
+                    if col not in nonnum and 'Mean' not in col and 'Std' not in col:
+                        datai['Mean '+ col][bitesize.index] = np.nanmean(bitesize[col])
+                        datai['Std '+ col][bitesize.index] = np.nanstd(bitesize[col])
 
     return datai
 
