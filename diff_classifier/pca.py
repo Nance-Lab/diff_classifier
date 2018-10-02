@@ -188,6 +188,7 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     """
     pd.options.mode.chained_assignment = None  # default='warn'
     dataset_num = dataset.drop(dropcols, axis=1)
+    dataset_num = dataset_num.replace([np.inf, -np.inf], np.nan)
 
     if rem_outliers:
         for i in range(10):

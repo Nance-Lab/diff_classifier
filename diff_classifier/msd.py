@@ -689,7 +689,8 @@ def precision_averaging(group, geomean, geo_stder, weights, save=True,
 def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
                          yrange=(10**-1, 10**1), fps=100.02,
                          xrange=(10**-2, 10**0), upload=True,
-                         outfile='test.png', exponential=True):
+                         outfile='test.png', exponential=True,
+                         labels=None, log=True):
     """Plots precision-weighted averages of MSD datasets.
 
     Plots pre-calculated precision-weighted averages of MSD datasets calculated
@@ -716,10 +717,14 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
     """
 
     n = len(experiments)
+    
+    if labels==None:
+        labels = experiments
 
     color = iter(cm.viridis(np.linspace(0, 0.9, n)))
 
     fig = plt.figure(figsize=(8.5, 8.5))
+    ax = fig.add_subplot(111)
     plt.xlim(xrange[0], xrange[1])
     plt.ylim(yrange[0], yrange[1])
     plt.xlabel('Tau (s)', fontsize=25)
@@ -744,21 +749,24 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
         c = next(color)
 
         if exponential:
-            plt.loglog(xpos, np.exp(geo[counter]), c=c, linewidth=6,
-                       label=experiment)
-            plt.loglog(xpos, np.exp(geo[counter] - 1.96*gstder[counter]),
-                       c=c, dashes=[6, 2], linewidth=4)
-            plt.loglog(xpos, np.exp(geo[counter] + 1.96*gstder[counter]),
-                       c=c, dashes=[6, 2], linewidth=4)
+            ax.plot(xpos, np.exp(geo[counter]), c=c, linewidth=6,
+                       label=labels[counter])
+            ax.fill_between(xpos, np.exp(geo[counter] - 1.96*gstder[counter]),
+                            np.exp(geo[counter] + 1.96*gstder[counter]),
+                            color=c, alpha=0.4)
+
         else:
-            plt.loglog(xpos, geo[counter], c=c, linewidth=6,
-                       label=experiment)
-            plt.loglog(xpos, geo[counter] - 1.96*gstder[counter], c=c,
-                       dashes=[6, 2], linewidth=4)
-            plt.loglog(xpos, geo[counter] + 1.96*gstder[counter], c=c,
-                       dashes=[6, 2], linewidth=4)
+            ax.plot(xpos, geo[counter], c=c, linewidth=6,
+                       label=labels[counter])
+            ax.fill_between(xpos, geo[counter] - 1.96*gstder[counter], 
+                       geo[counter] + 1.96*gstder[counter], color=c,
+                       alpha=0.4)
 
         counter = counter + 1
+    
+    if log:
+        ax.set_xscale( "log" )
+        ax.set_yscale( "log" )
 
     plt.legend(frameon=False, loc=2, prop={'size': 16})
 
