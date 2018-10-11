@@ -99,7 +99,7 @@ settings.addSpotFilter(filter6)
 settings.addTrackAnalyzer(TrackSpeedStatisticsAnalyzer())
 settings.addTrackAnalyzer(TrackDurationAnalyzer())
 
-filter7 = FeatureFilter('TRACK_DURATION', {track_duration}, True)
+filter7 = FeatureFilter('TRACK_DURATION', {track_displacement}, True)
 settings.addTrackFilter(filter7)
 
 settings.initialSpotFilterValue = 1
