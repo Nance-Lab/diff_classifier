@@ -593,7 +593,7 @@ def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
     """
     defaults = {'figsize': (8, 8), 'dotsize': 70, 'alpha': 0.7, 'xlim': None,
                 'ylim': None, 'legendfontsize': 12, 'labelfontsize': 20,
-                'fname': None}
+                'fname': None, 'legendloc': 2}
 
     for defkey in defaults.keys():
         if defkey not in kwargs.keys():
@@ -633,7 +633,9 @@ def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
     if kwargs['ylim'] is not None:
         plt.ylim(kwargs['ylim'])
 
-    plt.legend(fontsize=kwargs['legendfontsize'], frameon=False)
+    plt.legend(fontsize=kwargs['legendfontsize'], frameon=False,
+               borderaxespad=0.,
+               bbox_to_anchor=(1.05, 1))
     plt.xlabel('Prin. Component {}'.format(features[0]),
                fontsize=kwargs['labelfontsize'])
     plt.ylabel('Prin. Component {}'.format(features[1]),

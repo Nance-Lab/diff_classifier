@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
+import turtle
 import sys
 import diff_classifier.knotlets as kn
 import numpy as np
 import diff_classifier.aws as aws
 import diff_classifier.msd as msd
 
-folder = '08_28_18_varying_PEG_redo'
-bucket = 'evanepst.data'
+folder = '10_04_18_COOH_PEG_serum'
+bucket = 'rhodese.data'
 #experiment = 'test' #Used for naming purposes. Should exclude XY and well information
 
 #vids = 2
@@ -17,11 +18,11 @@ fps = 100.02
 umppx = 0.07
 
 vids = 10
-covers = ['COOH', 'pt10xs', 'pt15xs', 'pt25xs', 'pt40xs']
+covers = ['COOH', 'COOH_serum', 'PEG', 'PEG_serum']
 for cover in covers:
     for num in range(1, vids+1):
         #to_track.append('100x_0_4_1_2_gel_{}_bulk_vid_{}'.format(vis, num))
-        to_track.append('3mM_100_{}_XY{}'.format(cover, '%02d' % num))
+        to_track.append('{}_XY{}'.format(cover, '%02d' % num))
 
 geomean = {}
 gSEM = {}
@@ -37,3 +38,4 @@ for sample_name in to_track[int(sys.argv[1]):int(sys.argv[2])]:
     geomean[sample_name], gSEM[sample_name] = msd.geomean_msdisp(sample_name, umppx=umppx, fps=fps,
                                                                  remote_folder=folder, bucket=bucket)
     print('Done with {}'.format(sample_name))
+
