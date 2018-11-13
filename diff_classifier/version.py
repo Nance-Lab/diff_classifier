@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import os.path as op
+import os
 
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 0
@@ -45,4 +46,8 @@ MINOR = _version_minor
 MICRO = _version_micro
 VERSION = __version__
 PACKAGE_DATA = {'diff_classifier': [op.join('data', '*')]}
-REQUIRES = ["numpy", "scipy", "pandas", "scikit_image", "sklearn", "boto3"]
+
+src_dir = op.dirname(op.abspath(__file__))
+requires_path = op.abspath(op.join(src_dir, "requirements.txt"))
+with open(requires_path) as f:
+    REQUIRES = [line.strip('\n') for line in f.readlines()]

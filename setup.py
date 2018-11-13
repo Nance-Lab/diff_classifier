@@ -26,7 +26,6 @@ opts = dict(name=NAME,
             platforms=PLATFORMS,
             version=VERSION,
             install_requires=REQUIRES,
-            requires=REQUIRES,
             package_data=PACKAGE_DATA)
 
 
