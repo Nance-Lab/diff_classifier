@@ -5,8 +5,12 @@ Getting started with diff_classifier
 
 Pip install
 -----------
-Currently, diff_classifier is not on PyPi, but the next version of
-diff_classifer will be uploaded to PyPi.
+Currently, ``diff_classifier`` is not on PyPI (though it will be shortly).
+However, the GitHub's master branch is available:
+
+.. code-block:: python
+
+  pip install git+https://github.com/ccurtis7/diff_classifier.git
 
 Git clone
 ---------
