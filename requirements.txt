@@ -12,3 +12,4 @@ shapely
 numpydoc
 ipywidgets
 seaborn
+Shapely
