@@ -6,35 +6,6 @@ Welcome to diff_classifier
 The diff_classifier package is complete particle tracking package implemented
 using the ImageJ plugin `Trackmate <http://imagej.net/Getting_started_with_TrackMate>`_.
 
-Usage
------
-
-.. code-block:: python
-
-  import diff_classifier.utils as ut
-  import diff_classifier.msd as msd
-  import diff_classifier.features as ft
-  import diff_classifier.imagej as ij
-  import diff_classifier.heatmaps as hm
-
-  prefix = 'test_video'
-  frames = 651
-  local_im = prefix + '.tif' # Name of image file
-  outfile = 'Traj' + local_im.split('.')[0] + '.csv'
-  msd_file = 'msd_{}.csv'.format(prefix)
-  ft_file = 'features_{}.csv'.format(prefix)
-
-  ij.track(local_im, outfile, template=None, fiji_bin=None, radius=4.5, threshold=0.,
-            do_median_filtering=True, quality=4.5, x=511, y=y, ylo=1, median_intensity=300.0, snr=0.0,
-            linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
-            track_displacement=10.0)
-
-  df = ut.csv_to_pd(outfile)
-  msds = msd.all_msds2(df, frames=frames)
-  features = ft.calculate_features(msds)
-
-  hm.plot_trajectories(prefix)
-
 Motivation
 ----------
 
@@ -93,6 +64,35 @@ parallelization functions for complete tracking, analysis, and visualization
 of large tracking experiments.  In general, these are only templates, and will
 have to be modified by the user for their own experimental implementations.
 Instructions can be found at :ref: 'cloudknot-parallelization-label'.
+
+Usage
+-----
+
+.. code-block:: python
+
+  import diff_classifier.utils as ut
+  import diff_classifier.msd as msd
+  import diff_classifier.features as ft
+  import diff_classifier.imagej as ij
+  import diff_classifier.heatmaps as hm
+
+  prefix = 'test_video'
+  frames = 651
+  local_im = prefix + '.tif' # Name of image file
+  outfile = 'Traj' + local_im.split('.')[0] + '.csv'
+  msd_file = 'msd_{}.csv'.format(prefix)
+  ft_file = 'features_{}.csv'.format(prefix)
+
+  ij.track(local_im, outfile, template=None, fiji_bin=None, radius=4.5, threshold=0.,
+            do_median_filtering=True, quality=4.5, x=511, y=y, ylo=1, median_intensity=300.0, snr=0.0,
+            linking_max_distance=8.0, gap_closing_max_distance=10.0, max_frame_gap=2,
+            track_displacement=10.0)
+
+  df = ut.csv_to_pd(outfile)
+  msds = msd.all_msds2(df, frames=frames)
+  features = ft.calculate_features(msds)
+
+  hm.plot_trajectories(prefix)
 
 Bugs and issues
 ---------------
