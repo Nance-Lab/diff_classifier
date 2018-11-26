@@ -67,7 +67,7 @@ def split(prefix, remote_folder, bucket='nancelab.publicfiles',
 
 def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
              regress_f='regress.obj', rows=4, cols=4, ires=(512, 512),
-             tparams={'radius': 3.0, 'threshold': 0.0,
+             tparams={'frames': 651, 'radius': 3.0, 'threshold': 0.0,
                       'do_median_filtering': False, 'quality': 15.0,
                       'xdims': (0, 511), 'ydims': (1, 511),
                       'median_intensity': 300.0, 'snr': 0.0,
