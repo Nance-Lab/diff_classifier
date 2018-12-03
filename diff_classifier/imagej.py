@@ -16,6 +16,8 @@ import subprocess
 import tempfile
 import random
 
+import fijibin
+
 import os.path as op
 import numpy as np
 import skimage.io as sio
@@ -151,7 +153,7 @@ def track(target, out_file, template=None, fiji_bin=None,
         Lower duration cutoff in frames for trajectory filtering.
 
     """
-    
+
     tdefault = {'frames': 651, 'radius': 3.0, 'threshold': 0.0,
                 'do_median_filtering': False, 'quality': 15.0, 'xdims': (0, 511),
                 'ydims': (1, 511), 'median_intensity': 300.0, 'snr': 0.0,
@@ -160,18 +162,19 @@ def track(target, out_file, template=None, fiji_bin=None,
     for key in tdefault:
         if key not in tparams.keys():
             tparams[key] = tdefault[key]
-    
+
     if template is None:
         template = op.join(op.split(dc.__file__)[0],
                            'data',
                            'trackmate_template3.py')
 
     if fiji_bin is None:
-        if sys.platform == "darwin":
-            fiji_bin = op.join(
-                '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
-        elif sys.platform.startswith("linux"):
-            fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
+        # if sys.platform == "darwin":
+        #     fiji_bin = op.join(
+        #         '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
+        # elif sys.platform.startswith("linux"):
+        #     fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
+        fiji_bin = fijibin.BIN.split('.exe')[0]
 
     script = ''.join(open(template).readlines())
     tpfile = tempfile.NamedTemporaryFile(suffix=".py")

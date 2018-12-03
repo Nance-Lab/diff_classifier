@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 import os
-#try:
+# try:
 #    import fijibin
-#except:
+# except:
 #    print('Import error. Install Fiji manually.')
 
 ver_file = os.path.join('diff_classifier', 'version.py')
@@ -31,3 +31,7 @@ opts = dict(name=NAME,
 
 if __name__ == '__main__':
     setup(**opts)
+    try:
+        import fijibin
+    except:
+        print('Import error. Install Fiji manually.')
