@@ -12,3 +12,4 @@ numpydoc
 ipywidgets
 seaborn
 Shapely
+fijibin
