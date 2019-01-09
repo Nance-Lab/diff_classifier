@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,25 +24,21 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/>
-        <link rel="next" title="Cloudknot parallelization" href="cloudknot_parallelization.html"/>
-        <link rel="prev" title="Calculating features" href="features_analysis.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Cloudknot parallelization" href="cloudknot_parallelization.html" />
+    <link rel="prev" title="Calculating features" href="features_analysis.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -77,13 +75,16 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started with diff_classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_data.html">Example data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tracking.html">Tracking particles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="features_analysis.html">Calculating features</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Uploading and download with s3</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Uploading and download with s3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cloudknot_parallelization.html">Cloudknot parallelization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ccurtis7/diff_classifier/tree/master/notebooks">examples</a></li>
@@ -100,34 +101,54 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Uploading and download with s3</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Uploading and download with s3</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/interacting_with_S3.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/interacting_with_S3.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -139,7 +160,7 @@
 download_s3 and upload_s3.  Users must select a bucket by changing the variable
 bucket_name.  Users must also have an AWS account and the correct permissions on
 their computer to download from or upload to the bucket of interest.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">download_s3</span><span class="p">(</span><span class="n">remote_fname</span><span class="p">,</span> <span class="n">local_fname</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="s2">&quot;nancelab.publicfiles&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">download_s3</span><span class="p">(</span><span class="n">remote_fname</span><span class="p">,</span> <span class="n">local_fname</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="s2">&quot;nancelab.publicfiles&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Example tif images for tracking analysis are available in a publicly
@@ -152,15 +173,16 @@ documentation
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cloudknot_parallelization.html" class="btn btn-neutral float-right" title="Cloudknot parallelization" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cloudknot_parallelization.html" class="btn btn-neutral float-right" title="Cloudknot parallelization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="features_analysis.html" class="btn btn-neutral" title="Calculating features" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="features_analysis.html" class="btn btn-neutral" title="Calculating features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -169,11 +191,11 @@ documentation
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -188,35 +210,34 @@ documentation
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

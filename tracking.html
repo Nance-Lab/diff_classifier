@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,25 +24,21 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/>
-        <link rel="next" title="Calculating features" href="features_analysis.html"/>
-        <link rel="prev" title="Example data" href="example_data.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calculating features" href="features_analysis.html" />
+    <link rel="prev" title="Example data" href="example_data.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -77,11 +75,14 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started with diff_classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_data.html">Example data</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Tracking particles</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tracking particles</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#selecting-trajectory-parameters">Selecting trajectory parameters</a></li>
 </ul>
 </li>
@@ -103,34 +104,54 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Tracking particles</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tracking particles</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/tracking.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/tracking.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -138,7 +159,7 @@
             
   <div class="section" id="tracking-particles">
 <span id="tracking-label"></span><h1>Tracking particles<a class="headerlink" href="#tracking-particles" title="Permalink to this headline">¶</a></h1>
-<p>The &#8220;track&#8221; function in diff_classifier operates by creating a temporary script
+<p>The “track” function in diff_classifier operates by creating a temporary script
 files in the TEMP directory and generating a command sent through the shell
 to ImageJ.  Tracking is implemented using the TrackMate ImageJ plugin. User
 inputs include tracking parameters and spot and track filter cutoffs.</p>
@@ -166,7 +187,7 @@ must have to be included in the final dataset.</li>
 </ul>
 <p>The algorithm is set to only implement the difference of Gaussians detection
 algorithm and the simple LAP tracker algorithm.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">track</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">track</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">5.</span><span class="p">,</span>
       <span class="n">do_median_filtering</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">511</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">511</span><span class="p">,</span> <span class="n">ylo</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
       <span class="n">median_intensity</span><span class="o">=</span><span class="mf">55000.0</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">linking_max_distance</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
       <span class="n">gap_closing_max_distance</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">max_frame_gap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
@@ -176,7 +197,7 @@ algorithm and the simple LAP tracker algorithm.</p>
 <div class="section" id="selecting-trajectory-parameters">
 <h2>Selecting trajectory parameters<a class="headerlink" href="#selecting-trajectory-parameters" title="Permalink to this headline">¶</a></h2>
 <p>One difficulty with particle tracking technology is that there is no easy way to
-determine the &#8220;correct&#8221; tracking parameters for different videos.  Even videos
+determine the “correct” tracking parameters for different videos.  Even videos
 collected in the same conditions using the same particles can have different
 optimal tracking parameters.  Parameters can also vary from user to user.  How
 does one select optimal parameters, especially where tracking large numbers of
@@ -194,7 +215,7 @@ imagej.regress_sys allows users to create a regression object that predicts
 quality parameters from an input training dataset. Users must manually track
 a small number of randomly selected videos from their entire video collection
 and use the quality values as inputs to regress_sys e.g.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>
 <span class="n">nvideos</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">all_videos</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nvideos</span><span class="p">):</span>
@@ -209,7 +230,7 @@ and use the quality values as inputs to regress_sys e.g.</p>
 selected videos contained in all_videos which the user must manually track.
 The quality values are loaded into the variable yfit to produce the regression
 object using scikit-learn:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">yfit</span> <span class="o">=</span> <span class="p">[</span><span class="mf">20.4</span><span class="p">,</span> <span class="mf">17.9</span><span class="p">,</span> <span class="mf">10.3</span><span class="p">,</span> <span class="mf">30.4</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">yfit</span> <span class="o">=</span> <span class="p">[</span><span class="mf">20.4</span><span class="p">,</span> <span class="mf">17.9</span><span class="p">,</span> <span class="mf">10.3</span><span class="p">,</span> <span class="mf">30.4</span><span class="p">]</span>
 <span class="n">regress</span> <span class="o">=</span> <span class="n">ij</span><span class="o">.</span><span class="n">regress_sys</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">all_videos</span><span class="p">,</span> <span class="n">yfit</span><span class="p">,</span> <span class="n">training_size</span><span class="p">,</span>
                          <span class="n">have_output</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
@@ -221,15 +242,16 @@ object using scikit-learn:</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="features_analysis.html" class="btn btn-neutral float-right" title="Calculating features" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="features_analysis.html" class="btn btn-neutral float-right" title="Calculating features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="example_data.html" class="btn btn-neutral" title="Example data" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="example_data.html" class="btn btn-neutral" title="Example data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -238,11 +260,11 @@ object using scikit-learn:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -257,35 +279,34 @@ object using scikit-learn:</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

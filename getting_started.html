@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,25 +24,21 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="index.html"/>
-        <link rel="next" title="Example data" href="example_data.html"/>
-        <link rel="prev" title="Welcome to diff_classifier" href="index.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example data" href="example_data.html" />
+    <link rel="prev" title="Welcome to diff_classifier" href="index.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -77,13 +75,16 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Getting started with diff_classifier</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started with diff_classifier</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#pip-install">Pip install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#git-clone">Git clone</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#checking-fiji-installation">Checking Fiji installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#note-python2-python3-compatability">Note: Python2/Python3 compatability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#note-python2-python3-compatibility">Note: Python2/Python3 compatibility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
@@ -107,34 +108,54 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Getting started with diff_classifier</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Getting started with diff_classifier</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-            <a href="_sources/getting_started.txt" rel="nofollow"> View page source</a>
+            
+            <a href="_sources/getting_started.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -150,11 +171,11 @@ diff_classifer will be uploaded to PyPi.</p>
 <div class="section" id="git-clone">
 <h2>Git clone<a class="headerlink" href="#git-clone" title="Permalink to this headline">¶</a></h2>
 <p>Users can clone a copy of diff_classifier with the command</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ccurtis7</span><span class="o">/</span><span class="n">diff_classifier</span><span class="o">.</span><span class="n">git</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ccurtis7</span><span class="o">/</span><span class="n">diff_classifier</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 <p>Running the setup file will install needed dependencies, including Fiji:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">python3</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span>
 </pre></div>
 </div>
 <p>You can install diff_classifier from the <a class="reference external" href="https://github.com/ccurtis7/diff_classifier">Github repository</a>.  This will install
@@ -164,25 +185,24 @@ Trackmate functionality.</p>
 </div>
 <div class="section" id="checking-fiji-installation">
 <h2>Checking Fiji installation<a class="headerlink" href="#checking-fiji-installation" title="Permalink to this headline">¶</a></h2>
-<p>The tracking portion of diff_classifier relies on the Fiji plugin <a class="reference external" href="https://imagej.net/TrackMate">Trackmate</a>. The setup file should install Fiji
-automatically with the Python plugin
-<a class="reference external" href="https://pypi.org/project/fijibin/">fijibin</a>. By default, this is usually
-installed in the directory</p>
-<div class="highlight-shell"><div class="highlight"><pre>/name/of/home/directory/.bin
+<p>The tracking portion of diff_classifier relies on the Fiji plugin <a class="reference external" href="https://imagej.net/TrackMate">Trackmate</a>. The setup.py file should do this automatically.</p>
+<p>Otherwise, users can install Fiji manually at <a class="reference external" href="https://fiji.sc/#download">here</a>.
+An example installation using the shell:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
+unzip fiji-linux64.zip
 </pre></div>
 </div>
-<p>If needed, you can install Fiji manually <a class="reference external" href="https://fiji.sc/#download">here</a>.</p>
+<p>When using the diff_classifier.imagej module, default behavior looks for Fiji at
+~/Fiji.app/ImageJ-linux64.exe for Linux users or
+/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx.exe for Apple users.
+Otherwise, users must manually specify the location using the fiji_bin variable.</p>
 </div>
-<div class="section" id="note-python2-python3-compatability">
-<h2>Note: Python2/Python3 compatability<a class="headerlink" href="#note-python2-python3-compatability" title="Permalink to this headline">¶</a></h2>
-<p>The current diff_classifier release behaves a little funky. Most of the code
-is optimized for Python 3 and isn&#8217;t guaranteed to work in Python 2. However, due
-to some undesirable behavior of the Cloudknot dependency in Python3, any jobs
-submitted to AWS with a cloudknot.knot object must be done using Python2. In
-essence, diff_classifier should be run locally using Python3, ec2 instances
-called upon in AWS Batch should use Python3, but Cloudknot submissions through
-an iPython notebook should be run using Python2. See example notebooks
-below for more guidance.</p>
+<div class="section" id="note-python2-python3-compatibility">
+<h2>Note: Python2/Python3 compatibility<a class="headerlink" href="#note-python2-python3-compatibility" title="Permalink to this headline">¶</a></h2>
+<p>Use Python 3 for almost everything. Unfortunately, Python 2 must be used for
+one task: launching Cloudknot jobs. This means that Python 2 must be run
+locally when launching Cloudknot jobs, which launches an AWS Batch. This AWS
+Batch should use Python 3.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
@@ -194,15 +214,16 @@ on Github.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example_data.html" class="btn btn-neutral float-right" title="Example data" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example_data.html" class="btn btn-neutral float-right" title="Example data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to diff_classifier" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Welcome to diff_classifier" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -211,11 +232,11 @@ on Github.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -230,35 +251,34 @@ on Github.</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
