@@ -7,8 +7,8 @@ import numpy as np
 import diff_classifier.aws as aws
 import diff_classifier.msd as msd
 
-folder = '10_04_18_COOH_PEG_serum'
-bucket = 'rhodese.data'
+folder = '09_26_18_tissue_study'
+bucket = 'hpontes.data'
 #experiment = 'test' #Used for naming purposes. Should exclude XY and well information
 
 #vids = 2
@@ -17,12 +17,14 @@ frames = 651
 fps = 100.02
 umppx = 0.07
 
-vids = 10
-covers = ['COOH', 'COOH_serum', 'PEG', 'PEG_serum']
+vids = 5
+covers = ['10K', '1K', '5K', 'COOH']
+slices = [4, 5, 6]
 for cover in covers:
-    for num in range(1, vids+1):
-        #to_track.append('100x_0_4_1_2_gel_{}_bulk_vid_{}'.format(vis, num))
-        to_track.append('{}_XY{}'.format(cover, '%02d' % num))
+    for slic in slices:
+        for num in range(1, vids+1):
+            #to_track.append('100x_0_4_1_2_gel_{}_bulk_vid_{}'.format(vis, num))
+            to_track.append('{}_tissue_S{}_XY{}'.format(cover, slic, num))
 
 geomean = {}
 gSEM = {}
