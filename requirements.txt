@@ -1,6 +1,6 @@
 coverage==4.5.1
 coveralls
-pytest
+pytest==4.1.0
 numpy
 scipy
 pandas
