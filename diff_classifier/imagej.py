@@ -101,11 +101,7 @@ def mean_intensity(local_im, frame=0):
 
 
 def track(target, out_file, template=None, fiji_bin=None,
-          tparams={'frames': 651, 'radius': 3.0, 'threshold': 0.0, 'do_median_filtering': False,
-           'quality': 15.0, 'xdims': (0, 511), 'ydims': (1, 511),
-           'median_intensity': 300.0, 'snr': 0.0, 'linking_max_distance': 6.0,
-           'gap_closing_max_distance': 10.0, 'max_frame_gap': 3,
-           'track_duration': 20.0}):
+          tparams=None):
     """Performs particle tracking on input video.
 
     Particle tracking is performed with the ImageJ plugin Trackmate. Outputs
@@ -155,13 +151,19 @@ def track(target, out_file, template=None, fiji_bin=None,
     """
 
     tdefault = {'frames': 651, 'radius': 3.0, 'threshold': 0.0,
-                'do_median_filtering': False, 'quality': 15.0, 'xdims': (0, 511),
-                'ydims': (1, 511), 'median_intensity': 300.0, 'snr': 0.0,
-                'linking_max_distance': 6.0, 'gap_closing_max_distance': 10.0,
+                'do_median_filtering': False, 'quality': 15.0,
+                'xdims': (0, 511), 'ydims': (1, 511),
+                'median_intensity': 300.0,
+                'snr': 0.0, 'linking_max_distance': 6.0,
+                'gap_closing_max_distance': 10.0,
                 'max_frame_gap': 3, 'track_duration': 20.0}
-    for key in tdefault:
-        if key not in tparams.keys():
-            tparams[key] = tdefault[key]
+
+    if tparams in None:
+        tparams = {}
+
+    for key, value in tdefault:
+        if key, value not in tparams:
+            tparams[key] = value
 
     if template is None:
         template = op.join(op.split(dc.__file__)[0],
@@ -179,12 +181,16 @@ def track(target, out_file, template=None, fiji_bin=None,
     script = ''.join(open(template).readlines())
     tpfile = tempfile.NamedTemporaryFile(suffix=".py")
     fid = open(tpfile.name, 'w')
-    fid.write(script.format(target_file=target, frames=str(tparams['frames']), radius=str(tparams['radius']),
+    fid.write(script.format(target_file=target, frames=str(tparams['frames']),
+                            radius=str(tparams['radius']),
                             threshold=str(tparams['threshold']),
                             do_median_filtering=str(tparams['do_median_filtering']),
                             quality=str(tparams['quality']),
-                            xd=str(tparams['xdims'][1]), yd=str(tparams['ydims'][1]), ylo=str(tparams['ydims'][0]),
-                            median_intensity=str(tparams['median_intensity']), snr=str(tparams['snr']),
+                            xd=str(tparams['xdims'][1]),
+                            yd=str(tparams['ydims'][1]),
+                            ylo=str(tparams['ydims'][0]),
+                            median_intensity=str(tparams['median_intensity']),
+                            snr=str(tparams['snr']),
                             linking_max_distance=str(tparams['linking_max_distance']),
                             gap_closing_max_distance=str(tparams['gap_closing_max_distance']),
                             max_frame_gap=str(tparams['max_frame_gap']),
