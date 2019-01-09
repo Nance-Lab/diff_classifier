@@ -158,10 +158,10 @@ def track(target, out_file, template=None, fiji_bin=None,
                 'gap_closing_max_distance': 10.0,
                 'max_frame_gap': 3, 'track_duration': 20.0}
 
-    if tparams in None:
+    if tparams is None:
         tparams = {}
 
-    for key, value in tdefault:
+    for key, value in tdefault.items():
         if key not in tparams:
             tparams[key] = value
 
@@ -171,12 +171,12 @@ def track(target, out_file, template=None, fiji_bin=None,
                            'trackmate_template3.py')
 
     if fiji_bin is None:
-        # if sys.platform == "darwin":
-        #     fiji_bin = op.join(
-        #         '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
-        # elif sys.platform.startswith("linux"):
-        #     fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
-        fiji_bin = fijibin.BIN.split('.exe')[0]
+        if sys.platform == "darwin":
+            fiji_bin = op.join(
+                '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
+        elif sys.platform.startswith("linux"):
+            fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
+        # fiji_bin = fijibin.BIN.split('.exe')[0]
 
     script = ''.join(open(template).readlines())
     tpfile = tempfile.NamedTemporaryFile(suffix=".py")
@@ -196,11 +196,13 @@ def track(target, out_file, template=None, fiji_bin=None,
                             max_frame_gap=str(tparams['max_frame_gap']),
                             track_duration=str(tparams['track_duration'])))
     fid.close()
+    
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tpfile.name)
     print(cmd)
     subp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     fid = open(out_file, 'w')
     fid.write(subp.stdout.decode())
+    #print(subp.stdout.decode())
     fid.close()
 
 
