@@ -162,7 +162,7 @@ def track(target, out_file, template=None, fiji_bin=None,
         tparams = {}
 
     for key, value in tdefault:
-        if key, value not in tparams:
+        if key not in tparams:
             tparams[key] = value
 
     if template is None:
