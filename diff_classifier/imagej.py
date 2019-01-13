@@ -11,6 +11,7 @@ References
 
 """
 
+import os
 import sys
 import subprocess
 import tempfile
@@ -27,6 +28,26 @@ import diff_classifier.aws as aws
 
 from sklearn import linear_model
 from sklearn import svm
+
+
+def _get_fiji():
+    # Has the user specified Fiji for us?
+    if "FIJI_BIN" in os.environ:
+        return os.environ["FIJI_BIN"]
+    # See if it exists
+    home = os.path.expanduser("~")
+    paths = [
+        os.path.join('/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx'),
+        os.path.join(home, 'Fiji.app/ImageJ-linux64')
+    ]
+    paths = [p for p in paths is os.path.exists(p)]
+    if paths:
+        return paths[0]
+
+    # Download it if not
+    subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip', cwd=home)
+    subprocess.call('unzip fiji-linux64.zip', cwd=home)
+    return _get_fiji()
 
 
 def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
@@ -170,13 +191,7 @@ def track(target, out_file, template=None, fiji_bin=None,
                            'data',
                            'trackmate_template3.py')
 
-    if fiji_bin is None:
-        if sys.platform == "darwin":
-            fiji_bin = op.join(
-                '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
-        elif sys.platform.startswith("linux"):
-            fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
-        # fiji_bin = fijibin.BIN.split('.exe')[0]
+    fiji_bin = _get_fiji()
 
     script = ''.join(open(template).readlines())
     tpfile = tempfile.NamedTemporaryFile(suffix=".py")
