@@ -16,8 +16,7 @@ import sys
 import subprocess
 import tempfile
 import random
-
-import fijibin
+from itertools import compress
 
 import os.path as op
 import numpy as np
@@ -31,23 +30,47 @@ from sklearn import svm
 
 
 def _get_fiji():
-    # Has the user specified Fiji for us?
-    if "FIJI_BIN" in os.environ:
-        return os.environ["FIJI_BIN"]
-    # See if it exists
+    """Checks if Fiji is downloaded.
+    
+    Checks if an existing version of Fiji is downloaded and whether
+    it is identified as the system variable "FIJI_BIN." Only compatible
+    with Linux and Mac systems.
+    
+    """
     home = os.path.expanduser("~")
     paths = [
         os.path.join('/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx'),
         os.path.join(home, 'Fiji.app/ImageJ-linux64')
     ]
-    paths = [p for p in paths is os.path.exists(p)]
-    if paths:
-        return paths[0]
+    exists = [os.path.exists(p) for p in paths]
+    paths = list(compress(paths, exists))
 
-    # Download it if not
-    subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip', cwd=home)
-    subprocess.call('unzip fiji-linux64.zip', cwd=home)
-    return _get_fiji()
+    if sys.platform is not 'darwin' and not sys.platform.startswith('linux'):
+        #print('System is not Linux or Mac')
+        raise ValueError('System is not Linux or Mac')
+    # Has the user specified Fiji for us?
+    elif "FIJI_BIN" in os.environ:
+        print("FIJI_BIN defined.")
+        return os.environ["FIJI_BIN"]
+        
+    # See if it exists
+    elif paths[0]:
+        print("Fiji installed, but no shortcut")
+        os.environ['FIJI_BIN'] = paths[0]
+        return paths[0]
+        
+    else:
+        # Download it if not
+        if sys.platform == 'darwin':
+            subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-macosx.zip', cwd=home)
+            subprocess.call('unzip fiji-macosx.zip', cwd=home)
+            
+        elif sys.platform.startswith('linux'):
+            subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip', cwd=home)
+            subprocess.call('unzip fiji-linux64.zip', cwd=home)
+        print("Downloaded Fiji")
+        return _get_fiji()
+        
 
 
 def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
