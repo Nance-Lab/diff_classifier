@@ -11,12 +11,12 @@ References
 
 """
 
+import os
 import sys
 import subprocess
 import tempfile
 import random
-
-import fijibin
+from itertools import compress
 
 import os.path as op
 import numpy as np
@@ -27,6 +27,50 @@ import diff_classifier.aws as aws
 
 from sklearn import linear_model
 from sklearn import svm
+
+
+def _get_fiji():
+    """Checks if Fiji is downloaded.
+    
+    Checks if an existing version of Fiji is downloaded and whether
+    it is identified as the system variable "FIJI_BIN." Only compatible
+    with Linux and Mac systems.
+    
+    """
+    home = os.path.expanduser("~")
+    paths = [
+        os.path.join('/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx'),
+        os.path.join(home, 'Fiji.app/ImageJ-linux64')
+    ]
+    exists = [os.path.exists(p) for p in paths]
+    paths = list(compress(paths, exists))
+
+    if sys.platform is not 'darwin' and not sys.platform.startswith('linux'):
+        #print('System is not Linux or Mac')
+        raise ValueError('System is not Linux or Mac')
+    # Has the user specified Fiji for us?
+    elif "FIJI_BIN" in os.environ:
+        print("FIJI_BIN defined.")
+        return os.environ["FIJI_BIN"]
+        
+    # See if it exists
+    elif paths[0]:
+        print("Fiji installed, but no shortcut")
+        os.environ['FIJI_BIN'] = paths[0]
+        return paths[0]
+        
+    else:
+        # Download it if not
+        if sys.platform == 'darwin':
+            subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-macosx.zip', cwd=home)
+            subprocess.call('unzip fiji-macosx.zip', cwd=home)
+            
+        elif sys.platform.startswith('linux'):
+            subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip', cwd=home)
+            subprocess.call('unzip fiji-linux64.zip', cwd=home)
+        print("Downloaded Fiji")
+        return _get_fiji()
+        
 
 
 def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
@@ -170,13 +214,7 @@ def track(target, out_file, template=None, fiji_bin=None,
                            'data',
                            'trackmate_template3.py')
 
-    if fiji_bin is None:
-        if sys.platform == "darwin":
-            fiji_bin = op.join(
-                '/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx')
-        elif sys.platform.startswith("linux"):
-            fiji_bin = op.join(op.expanduser('~'), 'Fiji.app/ImageJ-linux64')
-        # fiji_bin = fijibin.BIN.split('.exe')[0]
+    fiji_bin = _get_fiji()
 
     script = ''.join(open(template).readlines())
     tpfile = tempfile.NamedTemporaryFile(suffix=".py")
