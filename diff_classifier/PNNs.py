@@ -120,13 +120,13 @@ def PNN_binning(raw_img, input_df, num_bins=7, threshold='Otsu', min_obj_size=30
         elif raw_df['Bin'][i] == 3:
             summary_array[int(counts2[2]), int(raw_df['Bin'][i]) - 1] = raw_df[feat][i]
             counts2[2] = counts2[2] + 1
-        elif feat_df['Bin'][i] == 4:
+        elif raw_df['Bin'][i] == 4:
             summary_array[int(counts2[3]), int(raw_df['Bin'][i]) - 1] = raw_df[feat][i]
             counts2[3] = counts2[3] + 1
-        elif feat_df['Bin'][i] == 5:
+        elif raw_df['Bin'][i] == 5:
             summary_array[int(counts2[4]), int(raw_df['Bin'][i]) - 1] = raw_df[feat][i]
             counts2[4] = counts2[4] + 1
-        elif feat_df['Bin'][i] == 6:
+        elif raw_df['Bin'][i] == 6:
             summary_array[int(counts2[5]), int(raw_df['Bin'][i]) - 1] = raw_df[feat][i]
             counts2[5] = counts2[5] + 1
         else:
