@@ -23,8 +23,8 @@ def PNN_binning(raw_img, input_df, num_bins=7, threshold='Otsu', min_obj_size=30
     # First, you have to scale the PNN confocal image so it aligns with the size of the MPT video
     # (usually, it must be scaled from a 512x512 image to a 2048x2048 image)
     img_scaled = resize(raw_img[0,:,:],(2048,2048))
-    scaled_plot = plt.imshow(img_scaled, cmap='gray')
-    plt.show()
+    #scaled_plot = plt.imshow(img_scaled, cmap='gray')
+    #plt.show()
     
     # this thresholds the scaled image using the user-input threshold type, converting the image to a binary
     
@@ -49,17 +49,17 @@ def PNN_binning(raw_img, input_df, num_bins=7, threshold='Otsu', min_obj_size=30
     # objects smaller than the user-defined minimum object size
     
     pnnbinary_filled = ndi.binary_fill_holes(pnnbinary)
-    binary_filledplot = plt.imshow(pnnbinary_filled, cmap='gray')
-    plt.show()
+    #binary_filledplot = plt.imshow(pnnbinary_filled, cmap='gray')
+    #plt.show()
     pnn_clean = morphology.remove_small_objects(pnnbinary_filled, min_size=min_obj_size)
-    pnn_clean_plot = plt.imshow(pnn_clean, cmap='gray')
-    plt.show()
+    #pnn_clean_plot = plt.imshow(pnn_clean, cmap='gray')
+    #plt.show()
     
     # Now, the Euclidean distance (to the nearest PNN) is caluclated at each pixel location in the 2048x2048 image
     
     euc_img = Euclidean(1-pnn_clean) #1- represents going outwards from the cells
-    plt.imshow(euc_img)
-    plt.show
+    #plt.imshow(euc_img)
+    #plt.show
     
     # With the Euclidean distance matrix generated, we now switch over to dataframe modification
     
