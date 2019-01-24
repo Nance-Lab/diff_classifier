@@ -16,6 +16,7 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 import diff_classifier.aws as aws
+from scipy.ndimage.morphology import distance_transform_edt as eudist
 
 
 def nth_diff(dataframe, n=1, axis=0):
@@ -717,7 +718,7 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
     """
 
     n = len(experiments)
-    
+
     if labels==None:
         labels = experiments
 
@@ -750,23 +751,23 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
 
         if exponential:
             ax.plot(xpos, np.exp(geo[counter]), c=c, linewidth=6,
-                       label=labels[counter])
+                    label=labels[counter])
             ax.fill_between(xpos, np.exp(geo[counter] - 1.96*gstder[counter]),
                             np.exp(geo[counter] + 1.96*gstder[counter]),
                             color=c, alpha=0.4)
 
         else:
             ax.plot(xpos, geo[counter], c=c, linewidth=6,
-                       label=labels[counter])
-            ax.fill_between(xpos, geo[counter] - 1.96*gstder[counter], 
-                       geo[counter] + 1.96*gstder[counter], color=c,
-                       alpha=0.4)
+                    label=labels[counter])
+            ax.fill_between(xpos, geo[counter] - 1.96*gstder[counter],
+                            geo[counter] + 1.96*gstder[counter], color=c,
+                            alpha=0.4)
 
         counter = counter + 1
-    
+
     if log:
-        ax.set_xscale( "log" )
-        ax.set_yscale( "log" )
+        ax.set_xscale("log")
+        ax.set_yscale("log")
 
     plt.legend(frameon=False, loc=2, prop={'size': 16})
 
@@ -775,7 +776,62 @@ def plot_all_experiments(experiments, bucket='ccurtis.data', folder='test',
         aws.upload_s3(outfile, folder+'/'+outfile, bucket_name=bucket)
 
 
-def random_walk(nsteps=100, seed=1, start=(0, 0)):
+def checkerboard_mask(dims=(512, 512), squares=50, width=25):
+    """Creates a 2D Boolean checkerboard mask
+
+    Creates a Boolean array of evenly spaced squares.
+    Whitespace is set to True.
+
+    Parameters
+    ----------
+
+    dims : tuple of int
+        Dimensions of desired Boolean array
+    squares : int
+        Dimensions of in individual square in array
+    width : int
+        Dimension of spacing between squares
+
+    Returns
+    ----------
+
+    zeros : numpy.ndarray of bool
+        2D Boolean array of evenly spaced squares
+
+    """
+    zeros = np.zeros(dims) == 0
+    square_d = squares
+
+    loy = width
+    hiy = loy + square_d
+
+    for j in range(50):
+
+        lox = width
+        hix = lox + square_d
+        for i in range(50):
+
+            if hix < 512 and hiy < 512:
+                zeros[loy:hiy, lox:hix] = False
+            elif hix < 512:
+                zeros[loy:512-1, lox:hix] = False
+            elif hiy < 512:
+                zeros[loy:hiy, lox:512-1] = False
+            else:
+                zeros[loy:512-1, lox:512-1] = False
+                break
+
+            lox = hix + width
+            hix = lox + square_d
+
+        loy = hiy + width
+        hiy = loy + square_d
+
+    return zeros
+
+
+def random_walk(nsteps=100, seed=None, start=(0, 0), step=1, mask=None,
+                stuckprob=0.5):
     """Creates 2d random walk trajectory.
 
     Parameters
@@ -786,6 +842,12 @@ def random_walk(nsteps=100, seed=1, start=(0, 0)):
         Seed for pseudo-random number generator for reproducability.
     start : tuple of int or float
         Starting xy coordinates at which the random walk begins.
+    step : int or float
+        Magnitude of single step
+    mask : numpy.ndarray of bool
+        Mask of barriers contraining diffusion
+    stuckprop : float
+        Probability of "particle" adhering to barrier when it makes contact
 
     Returns
     -------
@@ -796,29 +858,129 @@ def random_walk(nsteps=100, seed=1, start=(0, 0)):
 
     """
 
-    rand.seed(a=seed)
+    if type(mask) is np.ndarray:
+        while not mask[start[0], start[1]]:
+            start = (start[0], start[1]+1)
+
+    np.random.seed(seed=seed)
 
     x = np.zeros(nsteps)
     y = np.zeros(nsteps)
     x[0] = start[0]
     y[0] = start[1]
+    eumask = eudist(~mask)
 
-    for i in range(1, nsteps):
-        val = rand.randint(1, 4)
-        if val == 1:
-            x[i] = x[i - 1] + 1
-            y[i] = y[i - 1]
-        elif val == 2:
-            x[i] = x[i - 1] - 1
-            y[i] = y[i - 1]
-        elif val == 3:
-            x[i] = x[i - 1]
-            y[i] = y[i - 1] + 1
-        else:
-            x[i] = x[i - 1]
-            y[i] = y[i - 1] - 1
+    # Checks to see if a mask is being used first
+    if not type(mask) is np.ndarray:
+        for i in range(1, nsteps):
+            val = rand.randint(1, 4)
+            if val == 1:
+                x[i] = x[i - 1] + step
+                y[i] = y[i - 1]
+            elif val == 2:
+                x[i] = x[i - 1] - step
+                y[i] = y[i - 1]
+            elif val == 3:
+                x[i] = x[i - 1]
+                y[i] = y[i - 1] + step
+            else:
+                x[i] = x[i - 1]
+                y[i] = y[i - 1] - step
+    else:
+        # print("Applied mask")
+        for i in range(1, nsteps):
+            val = rand.randint(1, 4)
+            # If mask is being used, checks if entry is in mask or not
+            if mask[int(x[i-1]), int(y[i-1])]:
+                if val == 1:
+                    x[i] = x[i - 1] + step
+                    y[i] = y[i - 1]
+                elif val == 2:
+                    x[i] = x[i - 1] - step
+                    y[i] = y[i - 1]
+                elif val == 3:
+                    x[i] = x[i - 1]
+                    y[i] = y[i - 1] + step
+                else:
+                    x[i] = x[i - 1]
+                    y[i] = y[i - 1] - step
+            # If it does cross into a False area, probability to be stuck
+            elif np.random.rand() > stuckprob:
+                x[i] = x[i - 1]
+                y[i] = y[i - 1]
+
+                while eumask[int(x[i]), int(y[i])] > 0:
+                    vals = np.zeros(4)
+                    vals[0] = eumask[int(x[i] + step), int(y[i])]
+                    vals[1] = eumask[int(x[i] - step), int(y[i])]
+                    vals[2] = eumask[int(x[i]), int(y[i] + step)]
+                    vals[3] = eumask[int(x[i]), int(y[i] - step)]
+                    vali = np.argmin(vals)
+
+                    if vali == 0:
+                        x[i] = x[i] + step
+                        y[i] = y[i]
+                    elif vali == 1:
+                        x[i] = x[i] - step
+                        y[i] = y[i]
+                    elif vali == 2:
+                        x[i] = x[i]
+                        y[i] = y[i] + step
+                    else:
+                        x[i] = x[i]
+                        y[i] = y[i] - step
+            # Otherwise, particle is stuck on "cell"
+            else:
+                x[i] = x[i - 1]
+                y[i] = y[i - 1]
 
     return x, y
+
+
+# def random_walk(nsteps=100, seed=1, start=(0, 0)):
+#     """Creates 2d random walk trajectory.
+#
+#     Parameters
+#     ----------
+#     nsteps : int
+#         Number of steps for trajectory to move.
+#     seed : int
+#         Seed for pseudo-random number generator for reproducability.
+#     start : tuple of int or float
+#         Starting xy coordinates at which the random walk begins.
+#
+#     Returns
+#     -------
+#     x : numpy.ndarray
+#         Array of x coordinates of random walk.
+#     y : numpy.ndarray
+#         Array of y coordinates of random walk.
+#
+#     """
+#
+#     rand.seed(a=seed)
+#
+#     x = np.zeros(nsteps)
+#     y = np.zeros(nsteps)
+#     x[0] = start[0]
+#     y[0] = start[1]
+#
+#     for i in range(1, nsteps):
+#         val = rand.randint(1, 4)
+#         if val == 1:
+#             x[i] = x[i - 1] + 1
+#             y[i] = y[i - 1]
+#         elif val == 2:
+#             x[i] = x[i - 1] - 1
+#             y[i] = y[i - 1]
+#         elif val == 3:
+#             x[i] = x[i - 1]
+#             y[i] = y[i - 1] + 1
+#         else:
+#             x[i] = x[i - 1]
+#             y[i] = y[i - 1] - 1
+#
+#     return x, y
 
 
 def random_traj_dataset(nframes=100, nparts=30, seed=1, fsize=(0, 512),
