@@ -31,11 +31,11 @@ from sklearn import svm
 
 def _get_fiji():
     """Checks if Fiji is downloaded.
-    
+
     Checks if an existing version of Fiji is downloaded and whether
     it is identified as the system variable "FIJI_BIN." Only compatible
     with Linux and Mac systems.
-    
+
     """
     home = os.path.expanduser("~")
     paths = [
@@ -43,34 +43,36 @@ def _get_fiji():
         os.path.join(home, 'Fiji.app/ImageJ-linux64')
     ]
     exists = [os.path.exists(p) for p in paths]
-    paths = list(compress(paths, exists))
+    # paths = list(compress(paths, exists))
 
     if sys.platform is not 'darwin' and not sys.platform.startswith('linux'):
-        #print('System is not Linux or Mac')
+        # print('System is not Linux or Mac')
         raise ValueError('System is not Linux or Mac')
     # Has the user specified Fiji for us?
     elif "FIJI_BIN" in os.environ:
         print("FIJI_BIN defined.")
         return os.environ["FIJI_BIN"]
-        
+
     # See if it exists
-    elif paths[0]:
-        print("Fiji installed, but no shortcut")
-        os.environ['FIJI_BIN'] = paths[0]
-        return paths[0]
-        
+    elif any(exists):
+        counter = 0
+        for exist in exists:
+            if exist:
+                path = paths[counter]
+            counter += 1
+
     else:
         # Download it if not
         if sys.platform == 'darwin':
             subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-macosx.zip', cwd=home)
             subprocess.call('unzip fiji-macosx.zip', cwd=home)
-            
+
         elif sys.platform.startswith('linux'):
             subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip', cwd=home)
             subprocess.call('unzip fiji-linux64.zip', cwd=home)
         print("Downloaded Fiji")
         return _get_fiji()
-        
+
 
 
 def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
@@ -234,7 +236,7 @@ def track(target, out_file, template=None, fiji_bin=None,
                             max_frame_gap=str(tparams['max_frame_gap']),
                             track_duration=str(tparams['track_duration'])))
     fid.close()
-    
+
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tpfile.name)
     print(cmd)
     subp = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
