@@ -64,12 +64,12 @@ def _get_fiji():
     else:
         # Download it if not
         if sys.platform == 'darwin':
-            subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-macosx.zip', cwd=home)
-            subprocess.call('unzip fiji-macosx.zip', cwd=home)
+            subprocess.run(['wget', 'https://downloads.imagej.net/fiji/latest/fiji-macosx.zip'], cwd=home)
+            subprocess.run(['unzip', 'fiji-macosx.zip'], cwd=home)
 
         elif sys.platform.startswith('linux'):
-            subprocess.call('wget https://downloads.imagej.net/fiji/latest/fiji-linux64.zip', cwd=home)
-            subprocess.call('unzip fiji-linux64.zip', cwd=home)
+            subprocess.run(['wget', 'https://downloads.imagej.net/fiji/latest/fiji-linux64.zip'], cwd=home)
+            subprocess.run(['unzip', 'fiji-linux64.zip'], cwd=home)
         print("Downloaded Fiji")
         return _get_fiji()
 
