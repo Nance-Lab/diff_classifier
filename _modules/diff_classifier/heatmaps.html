@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,24 +24,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -76,7 +73,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
@@ -99,56 +99,74 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>diff_classifier.heatmaps</li>
+        
+      <li>diff_classifier.heatmaps</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.heatmaps</h1><div class="highlight"><pre>
-<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="kn">as</span> <span class="nn">mpl</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">Voronoi</span>
-<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="k">import</span> <span class="n">Voronoi</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry.polygon</span> <span class="kn">import</span> <span class="n">Polygon</span>
-<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
-<span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="kn">as</span> <span class="nn">cm</span>
-<span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="kn">as</span> <span class="nn">aws</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry.polygon</span> <span class="k">import</span> <span class="n">Polygon</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+<span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="k">as</span> <span class="nn">aws</span>
 
 
-<div class="viewcode-block" id="voronoi_finite_polygons_2d"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.voronoi_finite_polygons_2d">[docs]</a><span class="k">def</span> <span class="nf">voronoi_finite_polygons_2d</span><span class="p">(</span><span class="n">vor</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="voronoi_finite_polygons_2d"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.voronoi_finite_polygons_2d">[docs]</a><span class="k">def</span> <span class="nf">voronoi_finite_polygons_2d</span><span class="p">(</span><span class="n">vor</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reconstruct infinite voronoi regions in a 2D diagram to finite</span>
 <span class="sd">    regions.</span>
@@ -178,7 +196,7 @@
     <span class="n">new_vertices</span> <span class="o">=</span> <span class="n">vor</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
     <span class="n">center</span> <span class="o">=</span> <span class="n">vor</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">radius</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">radius</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">radius</span> <span class="o">=</span> <span class="n">vor</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">ptp</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
 
     <span class="c1"># Construct a map containing all ridges for a given point</span>
@@ -233,11 +251,11 @@
             <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="c1"># print(&#39;Oops {}&#39;.format(counter))</span>
 
-    <span class="k">return</span> <span class="n">new_regions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">new_vertices</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_regions</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">new_vertices</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="plot_heatmap"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_heatmap">[docs]</a><span class="k">def</span> <span class="nf">plot_heatmap</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="s1">&#39;asymmetry1&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                 <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span>
+                 <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span>
                  <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot heatmap of trajectories in video with colors corresponding to features.</span>
@@ -271,7 +289,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Inputs</span>
     <span class="c1"># ----------</span>
-    <span class="n">merged_ft</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;features_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">merged_ft</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;features_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
     <span class="n">string</span> <span class="o">=</span> <span class="n">feature</span>
     <span class="n">leveler</span> <span class="o">=</span> <span class="n">merged_ft</span><span class="p">[</span><span class="n">string</span><span class="p">]</span>
     <span class="n">t_min</span> <span class="o">=</span> <span class="n">vmin</span>
@@ -298,7 +316,7 @@
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
     <span class="n">regions</span><span class="p">,</span> <span class="n">vertices</span> <span class="o">=</span> <span class="n">voronoi_finite_polygons_2d</span><span class="p">(</span><span class="n">vor</span><span class="p">)</span>
     <span class="n">my_map</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
-    <span class="n">norm</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">mapper</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">)</span>
 
     <span class="n">test</span> <span class="o">=</span> <span class="mi">0</span>
@@ -318,7 +336,7 @@
                 <span class="n">p2</span> <span class="o">=</span> <span class="n">p2</span>
                 <span class="n">test</span> <span class="o">=</span> <span class="n">test</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Index mismatch possible.&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Index mismatch possible.&#39;</span><span class="p">)</span>
 
     <span class="n">mapper</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">mapper</span><span class="p">)</span>
@@ -326,15 +344,15 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ires</span><span class="o">*</span><span class="n">rows</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Plotted {} heatmap successfully.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
-    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;hm_{}_{}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Plotted </span><span class="si">{}</span><span class="s1"> heatmap successfully.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;hm_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="plot_scatterplot"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_scatterplot">[docs]</a><span class="k">def</span> <span class="nf">plot_scatterplot</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="s1">&#39;asymmetry1&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                     <span class="n">dotsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span>
+                     <span class="n">dotsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span>
                      <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot scatterplot of trajectories in video with colors corresponding to features.</span>
@@ -361,14 +379,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Inputs</span>
     <span class="c1"># ----------</span>
-    <span class="n">merged_ft</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;features_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">merged_ft</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;features_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
     <span class="n">string</span> <span class="o">=</span> <span class="n">feature</span>
     <span class="n">leveler</span> <span class="o">=</span> <span class="n">merged_ft</span><span class="p">[</span><span class="n">string</span><span class="p">]</span>
     <span class="n">t_min</span> <span class="o">=</span> <span class="n">vmin</span>
     <span class="n">t_max</span> <span class="o">=</span> <span class="n">vmax</span>
     <span class="n">ires</span> <span class="o">=</span> <span class="n">resolution</span>
 
-    <span class="n">norm</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">mapper</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">)</span>
 
     <span class="n">zs</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">merged_ft</span><span class="p">[</span><span class="n">string</span><span class="p">])</span>
@@ -387,14 +405,14 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ires</span><span class="o">*</span><span class="n">rows</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Plotted {} scatterplot successfully.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
-    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;scatter_{}_{}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Plotted </span><span class="si">{}</span><span class="s1"> scatterplot successfully.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;scatter_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span></div>
 
-</div>
-<div class="viewcode-block" id="plot_trajectories"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_trajectories">[docs]</a><span class="k">def</span> <span class="nf">plot_trajectories</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> 
+
+<div class="viewcode-block" id="plot_trajectories"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_trajectories">[docs]</a><span class="k">def</span> <span class="nf">plot_trajectories</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
                       <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">,</span>
                       <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -414,7 +432,7 @@
 <span class="sd">        True if you want to upload to s3.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
     <span class="n">particles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">merged</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]))</span>
     <span class="n">ires</span> <span class="o">=</span> <span class="n">resolution</span>
 
@@ -428,16 +446,16 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ires</span><span class="o">*</span><span class="n">rows</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Plotted {} trajectories successfully.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
-    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;traj_{}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Plotted </span><span class="si">{}</span><span class="s1"> trajectories successfully.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;traj_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="plot_histogram"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_histogram">[docs]</a><span class="k">def</span> <span class="nf">plot_histogram</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Log Diffusion Coefficient Dist&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Trajectory Count&#39;</span><span class="p">,</span>
                    <span class="n">fps</span><span class="o">=</span><span class="mf">100.02</span><span class="p">,</span> <span class="n">umppx</span><span class="o">=</span><span class="mf">0.16</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">651</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">frame_interval</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">frame_range</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                   <span class="n">analysis</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span>
+                   <span class="n">analysis</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span>
                    <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot heatmap of trajectories in video with colors corresponding to features.</span>
@@ -468,7 +486,7 @@
 <span class="sd">        True if you want to upload to s3.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">merged</span>
     <span class="n">frame_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">frame_interval</span><span class="p">,</span> <span class="n">frame_range</span><span class="o">+</span><span class="n">frame_interval</span><span class="p">,</span> <span class="n">frame_interval</span><span class="p">)</span>
 
@@ -482,8 +500,8 @@
         <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">frame_interval</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;ms&#39;</span><span class="p">)</span>
 
-    <span class="n">set_x_limit</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="n">set_y_limit</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">set_x_limit</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">set_y_limit</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
@@ -525,14 +543,14 @@
         <span class="k">if</span> <span class="n">set_x_limit</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">x_range</span><span class="p">])</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;hist_{}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;hist_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">upload</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">upload</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span></div>
 
-</div>
-<div class="viewcode-block" id="plot_particles_in_frame"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_particles_in_frame">[docs]</a><span class="k">def</span> <span class="nf">plot_particles_in_frame</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">x_range</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+
+<div class="viewcode-block" id="plot_particles_in_frame"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_particles_in_frame">[docs]</a><span class="k">def</span> <span class="nf">plot_particles_in_frame</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">x_range</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                             <span class="n">remote_folder</span> <span class="o">=</span> <span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot number of particles per frame as a function of time.</span>
@@ -549,7 +567,7 @@
 <span class="sd">        True if you want to upload to s3.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
     <span class="n">frames</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">merged</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]))</span>
     <span class="n">framespace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">frames</span><span class="p">)</span>
     <span class="n">particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">framespace</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
@@ -563,13 +581,13 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frames&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Particles&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 
-    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;in_frame_{}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;in_frame_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">upload</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span></div>
 
-</div>
-<div class="viewcode-block" id="plot_individual_msds"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_individual_msds">[docs]</a><span class="k">def</span> <span class="nf">plot_individual_msds</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">x_range</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">umppx</span><span class="o">=</span><span class="mf">0.16</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mf">100.02</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+
+<div class="viewcode-block" id="plot_individual_msds"><a class="viewcode-back" href="../../api/heatmaps.html#diff_classifier.heatmaps.plot_individual_msds">[docs]</a><span class="k">def</span> <span class="nf">plot_individual_msds</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">x_range</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">umppx</span><span class="o">=</span><span class="mf">0.16</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mf">100.02</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                          <span class="n">remote_folder</span><span class="o">=</span><span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plot MSDs of trajectories and the geometric average.</span>
@@ -600,7 +618,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;{}/msd_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">))</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/msd_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">))</span>
 
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
     <span class="n">particles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">merged</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]))</span>
@@ -619,15 +637,15 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x_range</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_range</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Tau (s)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">r&#39;Mean Squared Displacement ($\mu$m$^2$)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Mean Squared Displacement ($\mu$m$^2$)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
 
-    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;{}/msds_{}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
-    <span class="n">outfile2</span> <span class="o">=</span> <span class="s1">&#39;{}/geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
-    <span class="n">outfile3</span> <span class="o">=</span> <span class="s1">&#39;{}/geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/msds_</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+    <span class="n">outfile2</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+    <span class="n">outfile3</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">outfile2</span><span class="p">,</span> <span class="n">geo_mean</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">outfile3</span><span class="p">,</span> <span class="n">geo_SEM</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">upload</span><span class="o">==</span><span class="bp">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">upload</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
         <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
         <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile2</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile2</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
         <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile3</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile3</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
@@ -635,6 +653,7 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -643,11 +662,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -662,35 +681,34 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

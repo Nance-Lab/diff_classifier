@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,24 +24,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -76,7 +73,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
@@ -99,41 +99,59 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>diff_classifier.msd</li>
+        
+      <li>diff_classifier.msd</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.msd</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot;Functions to calculate mean squared displacements from trajectory data</span>
+<span></span><span class="sd">&quot;&quot;&quot;Functions to calculate mean squared displacements from trajectory data</span>
 
 <span class="sd">This module includes functions to calculate mean squared displacements and</span>
 <span class="sd">additional measures from input trajectory datasets as calculated by the</span>
@@ -141,16 +159,16 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">random</span> <span class="kn">as</span> <span class="nn">rand</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rand</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
-<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">cm</span>
-<span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="kn">as</span> <span class="nn">aws</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">interpolate</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="k">import</span> <span class="n">cm</span>
+<span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="k">as</span> <span class="nn">aws</span>
 
 
 <div class="viewcode-block" id="nth_diff"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.nth_diff">[docs]</a><span class="k">def</span> <span class="nf">nth_diff</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -199,8 +217,8 @@
     <span class="k">if</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">length</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">length</span><span class="p">:</span>
-            <span class="n">test1</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[:</span><span class="o">-</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-            <span class="n">test2</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">test1</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[:</span><span class="o">-</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">test2</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="n">test2</span> <span class="o">-</span> <span class="n">test1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
@@ -217,9 +235,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="n">diff</span>
+    <span class="k">return</span> <span class="n">diff</span></div>
 
-</div>
+
 <div class="viewcode-block" id="msd_calc"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.msd_calc">[docs]</a><span class="k">def</span> <span class="nf">msd_calc</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates mean squared displacement of input track.</span>
 
@@ -260,9 +278,9 @@
     <span class="n">new_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
     <span class="n">old_frame</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span>
     <span class="n">oldxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]]</span>
-    <span class="n">fxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">fxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)]</span>
 
     <span class="n">intxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_equal</span><span class="p">(</span><span class="n">fxy</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">new_frame</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
@@ -285,9 +303,9 @@
     <span class="n">new_track</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">meansd</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">new_track</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">new_track</span><span class="p">[</span><span class="s1">&#39;Gauss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gauss</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">new_track</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">new_track</span>
+    <span class="k">return</span> <span class="n">new_track</span></div>
 
-</div>
+
 <div class="viewcode-block" id="all_msds"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.all_msds">[docs]</a><span class="k">def</span> <span class="nf">all_msds</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates mean squared displacements of a trajectory dataset</span>
 
@@ -338,7 +356,7 @@
                                 <span class="n">trackids</span><span class="p">[</span><span class="n">particle</span><span class="p">]</span>
                                 <span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span>
                                               <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-                                              <span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                                              <span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">particle</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">index1</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">index2</span> <span class="o">=</span> <span class="n">length</span>
@@ -361,9 +379,9 @@
              <span class="s1">&#39;Gauss&#39;</span><span class="p">:</span> <span class="n">gauss</span><span class="p">}</span>
     <span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">new_data</span>
+    <span class="k">return</span> <span class="n">new_data</span></div>
 
-</div>
+
 <div class="viewcode-block" id="make_xyarray"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.make_xyarray">[docs]</a><span class="k">def</span> <span class="nf">make_xyarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">651</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Rearranges xy position data into 2d arrays</span>
 
@@ -443,7 +461,7 @@
 
     <span class="n">track</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">first_p</span>
                  <span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span>
-                               <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                               <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">new_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
 
     <span class="n">old_frame</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
@@ -452,15 +470,15 @@
              <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Quality&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
              <span class="n">track</span><span class="p">[</span><span class="s1">&#39;SN_Ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
              <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
-    <span class="n">fxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">fxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+           <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)]</span>
 
     <span class="n">intxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">fxy</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">new_frame</span><span class="p">),</span> <span class="n">fxy</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">new_frame</span><span class="p">),</span> <span class="n">fxy</span><span class="p">[</span><span class="mi">2</span><span class="p">](</span><span class="n">new_frame</span><span class="p">),</span>
@@ -478,7 +496,7 @@
     <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_p</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">first_p</span><span class="o">+</span><span class="n">particles</span><span class="p">):</span>
         <span class="n">track</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">part</span>
                      <span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span>
-                                   <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                                   <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">old_frame</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]</span>
         <span class="n">oldxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
@@ -487,15 +505,15 @@
                  <span class="n">track</span><span class="p">[</span><span class="s1">&#39;SN_Ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
                  <span class="n">track</span><span class="p">[</span><span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
 
-        <span class="n">fxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">fxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                     <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                     <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                     <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                     <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
-               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+               <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">oldxy</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                     <span class="n">fill_value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)]</span>
 
         <span class="n">intxy</span> <span class="o">=</span> <span class="p">[</span><span class="n">fxy</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">new_frame</span><span class="p">),</span> <span class="n">fxy</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">new_frame</span><span class="p">),</span> <span class="n">fxy</span><span class="p">[</span><span class="mi">2</span><span class="p">](</span><span class="n">new_frame</span><span class="p">),</span>
@@ -509,9 +527,9 @@
         <span class="n">xyft</span><span class="p">[</span><span class="s1">&#39;snarray&#39;</span><span class="p">][:,</span> <span class="n">part</span><span class="o">-</span><span class="n">first_p</span><span class="p">]</span> <span class="o">=</span> <span class="n">intxy</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="n">xyft</span><span class="p">[</span><span class="s1">&#39;iarray&#39;</span><span class="p">][:,</span> <span class="n">part</span><span class="o">-</span><span class="n">first_p</span><span class="p">]</span> <span class="o">=</span> <span class="n">intxy</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">xyft</span>
+    <span class="k">return</span> <span class="n">xyft</span></div>
 
-</div>
+
 <div class="viewcode-block" id="all_msds2"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.all_msds2">[docs]</a><span class="k">def</span> <span class="nf">all_msds2</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">651</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates mean squared displacements of input trajectory dataset</span>
 
@@ -609,10 +627,10 @@
                  <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">new_data</span>
+    <span class="k">return</span> <span class="n">new_data</span></div>
 
-</div>
-<div class="viewcode-block" id="geomean_msdisp"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.geomean_msdisp">[docs]</a><span class="k">def</span> <span class="nf">geomean_msdisp</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">umppx</span><span class="o">=</span><span class="mf">0.16</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mf">100.02</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+
+<div class="viewcode-block" id="geomean_msdisp"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.geomean_msdisp">[docs]</a><span class="k">def</span> <span class="nf">geomean_msdisp</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">umppx</span><span class="o">=</span><span class="mf">0.16</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mf">100.02</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                    <span class="n">remote_folder</span><span class="o">=</span><span class="s2">&quot;01_18_Experiment&quot;</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">,</span>
                    <span class="n">backup_frames</span><span class="o">=</span><span class="mi">651</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Comptes geometric averages of mean squared displacement datasets</span>
@@ -644,7 +662,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;msd_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">particles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">merged</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]))</span>
         <span class="n">frames</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">merged</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">]))</span>
@@ -662,20 +680,20 @@
         <span class="n">geo_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">backup_frames</span><span class="p">)</span>
         <span class="n">geo_stder</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">backup_frames</span><span class="p">)</span>
 
-    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span> <span class="n">geo_mean</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span> <span class="n">geo_stder</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span> <span class="n">geo_mean</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span> <span class="n">geo_stder</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">upload</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="s1">&#39;geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
-                      <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="s1">&#39;geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="s1">&#39;geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
+                      <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="s1">&#39;geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
                       <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="s1">&#39;geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
-                      <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="s1">&#39;geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="s1">&#39;geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
+                      <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="s1">&#39;geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">),</span>
                       <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">geo_mean</span><span class="p">,</span> <span class="n">geo_stder</span>
+    <span class="k">return</span> <span class="n">geo_mean</span><span class="p">,</span> <span class="n">geo_stder</span></div>
 
-</div>
+
 <div class="viewcode-block" id="binning"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.binning">[docs]</a><span class="k">def</span> <span class="nf">binning</span><span class="p">(</span><span class="n">experiments</span><span class="p">,</span> <span class="n">wells</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Split set of input experiments into groups.</span>
 
@@ -706,12 +724,12 @@
     <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">wells</span><span class="p">):</span>
         <span class="n">slice1</span> <span class="o">=</span> <span class="n">num</span><span class="o">*</span><span class="n">slices</span>
         <span class="n">slice2</span> <span class="o">=</span> <span class="p">(</span><span class="n">num</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
-        <span class="n">pref</span> <span class="o">=</span> <span class="s1">&#39;{}_W{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
+        <span class="n">pref</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_W</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
         <span class="n">bins</span><span class="p">[</span><span class="n">pref</span><span class="p">]</span> <span class="o">=</span> <span class="n">experiments</span><span class="p">[</span><span class="n">slice1</span><span class="p">:</span><span class="n">slice2</span><span class="p">]</span>
         <span class="n">bin_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pref</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">slices</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">bin_names</span>
+    <span class="k">return</span> <span class="n">slices</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">bin_names</span></div>
 
-</div>
+
 <div class="viewcode-block" id="precision_weight"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.precision_weight">[docs]</a><span class="k">def</span> <span class="nf">precision_weight</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">geo_stder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates precision-based weights from input standard error data</span>
 
@@ -749,10 +767,10 @@
 
     <span class="n">weights</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w_holder</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">weights</span><span class="p">,</span> <span class="n">w_holder</span>
+    <span class="k">return</span> <span class="n">weights</span><span class="p">,</span> <span class="n">w_holder</span></div>
 
-</div>
-<div class="viewcode-block" id="precision_averaging"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.precision_averaging">[docs]</a><span class="k">def</span> <span class="nf">precision_averaging</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">geomean</span><span class="p">,</span> <span class="n">geo_stder</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+
+<div class="viewcode-block" id="precision_averaging"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.precision_averaging">[docs]</a><span class="k">def</span> <span class="nf">precision_averaging</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">geomean</span><span class="p">,</span> <span class="n">geo_stder</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span>
                         <span class="n">experiment</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates precision-weighted averages of MSD datasets.</span>
@@ -807,24 +825,24 @@
     <span class="n">geo_stder</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span><span class="o">/</span><span class="n">ma</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">gstder_holder</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)))</span>
 
     <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
-        <span class="n">geo_f</span> <span class="o">=</span> <span class="s1">&#39;geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
-        <span class="n">gstder_f</span> <span class="o">=</span> <span class="s1">&#39;geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+        <span class="n">geo_f</span> <span class="o">=</span> <span class="s1">&#39;geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
+        <span class="n">gstder_f</span> <span class="o">=</span> <span class="s1">&#39;geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">geo_f</span><span class="p">,</span> <span class="n">geo</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">gstder_f</span><span class="p">,</span> <span class="n">geo_stder</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">geo_f</span><span class="p">,</span> <span class="s1">&#39;{}/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">geo_f</span><span class="p">),</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">gstder_f</span><span class="p">,</span> <span class="s1">&#39;{}/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">gstder_f</span><span class="p">),</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">geo_f</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">geo_f</span><span class="p">),</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">gstder_f</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">gstder_f</span><span class="p">),</span>
                       <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
 
     <span class="n">geodata</span> <span class="o">=</span> <span class="n">Bunch</span><span class="p">(</span><span class="n">geomean</span><span class="o">=</span><span class="n">geo</span><span class="p">,</span> <span class="n">geostd</span><span class="o">=</span><span class="n">geo_stder</span><span class="p">,</span> <span class="n">weighthold</span><span class="o">=</span><span class="n">w_holder</span><span class="p">,</span>
                     <span class="n">geostdhold</span><span class="o">=</span><span class="n">gstder_holder</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">geodata</span>
+    <span class="k">return</span> <span class="n">geodata</span></div>
 
-</div>
+
 <div class="viewcode-block" id="plot_all_experiments"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.plot_all_experiments">[docs]</a><span class="k">def</span> <span class="nf">plot_all_experiments</span><span class="p">(</span><span class="n">experiments</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span>
                          <span class="n">yrange</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="o">**</span><span class="mi">1</span><span class="p">),</span> <span class="n">fps</span><span class="o">=</span><span class="mf">100.02</span><span class="p">,</span>
-                         <span class="nb">xrange</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="o">**</span><span class="mi">0</span><span class="p">),</span> <span class="n">upload</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                         <span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;test.png&#39;</span><span class="p">,</span> <span class="n">exponential</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+                         <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">**-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="o">**</span><span class="mi">0</span><span class="p">),</span> <span class="n">upload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;test.png&#39;</span><span class="p">,</span> <span class="n">exponential</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plots precision-weighted averages of MSD datasets.</span>
 
 <span class="sd">    Plots pre-calculated precision-weighted averages of MSD datasets calculated</span>
@@ -855,22 +873,22 @@
     <span class="n">color</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">n</span><span class="p">)))</span>
 
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="nb">xrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">xrange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xrange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">yrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yrange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Tau (s)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">r&#39;Mean Squared Displacement ($\mu$m$^2$)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Mean Squared Displacement ($\mu$m$^2$)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
 
     <span class="n">geo</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">gstder</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="s1">&#39;{}/geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">experiment</span><span class="p">),</span>
-                        <span class="s1">&#39;geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">),</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="s1">&#39;{}/geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">experiment</span><span class="p">),</span>
-                        <span class="s1">&#39;geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">),</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">experiment</span><span class="p">),</span>
+                        <span class="s1">&#39;geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">),</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">experiment</span><span class="p">),</span>
+                        <span class="s1">&#39;geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">),</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
 
-        <span class="n">geo</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;geomean_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">))</span>
-        <span class="n">gstder</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;geoSEM_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">))</span>
+        <span class="n">geo</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;geomean_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">))</span>
+        <span class="n">gstder</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;geoSEM_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">experiment</span><span class="p">))</span>
         <span class="n">geo</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_equal</span><span class="p">(</span><span class="n">geo</span><span class="p">[</span><span class="n">counter</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="n">gstder</span><span class="p">[</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_equal</span><span class="p">(</span><span class="n">gstder</span><span class="p">[</span><span class="n">counter</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
 
@@ -895,13 +913,13 @@
 
         <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">})</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="n">upload</span><span class="p">:</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="random_walk"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.random_walk">[docs]</a><span class="k">def</span> <span class="nf">random_walk</span><span class="p">(</span><span class="n">nsteps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;Creates 2d random walk trajectory.</span>
 
@@ -945,9 +963,9 @@
             <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
 
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
 
-</div>
+
 <div class="viewcode-block" id="random_traj_dataset"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.random_traj_dataset">[docs]</a><span class="k">def</span> <span class="nf">random_traj_dataset</span><span class="p">(</span><span class="n">nframes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">nparts</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fsize</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
                         <span class="n">ndist</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;Creates a random population of random walks.</span>
@@ -1003,15 +1021,16 @@
              <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">:</span> <span class="n">nframes</span><span class="o">*</span><span class="n">nparts</span><span class="o">*</span><span class="p">[</span><span class="mi">120</span><span class="p">]}</span>
     <span class="n">dataf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">datai</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dataf</span>
+    <span class="k">return</span> <span class="n">dataf</span></div>
 
-</div>
+
 <div class="viewcode-block" id="Bunch"><a class="viewcode-back" href="../../api/msd.html#diff_classifier.msd.Bunch">[docs]</a><span class="k">class</span> <span class="nc">Bunch</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwds</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwds</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -1020,11 +1039,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1039,35 +1058,34 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

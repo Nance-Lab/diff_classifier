@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,24 +24,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -76,7 +73,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
@@ -99,41 +99,59 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>diff_classifier.imagej</li>
+        
+      <li>diff_classifier.imagej</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.imagej</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot;Tools to perform particle tracking with Trackmate ImageJ plugin.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Tools to perform particle tracking with Trackmate ImageJ plugin.</span>
 
 <span class="sd">This module includes functions for prepping images and performing tracking</span>
 <span class="sd">using the TrackMate ImageJ plugin [1]_.</span>
@@ -151,15 +169,15 @@
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">skimage.io</span> <span class="kn">as</span> <span class="nn">sio</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">skimage.io</span> <span class="k">as</span> <span class="nn">sio</span>
 
-<span class="kn">import</span> <span class="nn">diff_classifier</span> <span class="kn">as</span> <span class="nn">dc</span>
-<span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="kn">as</span> <span class="nn">aws</span>
+<span class="kn">import</span> <span class="nn">diff_classifier</span> <span class="k">as</span> <span class="nn">dc</span>
+<span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="k">as</span> <span class="nn">aws</span>
 
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">svm</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">linear_model</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">svm</span>
 
 
 <div class="viewcode-block" id="partition_im"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.partition_im">[docs]</a><span class="k">def</span> <span class="nf">partition_im</span><span class="p">(</span><span class="n">tiffname</span><span class="p">,</span> <span class="n">irows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">icols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ores</span><span class="o">=</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">2048</span><span class="p">),</span>
@@ -204,9 +222,9 @@
             <span class="n">sio</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">new_image</span><span class="p">)</span>
             <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">names</span>
+    <span class="k">return</span> <span class="n">names</span></div>
 
-</div>
+
 <div class="viewcode-block" id="mean_intensity"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.mean_intensity">[docs]</a><span class="k">def</span> <span class="nf">mean_intensity</span><span class="p">(</span><span class="n">local_im</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates mean intensity of first frame of input image.</span>
 
@@ -230,11 +248,11 @@
     <span class="n">test_image</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">local_im</span><span class="p">)</span>
     <span class="n">test_intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">test_image</span><span class="p">[</span><span class="n">frame</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
 
-    <span class="k">return</span> <span class="n">test_intensity</span>
+    <span class="k">return</span> <span class="n">test_intensity</span></div>
 
-</div>
-<div class="viewcode-block" id="track"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.track">[docs]</a><span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-          <span class="n">tparams</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;do_median_filtering&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+
+<div class="viewcode-block" id="track"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.track">[docs]</a><span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">tparams</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;do_median_filtering&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
            <span class="s1">&#39;quality&#39;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span> <span class="s1">&#39;xdims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span> <span class="s1">&#39;ydims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span>
            <span class="s1">&#39;median_intensity&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;snr&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;linking_max_distance&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
            <span class="s1">&#39;gap_closing_max_distance&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;max_frame_gap&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
@@ -286,12 +304,12 @@
 <span class="sd">        Lower duration cutoff in frames for trajectory filtering.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">template</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
                            <span class="s1">&#39;data&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;trackmate_template3.py&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">fiji_bin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">fiji_bin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
             <span class="n">fiji_bin</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="s1">&#39;/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx&#39;</span><span class="p">)</span>
@@ -313,15 +331,15 @@
                             <span class="n">track_duration</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;track_duration&#39;</span><span class="p">])))</span>
     <span class="n">fid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> --ij2 --headless --run </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fiji_bin</span><span class="p">,</span> <span class="n">tpfile</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-    <span class="n">subp</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="n">subp</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">fid</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
     <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">subp</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
-    <span class="n">fid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">fid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-</div>
-<div class="viewcode-block" id="regress_sys"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.regress_sys">[docs]</a><span class="k">def</span> <span class="nf">regress_sys</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">all_videos</span><span class="p">,</span> <span class="n">yfit</span><span class="p">,</span> <span class="n">training_size</span><span class="p">,</span> <span class="n">randselect</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                <span class="n">trainingdata</span><span class="o">=</span><span class="p">[],</span> <span class="n">frame</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">have_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+
+<div class="viewcode-block" id="regress_sys"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.regress_sys">[docs]</a><span class="k">def</span> <span class="nf">regress_sys</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">all_videos</span><span class="p">,</span> <span class="n">yfit</span><span class="p">,</span> <span class="n">training_size</span><span class="p">,</span> <span class="n">randselect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">trainingdata</span><span class="o">=</span><span class="p">[],</span> <span class="n">frame</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">have_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">bucket_name</span><span class="o">=</span><span class="s1">&#39;ccurtis.data&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Uses regression based on image intensities to select tracking parameters.</span>
 
@@ -381,18 +399,18 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">training_size</span><span class="p">):</span>
             <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">tprefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">all_videos</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_videos</span><span class="p">))])</span>
-            <span class="k">if</span> <span class="n">have_output</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Get parameters for: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tprefix</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">have_output</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Get parameters for: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tprefix</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">tprefix</span> <span class="o">=</span> <span class="n">trainingdata</span>
 
-    <span class="k">if</span> <span class="n">have_output</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">have_output</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="c1"># Define descriptors</span>
         <span class="n">descriptors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">training_size</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">tprefix</span><span class="p">:</span>
             <span class="n">local_im</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.tif&#39;</span>
-            <span class="n">remote_im</span> <span class="o">=</span> <span class="s2">&quot;{}/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">local_im</span><span class="p">)</span>
+            <span class="n">remote_im</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">local_im</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
                 <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="n">remote_im</span><span class="p">,</span> <span class="n">local_im</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">)</span>
             <span class="n">test_image</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">local_im</span><span class="p">)</span>
@@ -422,9 +440,9 @@
         <span class="k">return</span> <span class="n">regress_object</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tprefix</span>
+        <span class="k">return</span> <span class="n">tprefix</span></div>
 
-</div>
+
 <div class="viewcode-block" id="regress_tracking_params"><a class="viewcode-back" href="../../api/imagej.html#diff_classifier.imagej.regress_tracking_params">[docs]</a><span class="k">def</span> <span class="nf">regress_tracking_params</span><span class="p">(</span><span class="n">regress_object</span><span class="p">,</span> <span class="n">to_track</span><span class="p">,</span>
                             <span class="n">regmethod</span><span class="o">=</span><span class="s1">&#39;LinearRegression&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Predicts quality values to be used in particle tracking.</span>
@@ -485,6 +503,7 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -493,11 +512,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -512,35 +531,34 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

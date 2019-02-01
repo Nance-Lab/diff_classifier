@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,24 +24,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -76,7 +73,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
@@ -99,41 +99,59 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>diff_classifier.features</li>
+        
+      <li>diff_classifier.features</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.features</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot;Functions to calculate trajectory features from input trajectory data</span>
+<span></span><span class="sd">&quot;&quot;&quot;Functions to calculate trajectory features from input trajectory data</span>
 
 <span class="sd">This module provides functions to calculate trajectory features based off the</span>
 <span class="sd">ImageJ plugin TrajClassifer by Thorsten Wagner. See details at</span>
@@ -144,13 +162,13 @@
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
-<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">diff_classifier.msd</span> <span class="kn">as</span> <span class="nn">msd</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="k">as</span> <span class="nn">LA</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">diff_classifier.msd</span> <span class="k">as</span> <span class="nn">msd</span>
 
 
 <div class="viewcode-block" id="unmask_track"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.unmask_track">[docs]</a><span class="k">def</span> <span class="nf">unmask_track</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
@@ -194,9 +212,9 @@
              <span class="s1">&#39;Mean_Intensity&#39;</span><span class="p">:</span> <span class="n">comp_meani</span>
              <span class="p">}</span>
     <span class="n">comp_track</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">comp_track</span>
+    <span class="k">return</span> <span class="n">comp_track</span></div>
 
-</div>
+
 <div class="viewcode-block" id="alpha_calc"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.alpha_calc">[docs]</a><span class="k">def</span> <span class="nf">alpha_calc</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates alpha, the exponential fit parameter for MSD data</span>
 
@@ -248,12 +266,12 @@
         <span class="n">alph</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">dcoef</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Optimal parameters not found. Print NaN instead.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Optimal parameters not found. Print NaN instead.&#39;</span><span class="p">)</span>
         <span class="n">alph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="n">dcoef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-    <span class="k">return</span> <span class="n">alph</span><span class="p">,</span> <span class="n">dcoef</span>
+    <span class="k">return</span> <span class="n">alph</span><span class="p">,</span> <span class="n">dcoef</span></div>
 
-</div>
+
 <div class="viewcode-block" id="gyration_tensor"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.gyration_tensor">[docs]</a><span class="k">def</span> <span class="nf">gyration_tensor</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the eigenvalues and eigenvectors of the gyration tensor of the</span>
 <span class="sd">    input trajectory.</span>
@@ -328,9 +346,9 @@
     <span class="n">eig2</span> <span class="o">=</span> <span class="n">eigvals</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
     <span class="n">eigv1</span> <span class="o">=</span> <span class="n">eigvecs</span><span class="p">[</span><span class="n">dom</span><span class="p">]</span>
     <span class="n">eigv2</span> <span class="o">=</span> <span class="n">eigvecs</span><span class="p">[</span><span class="n">rec</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">eigv1</span><span class="p">,</span> <span class="n">eigv2</span>
+    <span class="k">return</span> <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">eigv1</span><span class="p">,</span> <span class="n">eigv2</span></div>
 
-</div>
+
 <div class="viewcode-block" id="kurtosis"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.kurtosis">[docs]</a><span class="k">def</span> <span class="nf">kurtosis</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the kurtosis of input track.</span>
 
@@ -383,9 +401,9 @@
     <span class="n">kurt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">projection</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
                    <span class="n">projection</span><span class="p">))</span><span class="o">**</span><span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">kurt</span>
+    <span class="k">return</span> <span class="n">kurt</span></div>
 
-</div>
+
 <div class="viewcode-block" id="asymmetry"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.asymmetry">[docs]</a><span class="k">def</span> <span class="nf">asymmetry</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the asymmetry of the trajectory.</span>
 
@@ -449,9 +467,9 @@
     <span class="n">asym2</span> <span class="o">=</span> <span class="n">eig2</span><span class="o">/</span><span class="n">eig1</span>
     <span class="n">asym3</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">((</span><span class="n">eig1</span><span class="o">-</span><span class="n">eig2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">eig1</span><span class="o">+</span><span class="n">eig2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">asym1</span><span class="p">,</span> <span class="n">asym2</span><span class="p">,</span> <span class="n">asym3</span>
+    <span class="k">return</span> <span class="n">eig1</span><span class="p">,</span> <span class="n">eig2</span><span class="p">,</span> <span class="n">asym1</span><span class="p">,</span> <span class="n">asym2</span><span class="p">,</span> <span class="n">asym3</span></div>
 
-</div>
+
 <div class="viewcode-block" id="minboundrect"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.minboundrect">[docs]</a><span class="k">def</span> <span class="nf">minboundrect</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the minimum bounding rectangle of an input trajectory.</span>
 
@@ -590,9 +608,9 @@
     <span class="n">corner_pts</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">],</span> <span class="n">rads</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">min_bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-            <span class="n">center_point</span><span class="p">,</span> <span class="n">corner_pts</span><span class="p">)</span>
+            <span class="n">center_point</span><span class="p">,</span> <span class="n">corner_pts</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="aspectratio"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.aspectratio">[docs]</a><span class="k">def</span> <span class="nf">aspectratio</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the aspect ratio of the rectangle containing the input track.</span>
 
@@ -649,9 +667,9 @@
         <span class="n">aspratio</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">aspratio</span>
     <span class="n">elong</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">aspratio</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">aspratio</span><span class="p">,</span> <span class="n">elong</span><span class="p">,</span> <span class="n">center_point</span>
+    <span class="k">return</span> <span class="n">aspratio</span><span class="p">,</span> <span class="n">elong</span><span class="p">,</span> <span class="n">center_point</span></div>
 
-</div>
+
 <div class="viewcode-block" id="boundedness"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.boundedness">[docs]</a><span class="k">def</span> <span class="nf">boundedness</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the boundedness, fractal dimension, and trappedness of the</span>
 <span class="sd">    input track.</span>
@@ -742,9 +760,9 @@
         <span class="n">fractd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="n">probf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-    <span class="k">return</span> <span class="n">bound</span><span class="p">,</span> <span class="n">fractd</span><span class="p">,</span> <span class="n">probf</span>
+    <span class="k">return</span> <span class="n">bound</span><span class="p">,</span> <span class="n">fractd</span><span class="p">,</span> <span class="n">probf</span></div>
 
-</div>
+
 <div class="viewcode-block" id="efficiency"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.efficiency">[docs]</a><span class="k">def</span> <span class="nf">efficiency</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the efficiency and straitness of the input track</span>
 
@@ -801,9 +819,9 @@
 
     <span class="n">eff</span> <span class="o">=</span> <span class="n">num</span><span class="o">/</span><span class="n">den</span>
     <span class="n">strait</span> <span class="o">=</span> <span class="n">num2</span><span class="o">/</span><span class="n">den2</span>
-    <span class="k">return</span> <span class="n">eff</span><span class="p">,</span> <span class="n">strait</span>
+    <span class="k">return</span> <span class="n">eff</span><span class="p">,</span> <span class="n">strait</span></div>
 
-</div>
+
 <div class="viewcode-block" id="msd_ratio"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.msd_ratio">[docs]</a><span class="k">def</span> <span class="nf">msd_ratio</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">fram1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fram2</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates the MSD ratio of the input track at the specified frames.</span>
 
@@ -851,9 +869,9 @@
     <span class="k">assert</span> <span class="n">fram1</span> <span class="o">&lt;</span> <span class="n">fram2</span><span class="p">,</span> <span class="s2">&quot;fram1 must be less than fram2&quot;</span>
     <span class="n">ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">fram1</span><span class="p">]</span><span class="o">/</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;MSDs&#39;</span><span class="p">][</span><span class="n">fram2</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span>
              <span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">fram1</span><span class="p">]</span><span class="o">/</span><span class="n">dframe</span><span class="p">[</span><span class="s1">&#39;Frame&#39;</span><span class="p">][</span><span class="n">fram2</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">ratio</span>
+    <span class="k">return</span> <span class="n">ratio</span></div>
 
-</div>
+
 <div class="viewcode-block" id="calculate_features"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.calculate_features">[docs]</a><span class="k">def</span> <span class="nf">calculate_features</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">framerate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;Calculates multiple features from input MSD dataset and stores in pandas</span>
 <span class="sd">    dataframe.</span>
@@ -925,7 +943,7 @@
                     <span class="n">trackids</span><span class="p">[</span><span class="n">particle</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Frame&#39;</span><span class="p">],</span>
                                                     <span class="n">ascending</span><span class="o">=</span><span class="p">[</span>
                                                     <span class="mi">1</span><span class="p">,</span>
-                                                    <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                                                    <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">single_track</span> <span class="o">=</span> <span class="n">unmask_track</span><span class="p">(</span><span class="n">single_track_masked</span><span class="p">)</span>
         <span class="p">(</span><span class="n">datai</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">],</span>
          <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;D_fit&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">])</span> <span class="o">=</span> <span class="n">alpha_calc</span><span class="p">(</span><span class="n">single_track</span><span class="p">)</span>
@@ -965,9 +983,9 @@
         <span class="n">datai</span><span class="p">[</span><span class="s1">&#39;SN_Ratio&#39;</span><span class="p">][</span><span class="n">particle</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">single_track</span><span class="p">[</span>
               <span class="s1">&#39;SN_Ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">datai</span>
+    <span class="k">return</span> <span class="n">datai</span></div>
 
-</div>
+
 <div class="viewcode-block" id="feature_violin"><a class="viewcode-back" href="../../api/features.html#diff_classifier.features.feature_violin">[docs]</a><span class="k">def</span> <span class="nf">feature_violin</span><span class="p">(</span><span class="n">tgroups</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="s1">&#39;boundedness&#39;</span><span class="p">,</span>
                    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sample 1&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 2&#39;</span><span class="p">,</span> <span class="s1">&#39;sample 3&#39;</span><span class="p">],</span>
                    <span class="n">points</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">nticks</span><span class="o">=</span><span class="mi">11</span><span class="p">):</span>
@@ -1008,7 +1026,7 @@
     <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
     <span class="n">axes</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">to_graph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">widths</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-                    <span class="n">showmeans</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">showextrema</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                    <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">showextrema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">set_axis_style</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
     <span class="n">axes</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span>
                      <span class="n">labelsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
@@ -1019,6 +1037,7 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -1027,11 +1046,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1046,35 +1065,34 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

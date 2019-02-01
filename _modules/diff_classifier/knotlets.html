@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -22,24 +24,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="diff_classifier 0.1 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -76,7 +73,10 @@
           
             
             
-                <p class="caption"><span class="caption-text">User Documentation</span></p>
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started with diff_classifier</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../example_data.html">Example data</a></li>
@@ -99,41 +99,59 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">diff_classifier</a>
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">diff_classifier</a>
+        
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>diff_classifier.knotlets</li>
+        
+      <li>diff_classifier.knotlets</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
-        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <h1>Source code for diff_classifier.knotlets</h1><div class="highlight"><pre>
-<span class="sd">&#39;&#39;&#39;Test functions to submit tracking jobs to AWS Batch with Cloudknot</span>
+<span></span><span class="sd">&#39;&#39;&#39;Test functions to submit tracking jobs to AWS Batch with Cloudknot</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
 
@@ -169,15 +187,15 @@
 
     <span class="kn">import</span> <span class="nn">os</span>
     <span class="kn">import</span> <span class="nn">boto3</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="kn">as</span> <span class="nn">aws</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.imagej</span> <span class="kn">as</span> <span class="nn">ij</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="k">as</span> <span class="nn">aws</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.imagej</span> <span class="k">as</span> <span class="nn">ij</span>
 
     <span class="n">local_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;{}.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
     <span class="n">remote_name</span> <span class="o">=</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span>
     <span class="n">local_name</span> <span class="o">=</span> <span class="n">local_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span>
-    <span class="n">msd_file</span> <span class="o">=</span> <span class="s1">&#39;msd_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-    <span class="n">ft_file</span> <span class="o">=</span> <span class="s1">&#39;features_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">msd_file</span> <span class="o">=</span> <span class="s1">&#39;msd_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">ft_file</span> <span class="o">=</span> <span class="s1">&#39;features_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
     <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="n">remote_name</span><span class="p">,</span> <span class="n">local_name</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
 
     <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">)</span>
@@ -189,21 +207,21 @@
     <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
-            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;{}_{}_{}.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
         <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done with splitting. Should output file of name {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done with splitting. Should output file of name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
               <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">))</span>
 
-    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="tracking"><a class="viewcode-back" href="../../api/knotlets.html#diff_classifier.knotlets.tracking">[docs]</a><span class="k">def</span> <span class="nf">tracking</span><span class="p">(</span><span class="n">subprefix</span><span class="p">,</span> <span class="n">remote_folder</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;nancelab.publicfiles&#39;</span><span class="p">,</span>
              <span class="n">regress_f</span><span class="o">=</span><span class="s1">&#39;regress.obj&#39;</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ires</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
              <span class="n">tparams</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                      <span class="s1">&#39;do_median_filtering&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;quality&#39;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                      <span class="s1">&#39;do_median_filtering&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;quality&#39;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
                       <span class="s1">&#39;xdims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span> <span class="s1">&#39;ydims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span>
                       <span class="s1">&#39;median_intensity&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;snr&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
                       <span class="s1">&#39;linking_max_distance&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
@@ -239,21 +257,21 @@
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="kn">import</span> <span class="nn">os</span>
-    <span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
+    <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
     <span class="kn">import</span> <span class="nn">boto3</span>
-    <span class="kn">from</span> <span class="nn">sklearn.externals</span> <span class="kn">import</span> <span class="n">joblib</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="kn">as</span> <span class="nn">aws</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.utils</span> <span class="kn">as</span> <span class="nn">ut</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.msd</span> <span class="kn">as</span> <span class="nn">msd</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.features</span> <span class="kn">as</span> <span class="nn">ft</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.imagej</span> <span class="kn">as</span> <span class="nn">ij</span>
+    <span class="kn">from</span> <span class="nn">sklearn.externals</span> <span class="k">import</span> <span class="n">joblib</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="k">as</span> <span class="nn">aws</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.msd</span> <span class="k">as</span> <span class="nn">msd</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.features</span> <span class="k">as</span> <span class="nn">ft</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.imagej</span> <span class="k">as</span> <span class="nn">ij</span>
 
     <span class="n">local_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;{}.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subprefix</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subprefix</span><span class="p">)</span>
     <span class="n">remote_name</span> <span class="o">=</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span>
     <span class="n">local_name</span> <span class="o">=</span> <span class="n">local_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span>
     <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;Traj_&#39;</span> <span class="o">+</span> <span class="n">subprefix</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
-    <span class="n">local_im</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">local_folder</span><span class="p">,</span> <span class="s1">&#39;{}.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subprefix</span><span class="p">))</span>
+    <span class="n">local_im</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">local_folder</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subprefix</span><span class="p">))</span>
     <span class="n">row</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">subprefix</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">col</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">subprefix</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
@@ -266,8 +284,8 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="s1">&#39;{}/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">remote_folder</span><span class="p">,</span>
-                        <span class="s1">&#39;{}.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subprefix</span><span class="p">)),</span>
+        <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">remote_folder</span><span class="p">,</span>
+                        <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subprefix</span><span class="p">)),</span>
                         <span class="n">local_im</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
         <span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;quality&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ij</span><span class="o">.</span><span class="n">regress_tracking_params</span><span class="p">(</span><span class="n">regress</span><span class="p">,</span> <span class="n">subprefix</span><span class="p">,</span>
                                                         <span class="n">regmethod</span><span class="o">=</span><span class="s1">&#39;PassiveAggressiveRegressor&#39;</span><span class="p">)</span>
@@ -275,13 +293,13 @@
         <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="n">rows</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;ydims&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tparams</span><span class="p">[</span><span class="s1">&#39;ydims&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ires</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">27</span><span class="p">)</span>
 
-        <span class="n">ij</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">local_im</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">ij</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">local_im</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fiji_bin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">tparams</span><span class="o">=</span><span class="n">tparams</span><span class="p">)</span>
         <span class="n">aws</span><span class="o">.</span><span class="n">upload_s3</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Done with tracking.  Should output file of name {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-          <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done with tracking.  Should output file of name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">outfile</span><span class="p">))</span></div>
 
-</div>
+
 <div class="viewcode-block" id="assemble_msds"><a class="viewcode-back" href="../../api/knotlets.html#diff_classifier.knotlets.assemble_msds">[docs]</a><span class="k">def</span> <span class="nf">assemble_msds</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">remote_folder</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;nancelab.publicfiles&#39;</span><span class="p">,</span>
                   <span class="n">ires</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">frames</span><span class="o">=</span><span class="mi">651</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Calculates MSDs and features from input trajectory files</span>
@@ -311,29 +329,29 @@
 
     <span class="kn">import</span> <span class="nn">os</span>
     <span class="kn">import</span> <span class="nn">boto3</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="kn">as</span> <span class="nn">aws</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.msd</span> <span class="kn">as</span> <span class="nn">msd</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.features</span> <span class="kn">as</span> <span class="nn">ft</span>
-    <span class="kn">import</span> <span class="nn">diff_classifier.utils</span> <span class="kn">as</span> <span class="nn">ut</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.aws</span> <span class="k">as</span> <span class="nn">aws</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.msd</span> <span class="k">as</span> <span class="nn">msd</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.features</span> <span class="k">as</span> <span class="nn">ft</span>
+    <span class="kn">import</span> <span class="nn">diff_classifier.utils</span> <span class="k">as</span> <span class="nn">ut</span>
 
-    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;{}.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
     <span class="n">remote_name</span> <span class="o">=</span> <span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span>
-    <span class="n">msd_file</span> <span class="o">=</span> <span class="s1">&#39;msd_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-    <span class="n">ft_file</span> <span class="o">=</span> <span class="s1">&#39;features_{}.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">msd_file</span> <span class="o">=</span> <span class="s1">&#39;msd_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">ft_file</span> <span class="o">=</span> <span class="s1">&#39;features_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
 
     <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">)</span>
 
     <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
-            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;{}_{}_{}.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
 
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
         <span class="n">row</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">prefix</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">col</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">prefix</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span>
 
-        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;Traj_{}_{}_{}.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;Traj_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">.csv&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
         <span class="n">aws</span><span class="o">.</span><span class="n">download_s3</span><span class="p">(</span><span class="n">remote_folder</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span>
                         <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket</span><span class="p">)</span>
         <span class="n">local_name</span> <span class="o">=</span> <span class="n">filename</span>
@@ -358,7 +376,7 @@
                 <span class="n">to_add</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_add</span><span class="p">[</span><span class="s1">&#39;Track_ID&#39;</span><span class="p">]</span>
 
             <span class="n">merged</span> <span class="o">=</span> <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">all_msds2</span><span class="p">(</span><span class="n">to_add</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">))</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Done calculating MSDs for row {} and col {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">,</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done calculating MSDs for row </span><span class="si">{}</span><span class="s1"> and col </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">,</span>
                                                                        <span class="n">col</span><span class="p">))</span>
         <span class="n">counter</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -372,14 +390,14 @@
     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">msd_file</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
         <span class="n">outfile</span> <span class="o">=</span> <span class="s1">&#39;Traj_&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span></div>
 
-</div>
+
 <div class="viewcode-block" id="split_track_msds"><a class="viewcode-back" href="../../api/knotlets.html#diff_classifier.knotlets.split_track_msds">[docs]</a><span class="k">def</span> <span class="nf">split_track_msds</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">remote_folder</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="s1">&#39;nancelab.publicfiles&#39;</span><span class="p">,</span>
                      <span class="n">rows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ores</span><span class="o">=</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="mi">2048</span><span class="p">),</span> <span class="n">ires</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
-                     <span class="n">to_split</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">regress_f</span><span class="o">=</span><span class="s1">&#39;regress.obj&#39;</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">651</span><span class="p">,</span>
+                     <span class="n">to_split</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">regress_f</span><span class="o">=</span><span class="s1">&#39;regress.obj&#39;</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">651</span><span class="p">,</span>
                      <span class="n">tparams</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span> <span class="s1">&#39;threshold&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-                              <span class="s1">&#39;do_median_filtering&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;quality&#39;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
+                              <span class="s1">&#39;do_median_filtering&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;quality&#39;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">,</span>
                               <span class="s1">&#39;xdims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span> <span class="s1">&#39;ydims&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">511</span><span class="p">),</span>
                               <span class="s1">&#39;median_intensity&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;snr&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
                               <span class="s1">&#39;linking_max_distance&#39;</span><span class="p">:</span> <span class="mf">6.0</span><span class="p">,</span>
@@ -427,7 +445,7 @@
     <span class="n">pref</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
-            <span class="n">pref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;{}_{}_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
+            <span class="n">pref</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">subprefix</span> <span class="ow">in</span> <span class="n">pref</span><span class="p">:</span>
         <span class="n">tracking</span><span class="p">(</span><span class="n">subprefix</span><span class="o">=</span><span class="n">subprefix</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">=</span><span class="n">remote_folder</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span>
@@ -435,7 +453,7 @@
                  <span class="n">tparams</span><span class="o">=</span><span class="n">tparams</span><span class="p">)</span>
 
     <span class="n">assemble_msds</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">remote_folder</span><span class="o">=</span><span class="n">remote_folder</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span>
-                  <span class="n">ires</span><span class="o">=</span><span class="n">ires</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">)</span>
+                  <span class="n">ires</span><span class="o">=</span><span class="n">ires</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">)</span></div>
 
 
 <span class="c1"># def sensitivity_it(counter):</span>
@@ -527,10 +545,11 @@
 <span class="c1">#     aws.upload_s3(geoS_file, &#39;{}/{}&#39;.format(s_folder, geoS_file))</span>
 <span class="c1">#     aws.upload_s3(msd_image, &#39;{}/{}&#39;.format(s_folder, msd_image))</span>
 <span class="c1">#</span>
-<span class="c1">#     print(&#39;Successful parameter calculations for {}&#39;.format(iter_name))</span></div>
+<span class="c1">#     print(&#39;Successful parameter calculations for {}&#39;.format(iter_name))</span>
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -539,11 +558,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Chad Curtis.
+        &copy; Copyright 2018, Chad Curtis
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -558,35 +577,34 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.1',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
