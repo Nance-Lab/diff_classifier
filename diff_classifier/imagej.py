@@ -55,11 +55,13 @@ def _get_fiji():
 
     # See if it exists
     elif any(exists):
+        print('Exists elsewhere')
         counter = 0
         for exist in exists:
             if exist:
                 path = paths[counter]
             counter += 1
+        return path
 
     else:
         # Download it if not
