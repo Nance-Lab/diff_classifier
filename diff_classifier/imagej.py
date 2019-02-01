@@ -204,7 +204,8 @@ def track(target, out_file, template=None, fiji_bin=None,
                 'median_intensity': 300.0,
                 'snr': 0.0, 'linking_max_distance': 6.0,
                 'gap_closing_max_distance': 10.0,
-                'max_frame_gap': 3, 'track_duration': 20.0}
+                'max_frame_gap': 3, 'track_duration': 20.0,
+                'detector': 'Dog'}
 
     if tparams is None:
         tparams = {}
@@ -236,7 +237,8 @@ def track(target, out_file, template=None, fiji_bin=None,
                             linking_max_distance=str(tparams['linking_max_distance']),
                             gap_closing_max_distance=str(tparams['gap_closing_max_distance']),
                             max_frame_gap=str(tparams['max_frame_gap']),
-                            track_duration=str(tparams['track_duration'])))
+                            track_duration=str(tparams['track_duration']),
+                            set_detector=str(tparams['detector'])))
     fid.close()
 
     cmd = "%s --ij2 --headless --run %s" % (fiji_bin, tpfile.name)

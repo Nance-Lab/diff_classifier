@@ -7,6 +7,7 @@ import fiji.plugin.trackmate.TrackMate as TrackMate
 import fiji.plugin.trackmate.Logger as Logger
 import fiji.plugin.trackmate.detection.DetectorKeys as DetectorKeys
 import fiji.plugin.trackmate.detection.DogDetectorFactory as DogDetectorFactory
+import fiji.plugin.trackmate.detection.LogDetectorFactory as LogDetectorFactory
 import fiji.plugin.trackmate.tracking.sparselap.SparseLAPTrackerFactory as SparseLAPTrackerFactory
 import fiji.plugin.trackmate.tracking.LAPUtils as LAPUtils
 import fiji.plugin.trackmate.visualization.hyperstack.HyperStackDisplayer as HyperStackDisplayer
@@ -51,7 +52,7 @@ settings = Settings()
 settings.setFrom(imp)
 
 # Configure detector
-settings.detectorFactory = DogDetectorFactory()
+settings.detectorFactory = {set_detector}DetectorFactory()
 settings.detectorSettings = {{
     DetectorKeys.KEY_DO_SUBPIXEL_LOCALIZATION : True,
     DetectorKeys.KEY_RADIUS : {radius},
