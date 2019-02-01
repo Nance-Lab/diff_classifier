@@ -128,21 +128,18 @@ def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
 
     s3 = boto3.client('s3')
 
-    try:
-        aws.download_s3(remote_folder+'/'+outfile, outfile, bucket_name=bucket)
-    except:
-        aws.download_s3('{}/{}'.format(remote_folder,
-                        '{}.tif'.format(subprefix)),
-                        local_im, bucket_name=bucket)
-        tparams['quality'] = ij.regress_tracking_params(regress, subprefix,
-                                                        regmethod='PassiveAggressiveRegressor')
+    aws.download_s3('{}/{}'.format(remote_folder,
+                    '{}.tif'.format(subprefix)),
+                    local_im, bucket_name=bucket)
+    tparams['quality'] = ij.regress_tracking_params(regress, subprefix,
+                                                    regmethod='PassiveAggressiveRegressor')
 
-        if row == rows-1:
-            tparams['ydims'] = (tparams['ydims'][0], ires[1] - 27)
+    if row == rows-1:
+        tparams['ydims'] = (tparams['ydims'][0], ires[1] - 27)
 
-        ij.track(local_im, outfile, template=None, fiji_bin=None,
-                 tparams=tparams)
-        aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
+    ij.track(local_im, outfile, template=None, fiji_bin=None,
+             tparams=tparams)
+    aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
     print("Done with tracking.  Should output file of name {}".format(
           remote_folder+'/'+outfile))
 
