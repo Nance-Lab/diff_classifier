@@ -45,7 +45,7 @@ def _get_fiji():
     exists = [os.path.exists(p) for p in paths]
     # paths = list(compress(paths, exists))
 
-    if sys.platform is not 'darwin' and not sys.platform.startswith('linux'):
+    if sys.platform != 'darwin' and not sys.platform.startswith('linux'):
         # print('System is not Linux or Mac')
         raise ValueError('System is not Linux or Mac')
     # Has the user specified Fiji for us?
