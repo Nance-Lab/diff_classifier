@@ -281,7 +281,7 @@ def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True,
     """
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
     particles = int(max(merged['Track_ID']))
-    if particles > size:
+    if particles < size:
         size = particles - 1
     else:
         pass
@@ -477,7 +477,7 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     fig = plt.figure(figsize=figsize)
     particles = int(max(merged['Track_ID']))
 
-    if particles > size:
+    if particles < size:
         size = particles - 1
     else:
         pass
