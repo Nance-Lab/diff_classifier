@@ -39,7 +39,8 @@ def _get_fiji():
     """
     home = os.path.expanduser("~")
     paths = [
-        os.path.join('/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx'),
+        os.path.join(home, 'Applications/Fiji.app/Contents/MacOS/ImageJ-macosx'),
+        os.path.join(home, 'Fiji.app/Contents/MacOS/ImageJ-macosx'),
         os.path.join(home, 'Fiji.app/ImageJ-linux64')
     ]
     exists = [os.path.exists(p) for p in paths]
@@ -72,10 +73,12 @@ def _get_fiji():
         if sys.platform == 'darwin':
             subprocess.run(['wget', 'https://downloads.imagej.net/fiji/latest/fiji-macosx.zip'], cwd=home)
             subprocess.run(['unzip', 'fiji-macosx.zip'], cwd=home)
+            os.environ['FIJI_BIN'] = os.path.join(home, 'Fiji.app/Contents/MacOS/ImageJ-macosx')
 
         elif sys.platform.startswith('linux'):
             subprocess.run(['wget', 'https://downloads.imagej.net/fiji/latest/fiji-linux64.zip'], cwd=home)
             subprocess.run(['unzip', 'fiji-linux64.zip'], cwd=home)
+            os.environ['FIJI_BIN'] = os.path.join(home, 'Fiji.app/ImageJ-linux64')
         print("Downloaded Fiji")
         return _get_fiji()
 
