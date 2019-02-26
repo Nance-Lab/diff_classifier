@@ -45,15 +45,19 @@ def _get_fiji():
     exists = [os.path.exists(p) for p in paths]
     # paths = list(compress(paths, exists))
 
+    # Currently only works on Mac and Linux
     if sys.platform != 'darwin' and not sys.platform.startswith('linux'):
         # print('System is not Linux or Mac')
         raise ValueError('System is not Linux or Mac')
-    # Has the user specified Fiji for us?
+
+    # Has the user specified Fiji for us already as an environment variable?
+    # Want to use it if it is already installed
     elif "FIJI_BIN" in os.environ:
         print("FIJI_BIN defined.")
         return os.environ["FIJI_BIN"]
 
-    # See if it exists
+    # Is Fiji installed somewhere, but not defined in path?
+    # Checks in two locations, doesn't search entire system
     elif any(exists):
         print('Exists elsewhere')
         counter = 0

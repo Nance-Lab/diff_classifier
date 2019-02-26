@@ -3,7 +3,7 @@
 '''
 
 
-def split(prefix, remote_folder, bucket='nancelab.publicfiles',
+def split(prefix, remote_folder, bucket,
           rows=4, cols=4, ores=(2048, 2048), ires=(512, 512)):
     '''Splits input image file into smaller images.
 
@@ -65,15 +65,8 @@ def split(prefix, remote_folder, bucket='nancelab.publicfiles',
     os.remove(filename)
 
 
-def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
-             regress_f='regress.obj', rows=4, cols=4, ires=(512, 512),
-             tparams={'frames': 651, 'radius': 3.0, 'threshold': 0.0,
-                      'do_median_filtering': False, 'quality': 15.0,
-                      'xdims': (0, 511), 'ydims': (1, 511),
-                      'median_intensity': 300.0, 'snr': 0.0,
-                      'linking_max_distance': 6.0,
-                      'gap_closing_max_distance': 10.0, 'max_frame_gap': 3,
-                      'track_duration': 20.0}):
+def tracking(subprefix, remote_folder, bucket, tparams,
+             regress_f='regress.obj', rows=4, cols=4, ires=(512, 512)):
     '''Tracks particles in input image using Trackmate.
 
     A function based on imagej.track that downloads the image from S3, tracks
@@ -144,7 +137,7 @@ def tracking(subprefix, remote_folder, bucket='nancelab.publicfiles',
           remote_folder+'/'+outfile))
 
 
-def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
+def assemble_msds(prefix, remote_folder, bucket,
                   ires=(512, 512), frames=651, rows=4, cols=4):
     '''Calculates MSDs and features from input trajectory files
 
@@ -237,16 +230,9 @@ def assemble_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
         os.remove(outfile)
 
 
-def split_track_msds(prefix, remote_folder, bucket='nancelab.publicfiles',
+def split_track_msds(prefix, remote_folder, bucket, tparams,
                      rows=4, cols=4, ores=(2048, 2048), ires=(512, 512),
-                     to_split=False, regress_f='regress.obj', frames=651,
-                     tparams={'radius': 3.0, 'threshold': 0.0,
-                              'do_median_filtering': False, 'quality': 15.0,
-                              'xdims': (0, 511), 'ydims': (1, 511),
-                              'median_intensity': 300.0, 'snr': 0.0,
-                              'linking_max_distance': 6.0,
-                              'gap_closing_max_distance': 10.0,
-                              'max_frame_gap': 3, 'track_duration': 20.0}):
+                     to_split=False, regress_f='regress.obj', frames=651):
     '''Splits images, track particles, and calculates MSDs
 
     A composite function designed to work with Cloudknot to split images,
