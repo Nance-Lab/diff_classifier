@@ -259,9 +259,9 @@ def plot_scatterplot(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=51
         aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
 
 
-def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True, 
+def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True,
                       remote_folder = "01_18_Experiment", bucket='ccurtis.data',
-                      figsize=(12, 12)):
+                      figsize=(12, 12), subset=True, size=1000):
     """
     Plot trajectories in video.
 
@@ -281,10 +281,13 @@ def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True,
     """
     merged = pd.read_csv('msd_{}.csv'.format(prefix))
     particles = int(max(merged['Track_ID']))
+    particles = np.linspace(0, particles, particles-1).astype(int)
+    if subset:
+        particles = np.random.choice(particles, size=size, replace=False)
     ires = resolution
 
     fig = plt.figure(figsize=figsize)
-    for part in range(0, particles):
+    for part in particles:
         x = merged[merged['Track_ID'] == part]['X']
         y = merged[merged['Track_ID'] == part]['Y']
         plt.plot(x, y, color='k', alpha=0.7)
@@ -296,7 +299,7 @@ def plot_trajectories(prefix, resolution=512, rows=4, cols=4, upload=True,
     print('Plotted {} trajectories successfully.'.format(prefix))
     outfile = 'traj_{}.png'.format(prefix)
     fig.savefig(outfile, bbox_inches='tight')
-    if upload == True:
+    if upload:
         aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
 
 
@@ -434,8 +437,8 @@ def plot_particles_in_frame(prefix, x_range=600, y_range=2000, upload=True,
         aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
 
 
-def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02, alpha=0.01, folder='.', upload=True,
-                         remote_folder="01_18_Experiment", bucket='ccurtis.data', figsize=(10, 10)):
+def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02, alpha=0.1, folder='.', upload=True,
+                         remote_folder="01_18_Experiment", bucket='ccurtis.data', figsize=(10, 10), subset=True, size=1000):
     """
     Plot MSDs of trajectories and the geometric average.
 
@@ -470,11 +473,22 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     fig = plt.figure(figsize=figsize)
     particles = int(max(merged['Track_ID']))
     frames = int(max(merged['Frame']))
-    y = np.zeros((particles+1, frames+1))
-    for i in range(0, particles+1):
-        y[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
-        x = merged.loc[merged.Track_ID == i, 'Frame']/fps
-        plt.plot(x, y[i, :], 'k', alpha=alpha)
+
+    y = merged['Y'].values.reshape((particles+1, frames+1))*umppx*umppx
+    x = merged['X'].values.reshape((particles+1, frames+1))/fps
+#     for i in range(0, particles+1):
+#         y[i, :] = merged.loc[merged.Track_ID == i, 'MSDs']*umppx*umppx
+#         x = merged.loc[merged.Track_ID == i, 'Frame']/fps
+
+    particles = np.linspace(0, particles, particles-1).astype(int)
+    if subset:
+        particles = np.random.choice(particles, size=size, replace=False)
+
+    y = np.zeros((particles.shape[0], frames+1))
+    for idx, val in enumerate(particles):
+        y[idx, :] = merged.loc[merged.Track_ID == val, 'MSDs']*umppx*umppx
+        x = merged.loc[merged.Track_ID == val, 'Frame']/fps
+        plt.plot(x, y[idx, :], 'k', alpha=alpha)
 
     geo_mean = np.nanmean(ma.log(y), axis=0)
     geo_SEM = stats.sem(ma.log(y), axis=0, nan_policy='omit')
@@ -492,7 +506,7 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     fig.savefig(outfile, bbox_inches='tight')
     np.savetxt(outfile2, geo_mean, delimiter=",")
     np.savetxt(outfile3, geo_SEM, delimiter=",")
-    if upload==True:
+    if upload:
         aws.upload_s3(outfile, remote_folder+'/'+outfile, bucket_name=bucket)
         aws.upload_s3(outfile2, remote_folder+'/'+outfile2, bucket_name=bucket)
         aws.upload_s3(outfile3, remote_folder+'/'+outfile3, bucket_name=bucket)
