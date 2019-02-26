@@ -104,7 +104,7 @@ def test_plot_individual_msds():
     feat.to_csv(ft_file)
 
     geomean, gSEM = hm.plot_individual_msds(prefix, umppx=1, fps=1, y_range=400, alpha=0.3, upload=False)
-    npt.assert_equal(332.8, np.round(np.sum(geomean), 1))
+    npt.assert_almost_equal(336.9, np.round(np.sum(geomean), 1))
     npt.assert_equal(33.1, np.round(np.sum(gSEM), 1))
 
 
