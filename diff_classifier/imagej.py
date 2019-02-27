@@ -88,9 +88,9 @@ def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
                  ires=(512, 512)):
     """Partitions image into smaller images.
 
-    Partitions a large image into irows x icols images of size ires and saves
-    them. Also forces image to be square. Default input image sizes are from
-    a Nikon/Hamamatsu camera setup (2048 x 2044 pixels).
+    Partitions a large image into irows x icols images of size ires and write
+    them to the drive. Default input image sizes are from a Nikon/Hamamatsu
+    camera setup (2048 x 2044 pixels).
 
     Parameters
     ----------
@@ -104,6 +104,11 @@ def partition_im(tiffname, irows=4, icols=4, ores=(2048, 2048),
         Input images are scaled to size ores pixels prior to splitting.
     ires : tuple of int
         Output images are of size ires pixels.
+
+    Returns
+    --------
+    names : list of str
+        List of output image filenames
 
     Examples
     --------

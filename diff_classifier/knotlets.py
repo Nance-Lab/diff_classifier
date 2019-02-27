@@ -187,10 +187,6 @@ def assemble_msds(prefix, remote_folder, bucket,
         correctly splitting.
     frames : int
         Number of frames in input videos.
-    rows : int
-        Number of rows of split images (from kn.split).
-    cols : int
-        Number of columns of split images (from kn.split).
 
     '''
 
