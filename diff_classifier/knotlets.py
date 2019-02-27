@@ -1,4 +1,24 @@
-'''Test functions to submit tracking jobs to AWS Batch with Cloudknot
+'''Functions to submit tracking jobs to AWS Batch with Cloudknot
+
+This is a set of custom functions for use with Cloutknot for parallelized
+multi-particle tracking workflows. These can also be used as template if
+users want to build their own parallelized workflows. See Cloudknot
+documentation at https://richford.github.io/cloudknot/documentation.html
+for more information.
+
+The base set of functions is split, tracking, and assemble_msds. The split
+function splits large images into smaller images that are manageable for a
+single EC2 instance. The tracking function tracks nanoparticle trajectories in
+a single sub-image from the split function. The assemble_msds function operates
+on all sub-image trajectory csv files from the tracking function, calculates
+MSDs and features and assembles them into a single msd csv file and a single
+features csv file. The workflow looks something like this:
+
+                  |-track---|
+                  |-track---|
+(image) -split----|         |--assemble_msds-----> (msd/feature files)
+                  |-track---|
+                  |-track---|
 
 '''
 
@@ -8,7 +28,10 @@ def split(prefix, remote_folder, bucket,
     '''Splits input image file into smaller images.
 
     A function based on imagej.partition_im that download images from an S3
-    bucket, splits it into smaller images, and uploads these to S3.
+    bucket, splits it into smaller images, and uploads these to S3. Designed to
+    work with Cloudknot for parallelizable workflows. Typically, this function
+    is used in conjunction with kn.tracking and kn.assemble_msds for a complete
+    analysis.
 
     Parameters
     ----------
@@ -48,13 +71,14 @@ def split(prefix, remote_folder, bucket,
     s3 = boto3.client('s3')
 
     # Splitting section
-    ij.partition_im(local_name, irows=rows, icols=cols, ores=ores, ires=ires)
+    names = ij.partition_im(local_name, irows=rows, icols=cols,
+                            ores=ores, ires=ires)
 
     # Names of subfiles
-    names = []
-    for i in range(0, 4):
-        for j in range(0, 4):
-            names.append('{}_{}_{}.tif'.format(prefix, i, j))
+    # names = []
+    # for i in range(0, 4):
+    #     for j in range(0, 4):
+    #         names.append('{}_{}_{}.tif'.format(prefix, i, j))
 
     for name in names:
         aws.upload_s3(name, remote_folder+'/'+name, bucket_name=bucket)
@@ -71,6 +95,9 @@ def tracking(subprefix, remote_folder, bucket, tparams,
 
     A function based on imagej.track that downloads the image from S3, tracks
     particles using Trackmate, and uploads the resulting trajectory file to S3.
+    Designed to work with Cloudknot for parallelizable workflows. Typically,
+    this function is used in conjunction with kn.split and kn.assemble_msds for
+    a complete analysis.
 
     Parameters
     ----------
@@ -138,11 +165,14 @@ def tracking(subprefix, remote_folder, bucket, tparams,
 
 
 def assemble_msds(prefix, remote_folder, bucket,
-                  ires=(512, 512), frames=651, rows=4, cols=4):
+                  ires=(512, 512), frames=651):
     '''Calculates MSDs and features from input trajectory files
 
     A function based on msd.all_msds2 and features.calculate_features, creates
     msd and feature csv files from input trajectory files and uploads to S3.
+    Designed to work with Cloudknot for parallelizable workflows. Typically,
+    this function is used in conjunction with kn.split and kn.tracking for an
+    entire workflow.
 
     prefix : string
         Prefix (everything except file extension and folder name) of image file
@@ -158,9 +188,9 @@ def assemble_msds(prefix, remote_folder, bucket,
     frames : int
         Number of frames in input videos.
     rows : int
-        Number of rows to split image into.
+        Number of rows of split images (from kn.split).
     cols : int
-        Number of columns to split image into.
+        Number of columns of split images (from kn.split).
 
     '''
 
@@ -178,10 +208,25 @@ def assemble_msds(prefix, remote_folder, bucket,
 
     s3 = boto3.client('s3')
 
+    # names = []
+    # for i in range(0, 4):
+    #     for j in range(0, 4):
+    #         names.append('{}_{}_{}.tif'.format(prefix, i, j))
+    all_objects = s3.list_objects(Bucket=bucket,
+                                  Prefix='{}/{}_'.format(remote_folder,
+                                                         prefix))
     names = []
-    for i in range(0, 4):
-        for j in range(0, 4):
-            names.append('{}_{}_{}.tif'.format(prefix, i, j))
+    for entry in all_objects['Contents']:
+        name = entry['Key'].split('/')[1]
+        names.append(name)
+        row = int(name.split(prefix)[1].split('.')[0].split('_')[1])
+        col = int(name.split(prefix)[1].split('.')[0].split('_')[2])
+        if row > rows:
+            rows = row
+        if col > cols:
+            cols = col
+    rows = rows + 1
+    cols = cols + 1
 
     counter = 0
     for name in names:
