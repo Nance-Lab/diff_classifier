@@ -157,6 +157,30 @@
 <span id="welcome-to-diff-classifier"></span><h1>Welcome to diff_classifier<a class="headerlink" href="#module-diff_classifier" title="Permalink to this headline">¶</a></h1>
 <p>The diff_classifier package is complete particle tracking package implemented
 using the ImageJ plugin <a class="reference external" href="http://imagej.net/Getting_started_with_TrackMate">Trackmate</a>.</p>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>Multi-particle tracking is a powerful tool used in fields as diverse as
+aeronautics to oceanography that allows researchers to collect spatial
+information of moving objects from video and image datasets. Multi-particle
+tracking software packages abound (see for example this <a class="reference external" href="http://www.nature.com/articles/nmeth.2808">Nature methods paper</a> comparing the results of 14
+different teams).  But researchers are often on their own when it comes to
+scale up, analysis, and visualization. In practice, each individual video
+requires user-defined hyperparameters to both accurately identify particles in
+images and link identified particles from frame to frame. It also raises
+questions of reproducibility as user-defined parameters vary from user to user.
+Our parallelized workflow overcomes this challenge using a regression technique
+using a small subset of images as a training dataset.</p>
+<p>Diff_classifier seeks to provide these tools in a centralized package,
+including MSD and trajectory feature analysis tools, MSD and heatmap plots of
+output data, and parallelization tools implemented using Amazon Web Services.
+This package is the primary tool for tracking analysis of nanoparticles in the
+brain in the <a class="reference external" href="https://www.nancelab.com/">Nance research group</a> at the
+University of Washington.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/summary.png" src="_images/summary.png" />
+<p class="caption"><span class="caption-text">Sample output from diff_classifier visualization tools.</span></p>
+</div>
+</div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">diff_classifier.utils</span> <span class="kn">as</span> <span class="nn">ut</span>
@@ -183,23 +207,6 @@ using the ImageJ plugin <a class="reference external" href="http://imagej.net/Ge
 
 <span class="n">hm</span><span class="o">.</span><span class="n">plot_trajectories</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
 </pre></div>
-</div>
-</div>
-<div class="section" id="motivation">
-<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
-<p>Multi-particle tracking software packages abound (see for example this <a class="reference external" href="http://www.nature.com/articles/nmeth.2808">Nature
-methods paper</a> comparing the
-results of 14 different teams).  But researchers are often on their own when
-it comes to scale up, analysis, and visualization.  Diff_classifier seeks to
-provide these tools in a centralized package, including MSD and trajectory
-feature analysis tools, MSD and heatmap plots of output data, and
-parallelization tools implemented using Amazon Web Services.  This package
-is the primary tool for tracking analysis of nanoparticles in the brain in the
-<a class="reference external" href="https://www.nancelab.com/">Nance research group</a> at the University of
-Washington.</p>
-<div class="figure align-center" id="id1">
-<img alt="_images/summary.png" src="_images/summary.png" />
-<p class="caption"><span class="caption-text">Sample output from diff_classifier visualization tools.</span></p>
 </div>
 </div>
 <div class="section" id="installation-and-getting-started">
