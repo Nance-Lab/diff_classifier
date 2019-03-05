@@ -13,7 +13,7 @@ Multi-particle tracking is a powerful tool used in fields as diverse as
 aeronautics to oceanography that allows researchers to collect spatial
 information of moving objects from video and image datasets. Examples include:
 
-- Tracking tracers in ocean currents to measure to study fluid flow
+- Tracking tracers in ocean currents to study fluid flow
 - Tracking molecular motors (e.g. myosin, kinesin) to assess motile activity
 - Measuring intracellular trafficking by tracking membrane vesicles
 - Assessing microrheological properties by tracking nanoparticle movement.
