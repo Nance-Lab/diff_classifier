@@ -1,4 +1,5 @@
 ## diff_classifier
+[![status](http://joss.theoj.org/papers/003901de75c26c1dd3f060043249bc4f/status.svg)](http://joss.theoj.org/papers/003901de75c26c1dd3f060043249bc4f)
 [![Build Status](https://travis-ci.org/ccurtis7/diff_classifier.svg?branch=master)](https://travis-ci.org/ccurtis7/diff_classifier)
 [![Coverage Status](https://coveralls.io/repos/github/ccurtis7/diff_classifier/badge.svg)](https://coveralls.io/github/ccurtis7/diff_classifier)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/ccurtis7/diff_classifier.svg)](https://scrutinizer-ci.com/g/ccurtis7/diff_classifier/?branch=master)
@@ -32,6 +33,6 @@ and we love any input, suggestions, and problems.
 
 This package was created with [shablona](https://github.com/uwescience/shablona).
 
-Guidelines for contributions were based off the 
+Guidelines for contributions were based off the
 [CONTRIBUTIONS](https://github.com/richford/cloudknot/blob/master/CONTRIBUTING.md)
 file developed by [Adam Richie-Halford](https://github.com/richford).
