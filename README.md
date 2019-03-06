@@ -16,7 +16,7 @@ utilizes the ImageJ package Trackmate for tracking analysis, and Cloudknot for
 parallelization on AWS.
 
 <p align="center"><img src="doc/source/_static/summary.png"
-alt="diff_classifier" height="30" title="diff_classifier"/></p>
+alt="diff_classifier" height="300" title="diff_classifier"/></p>
 
 
 This is the diff_classifier development site.  You can view the source code and
