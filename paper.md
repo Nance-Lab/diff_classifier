@@ -29,18 +29,26 @@ bibliography: paper.bib
 The [diff_classifier](https://github.com/ccurtis7/diff_classifier) package seeks
 to address the issue of scale-up in multi-particle tracking (MPT) analyses via a
 parallelization approach. MPT is a powerful analytical tool that has been used
-in fields ranging from aeronautics to oceanography to biomedical engineering
-[@Pulford:2005]. While a variety of tracking algorithms are available to
-researchers [@Chenouard:2014], a common problem is that data
-analysis usually depends on the use of graphical user interfaces, and relies
-on human input for accurate tracking. For example, particle detection often
-relies on the selection of a quality threshold, a numerical quantity
-distinguishing between “real” particles and “fake” particles [@Tineves:2017]. If
-this threshold is too high, the high number of false positives can result in
-false trajectories that skew results, and in extreme cases, cause the code to
-crash due to a lack of convergence in the particle linking step. If the
-threshold is too low, trajectories will be cut short resulting in a bias towards
-short fast-moving trajectories and could result in empty datasets [@Wang:2015].
+in fields ranging from aeronautics to oceanography [@Pulford:2005] allowing
+researchers to collect spatial and velocity information of moving objects from
+video datasets. Examples include:
+
+* Tracking tracers in ocean currents to study fluid flow
+* Tracking molecular motors (e.g. myosin, kinesin) to assess motile activity
+* Measuring intracellular trafficking by tracking membrane vesicles
+* Assessing microrheological properties by tracking nanoparticle movement.
+
+While a variety of tracking algorithms are available to researchers
+[@Chenouard:2014], a common problem is that data analysis usually depends on the
+use of graphical user interfaces, and relies on human input for accurate
+tracking. For example, particle detection often relies on the selection of a
+quality threshold, a numerical quantity distinguishing between “real” particles
+and “fake” particles [@Tineves:2017]. If this threshold is too high, false
+positive trajectories result in skewed MSD profiles, and in extreme cases, cause
+the code to crash due to a lack of convergence in the particle linking step. If
+the threshold is too low, trajectories will be cut short resulting in a bias
+towards short fast-moving trajectories and could result in empty datasets
+[@Wang:2015].
 
 Due to variations in experimental conditions and image quality, user-selected
 tracking parameters can vary widely from video to video. As parameter selection
