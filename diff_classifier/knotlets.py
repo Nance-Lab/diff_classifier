@@ -212,6 +212,8 @@ def assemble_msds(prefix, remote_folder, bucket,
                                   Prefix='{}/{}_'.format(remote_folder,
                                                          prefix))
     names = []
+    rows = 0
+    cols = 0
     for entry in all_objects['Contents']:
         name = entry['Key'].split('/')[-1]
         names.append(name)
