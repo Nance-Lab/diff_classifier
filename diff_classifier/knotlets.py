@@ -215,8 +215,8 @@ def assemble_msds(prefix, remote_folder, bucket,
     for entry in all_objects['Contents']:
         name = entry['Key'].split('/')[1]
         names.append(name)
-        row = int(name.split(prefix)[1].split('.')[0].split('_')[1])
-        col = int(name.split(prefix)[1].split('.')[0].split('_')[2])
+        row = int(name.split(prefix)[1].split('.')[0].split('_')[-2])
+        col = int(name.split(prefix)[1].split('.')[0].split('_')[-1])
         if row > rows:
             rows = row
         if col > cols:
@@ -226,8 +226,8 @@ def assemble_msds(prefix, remote_folder, bucket,
 
     counter = 0
     for name in names:
-        row = int(name.split(prefix)[1].split('.')[0].split('_')[1])
-        col = int(name.split(prefix)[1].split('.')[0].split('_')[2])
+        row = int(name.split(prefix)[1].split('.')[0].split('_')[-2])
+        col = int(name.split(prefix)[1].split('.')[0].split('_')[-1])
 
         filename = "Traj_{}_{}_{}.csv".format(prefix, row, col)
         aws.download_s3(remote_folder+'/'+filename, filename,
