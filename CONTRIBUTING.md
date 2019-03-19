@@ -33,7 +33,7 @@ wanted" is open to whoever wants to implement it.
 Look through the GitHub issues for features. Anything tagged with "enhancement"
 and "help wanted" is open to whoever wants to implement it.
 
-When submitting a new feature, please use a Pull Request with a title and description
+When submitting a new feature, please use a [Pull Request](https://scikit-learn.org/dev/developers/contributing.html#how-to-contribute) with a title and description
 of the proposed use case. Ideally, new features will include
 
 - Docstrings implemented with the [Numpy format](https://www.numpy.org/devdocs/docs/howto_document.html)
