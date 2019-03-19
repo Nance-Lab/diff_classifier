@@ -33,6 +33,12 @@ wanted" is open to whoever wants to implement it.
 Look through the GitHub issues for features. Anything tagged with "enhancement"
 and "help wanted" is open to whoever wants to implement it.
 
+When submitting a new feature, please use a Pull Request with a title and description
+of the proposed use case. Ideally, new features will include
+
+- Docstrings implemented with the [Numpy format](https://www.numpy.org/devdocs/docs/howto_document.html)
+- Unit tests (see examples [here](https://github.com/ccurtis7/diff_classifier/tree/master/diff_classifier/tests))
+
 ### Write Documentation
 
 Diff_classifier could always use more documentation, whether as part of the
@@ -41,8 +47,12 @@ articles, and such.
 
 ### Submit Feedback
 
+We appreciate any and all feedback in your own implementations of diff_classifier :)
+
 The best way to send feedback is to file an issue at
 https://github.com/ccurtis7/diff_classifier/issues.
+
+
 
 If you are proposing a feature:
 
