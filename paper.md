@@ -1,5 +1,5 @@
 ---
-title: 'diffclassifier: Parallelization of multi-particle tracking video analyses'
+title: 'diff$\_$classifier: Parallelization of multi-particle tracking video analyses'
 tags:
 - Python
 - multi-particle tracking
