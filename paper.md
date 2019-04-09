@@ -1,5 +1,5 @@
 ---
-title: 'diff\_classifier: Parallelization of multi-particle tracking video analyses'
+title: 'diff_classifier: Parallelization of multi-particle tracking video analyses'
 tags:
 - Python
 - multi-particle tracking
@@ -74,8 +74,8 @@ analysis to individual particle trajectories. By including a variety of features
 resolution, users can implement a range of data science analysis techniques to
 their MPT datasets.
 
-The source code for diff_classifier has been archived to Zenodo with the
-linked DOI: [@zenodo]
+The source code for diff_classifier has been archived to [Zenodo](https://zenodo.org/record/2631862#.XKv4IPZFyEo) with the
+linked DOI [@zenodo].
 
 
 # Acknowledgements
