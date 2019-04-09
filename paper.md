@@ -53,16 +53,15 @@ towards short fast-moving trajectories and could result in empty datasets
 Due to variations in experimental conditions and image quality, user-selected
 tracking parameters can vary widely from video to video. As parameter selection
 can also vary from user to user, this also brings up the issue of
-reproducibility. diff_classifier addresses these issues with regression
-tools to predict input tracking parameters and parallelized script-based
-implementations in Amazon Web Services (AWS), using the Simple Storage
-Service (S3) and Batch for data storage and computing, respectively, and
-relying on the Cloudknot software library for automating these
-interactions [@cloudknot]. By manually tracking a small subset of the entire
-video dataset to be analyzed (5-10 videos per experiment), users can predict
-tracking parameters based on intensity distributions of input images. This can
-simultaneously reduce time-to-first-result in MPT workflows and provide
-reproducible MPT results.
+reproducibility. diff_classifier addresses these issues with regression tools to
+predict input tracking parameters and parallelized script-based implementations
+in Amazon Web Services (AWS), using the Simple Storage Service (S3) and Batch
+for data storage and computing, respectively, and relying on the Cloudknot
+software library for automating these interactions [@cloudknot]. By manually
+tracking a small subset of the entire video dataset to be analyzed (5-10 videos
+per experiment), users can predict tracking parameters based on intensity
+distributions of input images. This can simultaneously reduce
+time-to-first-result in MPT workflows and provide reproducible MPT results.
 
 diff_classifier also includes downstream MPT analysis tools including mean
 squared displacement and feature calculations, visualization tools, and a
@@ -75,17 +74,16 @@ resolution, users can implement a range of data science analysis techniques to
 their MPT datasets.
 
 The source code for diff_classifier has been archived to Zenodo with the
-linked DOI: [@zenodo]
+linked DOI: [@zenodo].
 
 
 # Acknowledgements
 
-The authors would like to thank the eScience Institute for the resources
-and expertise provided through the Incubator Program that made
-diff_classifier possible. The University of Washington eScience Institute
-is supported through a grant from the Gordon & Betty Moore Foundation and
-the Alfred P. Sloan Foundation. The authors would also like to thank
-funding from the National Institute of General Medical Sciences 1R35
-GM124677-01 (E. Nance).
+The authors would like to thank the eScience Institute for the resources and
+expertise provided through the Incubator Program that made diff_classifier
+possible. The University of Washington eScience Institute is supported through a
+grant from the Gordon & Betty Moore Foundation and the Alfred P. Sloan
+Foundation. The authors would also like to thank funding from the National
+Institute of General Medical Sciences 1R35 GM124677-01 (E. Nance).
 
 # References
