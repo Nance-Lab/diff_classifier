@@ -34,7 +34,7 @@ researchers to collect spatial and velocity information of moving objects from
 video datasets. Examples include:
 
 * Tracking tracers in ocean currents to study fluid flow
-* Tracking molecular motors (e.g. myosin, kinesin) to assess motile activity
+* Tracking molecular motors (e.g., myosin, kinesin) to assess motile activity
 * Measuring intracellular trafficking by tracking membrane vesicles
 * Assessing microrheological properties by tracking nanoparticle movement.
 
@@ -66,16 +66,13 @@ reproducible MPT results.
 
 diff_classifier also includes downstream MPT analysis tools including mean
 squared displacement and feature calculations, visualization tools, and a
-principle component analysis implementation. MPT is commonly used to calculate
+principal component analysis implementation. MPT is commonly used to calculate
 and report ensemble-averaged diffusion coefficients of nanoparticles and other
 objects. We sought to expand the power of MPT analyses by changing the unit of
 analysis to individual particle trajectories. By including a variety of features
-(e.g. aspect ratio, boundedness, fractal dimension), with trajectory-level
+(e.g., aspect ratio, boundedness, fractal dimension), with trajectory-level
 resolution, users can implement a range of data science analysis techniques to
 their MPT datasets.
-
-The source code for diff_classifier has been archived to [Zenodo](https://zenodo.org/record/2631862#.XKv4IPZFyEo) with the
-linked DOI [@zenodo].
 
 
 # Acknowledgements
