@@ -1,5 +1,5 @@
 ---
-title: 'diffclassifier: Parallelization of multi-particle tracking video analyses'
+title: 'diff\_classifier: Parallelization of multi-particle tracking video analyses'
 tags:
 - Python
 - multi-particle tracking
@@ -26,10 +26,10 @@ bibliography: paper.bib
 
 # Summary
 
-The [diffclassifier](https://github.com/ccurtis7/diff_classifier) package seeks
+The [diff\_classifier](https://github.com/ccurtis7/diff\_classifier) package seeks
 to address the issue of scale-up in multi-particle tracking (MPT) analyses via a
 parallelization approach. MPT is a powerful analytical tool that has been used
-in fields ranging from aeronautics to oceanography allowing
+in fields ranging from aeronautics to oceanography [@Pulford:2005] allowing
 researchers to collect spatial and velocity information of moving objects from
 video datasets. Examples include:
 
@@ -39,31 +39,32 @@ video datasets. Examples include:
 * Assessing microrheological properties by tracking nanoparticle movement.
 
 While a variety of tracking algorithms are available to researchers
-, a common problem is that data analysis usually depends on the
+[@Chenouard:2014], a common problem is that data analysis usually depends on the
 use of graphical user interfaces, and relies on human input for accurate
 tracking. For example, particle detection often relies on the selection of a
 quality threshold, a numerical quantity distinguishing between “real” particles
-and “fake” particles . If this threshold is too high, false
+and “fake” particles [@Tineves:2017]. If this threshold is too high, false
 positive trajectories result in skewed MSD profiles, and in extreme cases, cause
 the code to crash due to a lack of convergence in the particle linking step. If
 the threshold is too low, trajectories will be cut short resulting in a bias
 towards short fast-moving trajectories and could result in empty datasets
-.
+[@Wang:2015].
 
 Due to variations in experimental conditions and image quality, user-selected
 tracking parameters can vary widely from video to video. As parameter selection
 can also vary from user to user, this also brings up the issue of
-reproducibility. diffclassifier addresses these issues with regression tools to
-predict input tracking parameters and parallelized script-based implementations
-in Amazon Web Services (AWS), using the Simple Storage Service (S3) and Batch
-for data storage and computing, respectively, and relying on the Cloudknot
-software library for automating these interactions . By manually
-tracking a small subset of the entire video dataset to be analyzed (5-10 videos
-per experiment), users can predict tracking parameters based on intensity
-distributions of input images. This can simultaneously reduce
-time-to-first-result in MPT workflows and provide reproducible MPT results.
+reproducibility. diff\_classifier addresses these issues with regression
+tools to predict input tracking parameters and parallelized script-based
+implementations in Amazon Web Services (AWS), using the Simple Storage
+Service (S3) and Batch for data storage and computing, respectively, and
+relying on the Cloudknot software library for automating these
+interactions [@cloudknot]. By manually tracking a small subset of the entire
+video dataset to be analyzed (5-10 videos per experiment), users can predict
+tracking parameters based on intensity distributions of input images. This can
+simultaneously reduce time-to-first-result in MPT workflows and provide
+reproducible MPT results.
 
-diffclassifier also includes downstream MPT analysis tools including mean
+diff\_classifier also includes downstream MPT analysis tools including mean
 squared displacement and feature calculations, visualization tools, and a
 principle component analysis implementation. MPT is commonly used to calculate
 and report ensemble-averaged diffusion coefficients of nanoparticles and other
@@ -73,17 +74,18 @@ analysis to individual particle trajectories. By including a variety of features
 resolution, users can implement a range of data science analysis techniques to
 their MPT datasets.
 
-The source code for diffclassifier has been archived to Zenodo with the
-linked DOI: .
+The source code for diff\_classifier has been archived to Zenodo with the
+linked DOI: [@zenodo]
 
 
 # Acknowledgements
 
-The authors would like to thank the eScience Institute for the resources and
-expertise provided through the Incubator Program that made diffclassifier
-possible. The University of Washington eScience Institute is supported through a
-grant from the Gordon & Betty Moore Foundation and the Alfred P. Sloan
-Foundation. The authors would also like to thank funding from the National
-Institute of General Medical Sciences 1R35 GM124677-01 (E. Nance).
+The authors would like to thank the eScience Institute for the resources
+and expertise provided through the Incubator Program that made
+diff\_classifier possible. The University of Washington eScience Institute
+is supported through a grant from the Gordon & Betty Moore Foundation and
+the Alfred P. Sloan Foundation. The authors would also like to thank
+funding from the National Institute of General Medical Sciences 1R35
+GM124677-01 (E. Nance).
 
 # References
