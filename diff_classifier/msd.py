@@ -861,6 +861,7 @@ def random_walk(nsteps=100, seed=None, start=(0, 0), step=1, mask=None,
     if type(mask) is np.ndarray:
         while not mask[start[0], start[1]]:
             start = (start[0], start[1]+1)
+        eumask = eudist(~mask)
 
     np.random.seed(seed=seed)
 
@@ -868,7 +869,6 @@ def random_walk(nsteps=100, seed=None, start=(0, 0), step=1, mask=None,
     y = np.zeros(nsteps)
     x[0] = start[0]
     y[0] = start[1]
-    eumask = eudist(~mask)
 
     # Checks to see if a mask is being used first
     if not type(mask) is np.ndarray:
