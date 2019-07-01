@@ -254,6 +254,7 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     pcadataset.pcavals = pd.DataFrame(pca1.transform(dataset_scaled))
     pcadataset.final = pd.concat([dataset, pcadataset.pcavals], axis=1)
     pcadataset.pcamodel = pca1
+    pcadataset.scaler = scaler
 
     return pcadataset
 
@@ -265,7 +266,7 @@ def recycle_pcamodel(pcamodel, df, imputenans=True, scale=True):
         df_clean = imp.transform(df)
     else:
         df_clean = df
-        
+
     # Scale inputs
     if scale:
         scaler = stscale()
@@ -273,11 +274,11 @@ def recycle_pcamodel(pcamodel, df, imputenans=True, scale=True):
         df_scaled = scaler.transform(df_clean)
     else:
         df_scaled = df_clean
-        
+
     pcamodel.fit(df_scaled)
     pcavals = pd.DataFrame(pcamodel.transform(df_scaled))
     pcafinal = pd.concat([df, pcavals], axis=1)
-    
+
     return pcafinal
 
 
@@ -394,7 +395,7 @@ def build_model(rawdata, feature, featvals, equal_sampling=True,
     for defkey in defaults.keys():
         if defkey not in kwargs.keys():
             kwargs[defkey] = defaults[defkey]
-    
+
     if equal_sampling:
         for featval in featvals:
             if from_end:
@@ -431,7 +432,7 @@ def build_model(rawdata, feature, featvals, equal_sampling=True,
                             random_state=kwargs['NNrandom_state'])
     else:
         clf = RandomForestClassifier(n_estimators=kwargs['n_estimators'])
-    
+
     clf.fit(X, y)
 
     return clf, X, y
