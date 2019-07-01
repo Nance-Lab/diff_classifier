@@ -148,7 +148,8 @@ def kmo(dataset):
 
 
 def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
-                 rem_outliers=True, out_thresh=10, n_components=5):
+                 rem_outliers=True, out_thresh=10, n_components=5,
+                 existing_model=False, model_file='Optional'):
     """Performs a primary component analysis on an input dataset
 
     Parameters
@@ -218,23 +219,32 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
 
     # Scale inputs
     if scale:
-        scaler = stscale()
-        scaler.fit(dataset_clean)
-        dataset_scaled = scaler.transform(dataset_clean)
+        if existing_model:
+            scaler = model_file.scaler
+            dataset_scaled = model_file.scaler.transform(dataset_clean)
+        else:
+            scaler = stscale()
+            scaler.fit(dataset_clean)
+            dataset_scaled = scaler.transform(dataset_clean)
     else:
         dataset_scaled = dataset_clean
 
     pcadataset = Bunch(scaled=dataset_scaled)
-    pca1 = pca(n_components=n_components)
-    pca1.fit(dataset_scaled)
 
-    # Cumulative explained variance ratio
-    cum_var = 0
-    explained_v = pca1.explained_variance_ratio_
-    print('Cumulative explained variance:')
-    for i in range(0, n_components):
-        cum_var = cum_var + explained_v[i]
-        print('{} component: {}'.format(i, cum_var))
+    if existing_model:
+        pca1 = model_file.pcamodel
+    else:
+        pca1 = pca(n_components=n_components)
+        pca1.fit(dataset_scaled)
+
+    if not existing_model:
+        # Cumulative explained variance ratio
+        cum_var = 0
+        explained_v = pca1.explained_variance_ratio_
+        print('Cumulative explained variance:')
+        for i in range(0, n_components):
+            cum_var = cum_var + explained_v[i]
+            print('{} component: {}'.format(i, cum_var))
 
     prim_comps = {}
     pcadataset.prvals = {}
