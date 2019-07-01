@@ -283,7 +283,7 @@ def recycle_pcamodel(pcamodel, df, imputenans=True, scale=True):
 
 def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
              labels=['Sample1', 'Sample2'], savefig=True, filename='test.png',
-             rticks=np.linspace(-2, 2, 5)):
+             rticks=np.linspace(-2, 2, 5), dpi=300, labelsize=20):
     """Plots the average output features from a PCA analysis in polar
     coordinates
 
@@ -322,20 +322,21 @@ def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
         bars[key] = ax.plot(theta, radii[key], linewidth=lwidth, color=c,
                             label=labels[counter])
         counter = counter + 1
-    plt.legend(bbox_to_anchor=(0.90, 1), loc=2, borderaxespad=0.,
-               frameon=False, fontsize=20)
+    plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.,
+               frameon=False, fontsize=labelsize+4)
 
     # # Use custom colors and opacity
     # for r, bar in zip(radii, bars):
     #     bar.set_facecolor(plt.cm.jet(np.abs(r / 2.5)))
     #     bar.set_alpha(0.8)
     ax.set_xticks(np.pi/180. * np.linspace(0, 360, N, endpoint=False))
-    ax.set_xticklabels(list(range(0, N)))
-    ax.set_ylim([min(rticks), max(rticks)])
+    ax.set_xticklabels(list(range(0, N)), fontsize=labelsize)
+    ax.set_ylim([min(rticks), max(rticks)+1])
     ax.set_yticks(rticks)
+    ax.yaxis.set_tick_params(labelsize=labelsize)
 
     if savefig:
-        plt.savefig(filename, bbox_inches='tight')
+        plt.savefig(filename, bbox_inches='tight', dpi=dpi)
 
     plt.show()
 
@@ -505,7 +506,7 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
 
     defaults = {'figsize': (12, 5), 'yrange': [-20, 20], 'xlabel': 'Feature',
                 'labelsize': 20, 'ticksize': 16, 'fname': None,
-                'legendfontsize': 12, 'legendloc': 1}
+                'legendfontsize': 12, 'legendloc': 1, 'dpi': 300}
 
     for defkey in defaults.keys():
         if defkey not in kwargs.keys():
@@ -546,7 +547,7 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
     if kwargs['fname'] is None:
         plt.show()
     else:
-        plt.savefig(kwargs['fname'])
+        plt.savefig(kwargs['fname'], dpi=kwargs['dpi'])
 
     return to_violin
 
@@ -694,7 +695,8 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
 
     defaults = {'figsize': (8, 8), 'dotsize': 70, 'alpha': 0.7, 'xlim': None,
                 'ylim': None, 'zlim': None, 'legendfontsize': 12,
-                'labelfontsize': 10, 'fname': None}
+                'labelfontsize': 10, 'fname': None, 'dpi': 300,
+                'noticks': True, 'ticksize': 10}
 
     for defkey in defaults.keys():
         if defkey not in kwargs.keys():
@@ -747,12 +749,20 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
             if kwargs['zlim'] is not None:
                 axes[ax].set_zlim3d(kwargs['zlim'][0], kwargs['zlim'][1])
             axes[ax].view_init(angle1[acount], angle2[acount])
-            axes[ax].set_xlabel('Prin. Component {}'.format(features[0]),
+            axes[ax].set_xlabel('{}'.format(features[0]),
                                 fontsize=kwargs['labelfontsize'])
-            axes[ax].set_ylabel('Prin. Component {}'.format(features[1]),
+            axes[ax].set_ylabel('{}'.format(features[1]),
                                 fontsize=kwargs['labelfontsize'])
-            axes[ax].set_zlabel('Prin. Component {}'.format(features[2]),
+            axes[ax].set_zlabel('{}'.format(features[2]),
                                 fontsize=kwargs['labelfontsize'])
+            if kwargs['noticks']:
+                axes[ax].set_xticklabels('')
+                axes[ax].set_yticklabels('')
+                axes[ax].set_zticklabels('')
+            else:
+                axes[ax].xaxis.set_tick_params(labelsize=kwargs['ticksize'])
+                axes[ax].yaxis.set_tick_params(labelsize=kwargs['ticksize'])
+                axes[ax].zaxis.set_tick_params(labelsize=kwargs['ticksize'])
             acount = acount + 1
         counter = counter + 1
 
@@ -763,4 +773,4 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
     if kwargs['fname'] is None:
         plt.show()
     else:
-        plt.savefig(kwargs['fname'])
+        plt.savefig(kwargs['fname'], dpi=kwargs['dpi'])

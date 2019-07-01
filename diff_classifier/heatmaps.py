@@ -435,7 +435,7 @@ def plot_particles_in_frame(prefix, x_range=600, y_range=2000, upload=True,
 
 
 def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02, alpha=0.01, folder='.', upload=True,
-                         remote_folder="01_18_Experiment", bucket='ccurtis.data', figsize=(10, 10)):
+                         remote_folder="01_18_Experiment", bucket='ccurtis.data', figsize=(10, 10), dpi=300):
     """
     Plot MSDs of trajectories and the geometric average.
 
@@ -489,7 +489,7 @@ def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02
     outfile = '{}/msds_{}.png'.format(folder, prefix)
     outfile2 = '{}/geomean_{}.csv'.format(folder, prefix)
     outfile3 = '{}/geoSEM_{}.csv'.format(folder, prefix)
-    fig.savefig(outfile, bbox_inches='tight')
+    fig.savefig(outfile, bbox_inches='tight', dpi=dpi)
     np.savetxt(outfile2, geo_mean, delimiter=",")
     np.savetxt(outfile3, geo_SEM, delimiter=",")
     if upload==True:
