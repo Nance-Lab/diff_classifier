@@ -15,8 +15,6 @@ from sklearn import neighbors
 from sklearn.decomposition import PCA as pca
 from sklearn.preprocessing import StandardScaler as stscale
 from sklearn.preprocessing import Imputer
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 from mpl_toolkits.mplot3d import Axes3D
@@ -148,8 +146,7 @@ def kmo(dataset):
 
 
 def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
-                 rem_outliers=True, out_thresh=10, n_components=5,
-                 existing_model=False, model_file='Optional'):
+                 rem_outliers=True, out_thresh=10, n_components=5):
     """Performs a primary component analysis on an input dataset
 
     Parameters
@@ -189,7 +186,6 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     """
     pd.options.mode.chained_assignment = None  # default='warn'
     dataset_num = dataset.drop(dropcols, axis=1)
-    dataset_num = dataset_num.replace([np.inf, -np.inf], np.nan)
 
     if rem_outliers:
         for i in range(10):
@@ -219,32 +215,23 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
 
     # Scale inputs
     if scale:
-        if existing_model:
-            scaler = model_file.scaler
-            dataset_scaled = model_file.scaler.transform(dataset_clean)
-        else:
-            scaler = stscale()
-            scaler.fit(dataset_clean)
-            dataset_scaled = scaler.transform(dataset_clean)
+        scaler = stscale()
+        scaler.fit(dataset_clean)
+        dataset_scaled = scaler.transform(dataset_clean)
     else:
         dataset_scaled = dataset_clean
 
     pcadataset = Bunch(scaled=dataset_scaled)
+    pca1 = pca(n_components=n_components)
+    pca1.fit(dataset_scaled)
 
-    if existing_model:
-        pca1 = model_file.pcamodel
-    else:
-        pca1 = pca(n_components=n_components)
-        pca1.fit(dataset_scaled)
-
-    if not existing_model:
-        # Cumulative explained variance ratio
-        cum_var = 0
-        explained_v = pca1.explained_variance_ratio_
-        print('Cumulative explained variance:')
-        for i in range(0, n_components):
-            cum_var = cum_var + explained_v[i]
-            print('{} component: {}'.format(i, cum_var))
+    # Cumulative explained variance ratio
+    cum_var = 0
+    explained_v = pca1.explained_variance_ratio_
+    print('Cumulative explained variance:')
+    for i in range(0, n_components):
+        cum_var = cum_var + explained_v[i]
+        print('{} component: {}'.format(i, cum_var))
 
     prim_comps = {}
     pcadataset.prvals = {}
@@ -264,7 +251,6 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
     pcadataset.pcavals = pd.DataFrame(pca1.transform(dataset_scaled))
     pcadataset.final = pd.concat([dataset, pcadataset.pcavals], axis=1)
     pcadataset.pcamodel = pca1
-    pcadataset.scaler = scaler
 
     return pcadataset
 
@@ -276,7 +262,7 @@ def recycle_pcamodel(pcamodel, df, imputenans=True, scale=True):
         df_clean = imp.transform(df)
     else:
         df_clean = df
-
+        
     # Scale inputs
     if scale:
         scaler = stscale()
@@ -284,17 +270,17 @@ def recycle_pcamodel(pcamodel, df, imputenans=True, scale=True):
         df_scaled = scaler.transform(df_clean)
     else:
         df_scaled = df_clean
-
+        
     pcamodel.fit(df_scaled)
     pcavals = pd.DataFrame(pcamodel.transform(df_scaled))
     pcafinal = pd.concat([df, pcavals], axis=1)
-
+    
     return pcafinal
 
 
 def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
              labels=['Sample1', 'Sample2'], savefig=True, filename='test.png',
-             rticks=np.linspace(-2, 2, 5), dpi=300, labelsize=20):
+             rticks=np.linspace(-2, 2, 5)):
     """Plots the average output features from a PCA analysis in polar
     coordinates
 
@@ -333,28 +319,26 @@ def plot_pca(datasets, figsize=(8, 8), lwidth=8.0,
         bars[key] = ax.plot(theta, radii[key], linewidth=lwidth, color=c,
                             label=labels[counter])
         counter = counter + 1
-    plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.,
-               frameon=False, fontsize=labelsize+4)
+    plt.legend(bbox_to_anchor=(0.90, 1), loc=2, borderaxespad=0.,
+               frameon=False, fontsize=20)
 
     # # Use custom colors and opacity
     # for r, bar in zip(radii, bars):
     #     bar.set_facecolor(plt.cm.jet(np.abs(r / 2.5)))
     #     bar.set_alpha(0.8)
     ax.set_xticks(np.pi/180. * np.linspace(0, 360, N, endpoint=False))
-    ax.set_xticklabels(list(range(0, N)), fontsize=labelsize)
-    ax.set_ylim([min(rticks), max(rticks)+1])
+    ax.set_xticklabels(list(range(0, N)))
+    ax.set_ylim([min(rticks), max(rticks)])
     ax.set_yticks(rticks)
-    ax.yaxis.set_tick_params(labelsize=labelsize)
 
     if savefig:
-        plt.savefig(filename, bbox_inches='tight', dpi=dpi)
+        plt.savefig(filename, bbox_inches='tight')
 
     plt.show()
 
 
-def build_model(rawdata, feature, featvals, equal_sampling=True,
-                    tsize=20, from_end=True, input_cols=6, model='KNN',
-                    **kwargs):
+def build_KNN_model(rawdata, feature, featvals, equal_sampling=True,
+                    tsize=20, n_neighbors=5, from_end=True, input_cols=6):
     """Builds a K-nearest neighbor model using an input dataset.
 
     Parameters
@@ -398,14 +382,6 @@ def build_model(rawdata, feature, featvals, equal_sampling=True,
 
     """
 
-    defaults = {'n_neighbors': 5, 'NNsolver': 'lbfgs', 'NNalpha': 1e-5,
-                'NNhidden_layer': (5, 2), 'NNrandom_state': 1,
-                'n_estimators': 10}
-
-    for defkey in defaults.keys():
-        if defkey not in kwargs.keys():
-            kwargs[defkey] = defaults[defkey]
-
     if equal_sampling:
         for featval in featvals:
             if from_end:
@@ -434,21 +410,13 @@ def build_model(rawdata, feature, featvals, equal_sampling=True,
         X = test[to_plot, :]
         y = rawdata[feature].values[to_plot]
 
-    if model is 'KNN':
-        clf = neighbors.KNeighborsClassifier(kwargs['n_neighbors'])
-    elif model is 'MLP':
-        clf = MLPClassifier(solver=kwargs['NNsolver'], alpha=kwargs['NNalpha'],
-                            hidden_layer_sizes=kwargs['NNhidden_layer'],
-                            random_state=kwargs['NNrandom_state'])
-    else:
-        clf = RandomForestClassifier(n_estimators=kwargs['n_estimators'])
-
+    clf = neighbors.KNeighborsClassifier(n_neighbors)
     clf.fit(X, y)
 
     return clf, X, y
 
 
-def predict_model(model, X, y):
+def predict_KNN(model, X, y):
     """Calculates fraction correctly predicted using input KNN
     model
 
@@ -517,7 +485,7 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
 
     defaults = {'figsize': (12, 5), 'yrange': [-20, 20], 'xlabel': 'Feature',
                 'labelsize': 20, 'ticksize': 16, 'fname': None,
-                'legendfontsize': 12, 'legendloc': 1, 'dpi': 300}
+                'legendfontsize': 12, 'legendloc': 1}
 
     for defkey in defaults.keys():
         if defkey not in kwargs.keys():
@@ -558,13 +526,13 @@ def feature_violin(df, label='label', lvals=['yes', 'no'], fsubset=3, **kwargs):
     if kwargs['fname'] is None:
         plt.show()
     else:
-        plt.savefig(kwargs['fname'], dpi=kwargs['dpi'])
+        plt.savefig(kwargs['fname'])
 
     return to_violin
 
 
-def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
-                    randsel=True, randcount=200, **kwargs):
+def feature_plot_2D(dataset, label, features=[0, 1], randsel=True,
+                    randcount=200, **kwargs):
     """Plots two features against each other from feature dataset.
 
     Parameters
@@ -605,7 +573,7 @@ def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
     """
     defaults = {'figsize': (8, 8), 'dotsize': 70, 'alpha': 0.7, 'xlim': None,
                 'ylim': None, 'legendfontsize': 12, 'labelfontsize': 20,
-                'fname': None, 'legendloc': 2}
+                'fname': None}
 
     for defkey in defaults.keys():
         if defkey not in kwargs.keys():
@@ -615,7 +583,7 @@ def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
     xy = {}
     counter = 0
     labels = dataset[label].unique()
-    for lval in lvals:
+    for lval in labels:
         tgroups[counter] = dataset[dataset[label] == lval]
         counter = counter + 1
 
@@ -645,9 +613,7 @@ def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
     if kwargs['ylim'] is not None:
         plt.ylim(kwargs['ylim'])
 
-    plt.legend(fontsize=kwargs['legendfontsize'], frameon=False,
-               borderaxespad=0.,
-               bbox_to_anchor=(1.05, 1))
+    plt.legend(fontsize=kwargs['legendfontsize'], frameon=False)
     plt.xlabel('Prin. Component {}'.format(features[0]),
                fontsize=kwargs['labelfontsize'])
     plt.ylabel('Prin. Component {}'.format(features[1]),
@@ -661,8 +627,8 @@ def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
     return xy
 
 
-def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
-                    randsel=True, randcount=200, **kwargs):
+def feature_plot_3D(dataset, label, features=[0, 1, 2], randsel=True,
+                    randcount=200, **kwargs):
     """Plots three features against each other from feature dataset.
 
     Parameters
@@ -703,11 +669,9 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
         Coordinates of data on plot
 
     """
-
     defaults = {'figsize': (8, 8), 'dotsize': 70, 'alpha': 0.7, 'xlim': None,
                 'ylim': None, 'zlim': None, 'legendfontsize': 12,
-                'labelfontsize': 10, 'fname': None, 'dpi': 300,
-                'noticks': True, 'ticksize': 10}
+                'labelfontsize': 10, 'fname': None}
 
     for defkey in defaults.keys():
         if defkey not in kwargs.keys():
@@ -726,11 +690,9 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
     tgroups = {}
     xy = {}
     counter = 0
-    #labels = dataset[label].unique()
-    for lval in lvals:
+    labels = dataset[label].unique()
+    for lval in labels:
         tgroups[counter] = dataset[dataset[label] == lval]
-        #print(lval)
-        #print(tgroups[counter].shape)
         counter = counter + 1
 
     N = len(tgroups)
@@ -741,7 +703,6 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
         c = next(color)
         xy = []
         if randsel:
-            #print(range(0, len(tgroups[key][0].tolist())))
             to_plot = random.sample(range(0, len(tgroups[key][0].tolist())),
                                     randcount)
             for key2 in features:
@@ -752,28 +713,20 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
 
         acount = 0
         for ax in axes:
-            axes[ax].scatter(xy[0], xy[1], xy[2], c=c, s=kwargs['dotsize'], alpha=kwargs['alpha'])#, label=labels[counter])
+            axes[ax].scatter(xy[0], xy[1], xy[2], c=c, s=kwargs['dotsize'], alpha=kwargs['alpha'], label=labels[counter])
             if kwargs['xlim'] is not None:
-                axes[ax].set_xlim3d(kwargs['xlim'][0], kwargs['xlim'][1])
+                axes[ax].set_xlim3d(kwargs['xlim'])
             if kwargs['ylim'] is not None:
-                axes[ax].set_ylim3d(kwargs['ylim'][0], kwargs['ylim'][1])
+                axes[ax].set_ylim3d(kwargs['ylim'])
             if kwargs['zlim'] is not None:
-                axes[ax].set_zlim3d(kwargs['zlim'][0], kwargs['zlim'][1])
+                axes[ax].set_zlim3d(kwargs['zlim'])
             axes[ax].view_init(angle1[acount], angle2[acount])
-            axes[ax].set_xlabel('{}'.format(features[0]),
+            axes[ax].set_xlabel('Prin. Component {}'.format(features[0]),
                                 fontsize=kwargs['labelfontsize'])
-            axes[ax].set_ylabel('{}'.format(features[1]),
+            axes[ax].set_ylabel('Prin. Component {}'.format(features[1]),
                                 fontsize=kwargs['labelfontsize'])
-            axes[ax].set_zlabel('{}'.format(features[2]),
+            axes[ax].set_zlabel('Prin. Component {}'.format(features[2]),
                                 fontsize=kwargs['labelfontsize'])
-            if kwargs['noticks']:
-                axes[ax].set_xticklabels('')
-                axes[ax].set_yticklabels('')
-                axes[ax].set_zticklabels('')
-            else:
-                axes[ax].xaxis.set_tick_params(labelsize=kwargs['ticksize'])
-                axes[ax].yaxis.set_tick_params(labelsize=kwargs['ticksize'])
-                axes[ax].zaxis.set_tick_params(labelsize=kwargs['ticksize'])
             acount = acount + 1
         counter = counter + 1
 
@@ -784,4 +737,4 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
     if kwargs['fname'] is None:
         plt.show()
     else:
-        plt.savefig(kwargs['fname'], dpi=kwargs['dpi'])
+        plt.savefig(kwargs['fname'])

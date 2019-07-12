@@ -15,31 +15,31 @@ is_travis = "CI" in os.environ.keys()
 def test_partial_corr():
     dataf = msd.random_traj_dataset()
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds, mean_values=False)
+    feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(24.0, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10)
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds, mean_values=False)
+    feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(47.9, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10, seed=9)
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds, mean_values=False)
+    feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(33.4, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10, nframes=40, seed=9)
     msds = msd.all_msds2(dataf, frames=40)
-    feat = ft.calculate_features(msds, mean_values=False)
+    feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(17.4, np.round(np.sum(pcorr), 1))
 
     dataf = msd.random_traj_dataset(nparts=10, nframes=40, ndist=(3, 5), seed=9)
     msds = msd.all_msds2(dataf, frames=40)
-    feat = ft.calculate_features(msds, mean_values=False)
+    feat = ft.calculate_features(msds)
     pcorr = pca.partial_corr(feat)
     npt.assert_equal(35.7, np.round(np.sum(pcorr), 1))
 
@@ -49,7 +49,7 @@ def test_partial_corr():
 def test_kmo():
     dataf = msd.random_traj_dataset(nparts=10, ndist=(1, 1), seed=3)
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds, mean_values=False)
+    feat = ft.calculate_features(msds)
     dataset = feat.drop(['frames', 'Track_ID'], axis=1)
     corrmatrix = np.corrcoef(dataset.transpose())
     npt.assert_equal(np.round(np.sum(corrmatrix), 1), 7.3)
@@ -58,7 +58,7 @@ def test_kmo():
 def test_pca_analysis():
     dataf = msd.random_traj_dataset(nparts=10, ndist=(2, 6))
     msds = msd.all_msds2(dataf, frames=100)
-    feat = ft.calculate_features(msds, mean_values=False)
+    feat = ft.calculate_features(msds)
     pcadataset = pca.pca_analysis(feat, dropcols=['frames', 'Track_ID'],
                                   n_components=5)
     
@@ -69,7 +69,7 @@ def test_plot_pca():
     print()
 
 
-def test_build_model():
+def test_build_KNN_model():
     output = ['F']*1000 + ['M']*1000
     data = {'output': output,
             0: np.append(np.random.normal(1, 1, size=1000),
@@ -78,7 +78,7 @@ def test_build_model():
                          np.random.normal(0.2, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
-    model, X, Y = pca.build_model(dataf, 'output', ['F', 'M'],
+    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
 
@@ -86,7 +86,7 @@ def test_build_model():
     assert Y.shape == (25,)
 
 
-def test_predict_model():
+def test_predict_KNN():
     output = ['F']*1000 + ['M']*1000
     data = {'output': output,
             0: np.append(np.random.normal(1, 1, size=1000),
@@ -95,19 +95,19 @@ def test_predict_model():
                          np.random.normal(0.2, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
-    model, X, Y = pca.build_model(dataf, 'output', ['F', 'M'],
+    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
 
     testp = np.array([])
     for i in range(0, 30):
-        KNNmod, X, y = pca.build_model(dataf, 'output', ['F', 'M'],
+        KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                            equal_sampling=True, tsize=25,
                                            n_neighbors=5, input_cols=2)
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
-        testp = np.append(testp, pca.predict_model(KNNmod, X2, y2))
+        testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
 
     assert np.mean(testp) > 0.6
 
@@ -119,19 +119,19 @@ def test_predict_model():
                          np.random.normal(100, 0.1, size=1000))}
     dataf = pd.DataFrame(data)
 
-    model, X, Y = pca.build_model(dataf, 'output', ['F', 'M'],
+    model, X, Y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                       equal_sampling=False, tsize=25,
                                       n_neighbors=5, input_cols=2)
 
     testp = np.array([])
     for i in range(0, 30):
-        KNNmod, X, y = pca.build_model(dataf, 'output', ['F', 'M'],
+        KNNmod, X, y = pca.build_KNN_model(dataf, 'output', ['F', 'M'],
                                            equal_sampling=True, tsize=25,
                                            n_neighbors=5, input_cols=2)
 
         X2 = dataf.values[:, -2:]
         y2 = dataf.values[:, 0]
-        testp = np.append(testp, pca.predict_model(KNNmod, X2, y2))
+        testp = np.append(testp, pca.predict_KNN(KNNmod, X2, y2))
 
     assert np.mean(testp) > 0.95
 
@@ -163,7 +163,7 @@ def test_feature_plot_2D():
     df = pd.DataFrame(data=dataset)
 
     xy = pca.feature_plot_2D(df, label='label', features=[0, 1], randsel=True,
-                             lvals=['yes', 'no'], fname='test1.png')
+                             fname='test1.png')
     # assert len(xy[1]) == 200
     # assert os.path.isfile('test1.png')
     #
@@ -181,8 +181,7 @@ def test_feature_plot_3D():
                }
     df = pd.DataFrame(data=dataset)
 
-    xy = pca.feature_plot_3D(df, label='label', features=[0, 1, 2],
-                             lvals=['yes', 'no'], randsel=True,
+    xy = pca.feature_plot_3D(df, label='label', features=[0, 1, 2], randsel=True,
                              fname='test1.png')
     # assert len(xy[1]) == 200
     # assert os.path.isfile('test1.png')
