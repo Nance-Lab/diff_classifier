@@ -292,7 +292,7 @@ def test_precision_averaging():
 
 
 def test_random_walk():
-    xi = np.array([0., -1.,  0.,  0.,  1.])
+    xi = np.array([0., 1.,  2.,  2.,  1.])
     yi = np.array([0., 0., 0., 1., 1.])
     x, y = msd.random_walk(nsteps=5)
     npt.assert_equal(xi, x)
@@ -302,8 +302,8 @@ def test_random_walk():
 def test_random_traj_dataset():
     di = {'Frame': [float(i) for i in[0, 1, 2, 3, 4, 0, 1, 2, 3, 4]],
           'Track_ID': [float(i) for i in[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]],
-          'X': np.array([1., 1., 1., 1.93045976, 1.93045976, 0., -0.2881835, 0.,
-                        0., 0.2881835]),
+          'X': np.array([1., 1.93045975532, 1.0, 1.0, 1.0, 0.0, 0.288183500979, 0.576367001958,
+                        0.864550502937, 0.864550502937]),
           'Y': np.array([1., 0.06954024, -0.86091951, -0.86091951, 0.06954024,
                         4., 4., 4., 4.2881835, 4.2881835]),
           'Quality': [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],

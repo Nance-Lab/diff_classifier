@@ -442,7 +442,8 @@ def plot_particles_in_frame(prefix, x_range=600, y_range=2000, upload=True,
 
 
 def plot_individual_msds(prefix, x_range=100, y_range=20, umppx=0.16, fps=100.02, alpha=0.1, folder='.', upload=True,
-                         remote_folder="01_18_Experiment", bucket='ccurtis.data', figsize=(10, 10), subset=True, size=1000):
+                         remote_folder="01_18_Experiment", bucket='ccurtis.data', figsize=(10, 10), subset=True, size=1000,
+                         dpi=300):
     """
     Plot MSDs of trajectories and the geometric average.
 

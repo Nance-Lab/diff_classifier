@@ -61,8 +61,8 @@ def test_pca_analysis():
     feat = ft.calculate_features(msds, mean_values=False)
     pcadataset = pca.pca_analysis(feat, dropcols=['frames', 'Track_ID'],
                                   n_components=5)
-    
-    npt.assert_equal(np.round(np.sum(pcadataset.components.values), 3), 0.400)
+
+    npt.assert_equal(np.round(np.sum(pcadataset.components.values), 3), -1.849)
 
 
 def test_plot_pca():

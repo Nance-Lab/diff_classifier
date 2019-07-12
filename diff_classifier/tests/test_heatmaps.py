@@ -28,8 +28,8 @@ def test_voronoi_finite_polygons_2d():
 
     vor = Voronoi(points)
     regions, vertices = hm.voronoi_finite_polygons_2d(vor)
-    
-    npt.assert_equal(212.3, np.round(np.mean(vertices), 1))
+
+    npt.assert_equal(243.8, np.round(np.mean(vertices), 1))
 
 
 def test_plot_heatmap():
@@ -42,10 +42,10 @@ def test_plot_heatmap():
     msds.to_csv(msd_file)
     feat = ft.calculate_features(msds)
     feat.to_csv(ft_file)
-    
+
     hm.plot_heatmap(prefix, resolution=520, rows=1, cols=1, figsize=(6,5), upload=False)
     assert os.path.isfile('hm_asymmetry1_{}.png'.format(prefix))
-    
+
 
 def test_plot_scatterplot():
     prefix = 'test'
@@ -61,7 +61,7 @@ def test_plot_scatterplot():
     hm.plot_scatterplot(prefix, resolution=400, rows=1, cols=1, dotsize=120, upload=False)
     assert os.path.isfile('scatter_asymmetry1_{}.png'.format(prefix))
 
-    
+
 def test_plot_trajectories():
     prefix = 'test'
     msd_file = 'msd_{}.csv'.format(prefix)
@@ -75,7 +75,7 @@ def test_plot_trajectories():
 
     hm.plot_trajectories(prefix, resolution=520, rows=1, cols=1, upload=False)
     assert os.path.isfile('traj_{}.png'.format(prefix))
-    
+
 
 def test_plot_histogram():
     prefix = 'test'
@@ -87,10 +87,10 @@ def test_plot_histogram():
     msds.to_csv(msd_file)
     feat = ft.calculate_features(msds)
     feat.to_csv(ft_file)
-    
+
     hm.plot_histogram(prefix, fps=1, umppx=1, frames=100, frame_interval=5, frame_range=5, y_range=10, upload=False)
     assert os.path.isfile('hist_{}.png'.format(prefix))
-    
+
 
 def test_plot_individual_msds():
     prefix = 'test'
@@ -118,6 +118,6 @@ def test_plot_particles_in_frame():
     msds.to_csv(msd_file)
     feat = ft.calculate_features(msds)
     feat.to_csv(ft_file)
-    
+
     hm.plot_particles_in_frame(prefix, x_range=100, y_range=20, upload=False)
     assert os.path.isfile('in_frame_{}.png'.format(prefix))
