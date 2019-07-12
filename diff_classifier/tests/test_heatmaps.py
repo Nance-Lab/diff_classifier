@@ -105,7 +105,7 @@ def test_plot_individual_msds():
 
     geomean, gSEM = hm.plot_individual_msds(prefix, umppx=1, fps=1, y_range=400, alpha=0.3, upload=False)
     npt.assert_almost_equal(339.9, np.round(np.sum(geomean), 1))
-    npt.assert_almost_equal(35.2, np.round(np.sum(gSEM), 1))
+    npt.assert_almost_equal(35.3, np.round(np.sum(gSEM), 1))
 
 
 def test_plot_particles_in_frame():
