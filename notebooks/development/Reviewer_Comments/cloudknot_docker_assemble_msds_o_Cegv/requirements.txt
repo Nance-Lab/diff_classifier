@@ -1,2 +1,0 @@
-boto3==1.9.5.28
-cloudpickle==1.2.2

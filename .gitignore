@@ -10,3 +10,6 @@ diff_classifier/tests/__pycache__
 notebooks/cloudknot_docker*
 *.swp
 *.png
+*.obj
+notebooks/development/cloudknot_docker*
+*cloudknot_docker*
