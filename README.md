@@ -21,7 +21,7 @@ alt="diff_classifier" height="300" title="diff_classifier"/></p>
 
 This is the diff_classifier development site.  You can view the source code and
 file new issues. If you are just getting started, you should look at the
-[diff_classifier documentation](https://ccurtis7.github.io/diff_classifier/)
+[diff_classifier documentation](https://Nance-Lab.github.io/diff_classifier/)
 
 ## Contributing
 
