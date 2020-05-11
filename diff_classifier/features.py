@@ -16,6 +16,7 @@ import numpy.ma as ma
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import diff_classifier.msd as msd
+import scipy.spatial
 
 
 def unmask_track(track):
@@ -539,7 +540,7 @@ def boundedness(track, framerate=1):
         diffusion coefficient (after 2 frames), and rad is half the maximum
         distance between any two positions.
     fractd : float
-        The fractal path dimension defined as fractd = log(N)/log(N*data1*l**-1)
+        The fractal path dimension defined fractd = log(N)/log(N*data1*l**-1)
         where netdisp is the total length (sum over all steplengths), N is the
         number of steps, and data1 is the largest distance between any two
         positions.
@@ -719,8 +720,124 @@ def msd_ratio(track, fram1=3, fram2=100):
     return ratio
 
 
+def turn_angle(list_x, list_y):
+    """
+    The turning angle takes a counterclockwise angle from one point to the
+    other. For non magnitude angle, a negative value indicates a turn to the
+    left of the regular trajectory. A positive value indicates a turn to the
+    right from the regular trajectory. A value of 0 indicates a straight line.
+
+    Parameters
+    ----------
+    track : pandas.core.frame.DataFrame
+        At a minimum, must contain a Frames and a MSDs column.  The function
+        msd_calc can be used to generate the correctly formatted pd dataframe.
+
+    Returns
+    -------
+    angle_param : list (1x3) of floats
+        angle param is a 1x3 list of float values that contain angle_mean (the
+        mean of angle values calculated for the track), angle_mag_mean (mean of
+        magnitude of the turning angle), and angle_var (variance of the turning
+        angle)
+
+    """
+
+    def _3ptangleCC(pta, ptb, ptc):
+
+        ang = math.degrees(
+            math.atan2(ptc[1]-ptb[1],
+                       ptc[0]-ptb[0]) - math.atan2(pta[1]-ptb[1],
+                                                   pta[0]-ptb[0]))
+        return ang + 360 if ang < 0 else ang
+
+    angle = [0]
+    for j in range(1, len(list_x)-1):
+        pta = (list_x[j-1], list_y[j-1])
+        ptb = (list_x[j], list_y[j])
+        ptc = (list_x[j+1], list_y[j+1])
+        angle.append(180.00 - _3ptangleCC(pta, ptb, ptc))
+    angle_mean = np.mean(angle)
+    angle_mag_mean = np.mean(np.abs(angle))
+    angle_var = np.var(np.abs(angle))
+    return angle_mean, angle_mag_mean, angle_var
+
+
+def convex_hull(list_x, list_y):
+    """
+    The convex hull of a track is the area within a parameter around all
+    datapoints within the track. The list returned in this method contains
+    the values for the spatial convex hull running a "QJn" joggled input to
+    avoid precision errors and a normalized spatial convex hull based on
+    the sqrt of the length of the track.
+
+    Parameters
+    ----------
+    track : pandas.core.frame.DataFrame
+        At a minimum, must contain a Frames and a MSDs column.  The function
+        msd_calc can be used to generate the correctly formatted pd dataframe.
+
+    Returns
+    -------
+    hull_param : list of floats
+        list of convex hull and normalized convex hull
+    """
+    pos = []
+    list_x = [x for x in list_x if ~np.isnan(x)]
+    list_y = [y for y in list_y if ~np.isnan(y)]
+    for j in range(len(list_x)):
+        pos.append([list_x[j], list_y[j]])
+    try:
+        CH = scipy.spatial.ConvexHull(pos, qhull_options="QJn")
+        CH_vol = CH.volume  # Using "volume" b/c 2d array
+    except:
+        CH_vol = 0
+    CH_norm = CH_vol/math.sqrt(len(pos))
+    return CH_vol, CH_norm
+
+
+def dist2pt(pta, ptb):
+    return math.hypot(ptb[1] - ptb[0], pta[1] - pta[0])
+
+
+def dist_stats(list_x, list_y):
+    """
+    The turning angle takes a counterclockwise angle from one point to
+    the other. For non magnitude angle, a negative value indicates a
+    turn to the left of the regular trajectory. A positive value
+    indicates a turn to the right from the regular trajectory. A value
+    of 0 indicates a straight line.
+
+    Parameters
+    ----------
+    track : pandas.core.frame.DataFrame
+        At a minimum, must contain a Frames and a MSDs column.
+        The function msd_calc can be used to generate the correctly
+        formatted pd dataframe.
+
+    Returns
+    -------
+    dist_param : list (1x3) of floats
+        dist_param is a 1x3 list of float values that contain total
+        distance (the total distance that a particle traversed over
+        the time period), net distance (the net distance the particle
+        traveled from begining to end of the time period), and
+        progression (a ratio of net distance over total distance)
+    """
+    pos = []
+    dist = [0]
+    for j in range(len(list_x)):
+        pos.append([list_x[j], list_y[j]])
+    for j in range(len(pos)-1):
+        dist.append(dist2pt(pos[j], pos[j+1]))
+    dist_tot = np.sum(dist)
+    dist_net = dist2pt(pos[0], pos[-1])
+    prog = dist_net/dist_tot
+    return dist_tot, dist_net, prog
+
+
 def calculate_features(dframe, framerate=1, frame=(10, 100), mean_values=True):
-    """test test test Calculates multiple features from input MSD dataset and stores in pandas
+    """Calculates multiple features from input MSD dataset and stores in pandas
     dataframe.
 
     Parameters
@@ -777,7 +894,15 @@ def calculate_features(dframe, framerate=1, frame=(10, 100), mean_values=True):
            'Mean_Intensity': holder,
            'SN_Ratio': holder,
            'Deff1': holder,
-           'Deff2': holder}
+           'Deff2': holder,
+           'angle_mean': holder,
+           'angle_mag_mean': holder,
+           'angle_var': holder,
+           'convex_hull': holder,
+           'convex_hull_norm': holder,
+           'dist_tot': holder,
+           'dist_net': holder,
+           'progression': holder}
 
     datai = pd.DataFrame(data=die)
 
@@ -812,14 +937,24 @@ def calculate_features(dframe, framerate=1, frame=(10, 100), mean_values=True):
                                                       single_track.shape[0]-2])
         else:
             datai['MSD_ratio'][particle] = np.nan
-
+        (datai['angle_mean'][particle],
+         datai['angle_mag_mean'][particle],
+         datai['angle_var'][particle]) = turn_angle(single_track['X'],
+                                                    single_track['Y'])
+        (datai['convex_hull'][particle],
+         datai['convex_hull_norm'][particle]) = convex_hull(single_track['X'],
+                                                            single_track['Y'])
+        (datai['dist_tot'][particle],
+         datai['dist_net'][particle],
+         datai['progression'][particle]) = dist_stats(single_track['X'],
+                                                      single_track['Y'])
         try:
-            datai['Deff1'][particle] = single_track['MSDs'][frame[0]] / (4*frame[0])
+            datai['Deff1'][particle] = single_track['MSDs'][frame[0]]/(4*frame[0])
         except:
             datai['Deff1'][particle] = np.nan
 
         try:
-            datai['Deff2'][particle] = single_track['MSDs'][frame[1]] / (4*frame[1])
+            datai['Deff2'][particle] = single_track['MSDs'][frame[1]]/(4*frame[1])
         except:
             datai['Deff2'][particle] = np.nan
 
@@ -845,8 +980,8 @@ def calculate_features(dframe, framerate=1, frame=(10, 100), mean_values=True):
                 print(bitesize.shape)
                 for col in bitesize.columns:
                     if col not in nonnum and 'Mean' not in col and 'Std' not in col:
-                        datai['Mean '+ col][bitesize.index] = np.nanmean(bitesize[col])
-                        datai['Std '+ col][bitesize.index] = np.nanstd(bitesize[col])
+                        datai['Mean ' + col][bitesize.index] = np.nanmean(bitesize[col])
+                        datai['Std ' + col][bitesize.index] = np.nanstd(bitesize[col])
 
     return datai
 
