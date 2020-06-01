@@ -9,30 +9,183 @@ access desired S3 buckets.
 """
 import os
 import os.path as op
-
 import boto3
 
-
-# import diff_classifier.imagej as ij
-
-
-def download_s3(remote_fname, local_fname, bucket_name="ccurtis.data"):
-    """Download a file from S3 to local file-system
-
+# Takes in a String, "bucket_name", a string, "remote_folder",
+# and a list of strings or a single string, "keywords". Gets all
+# s3 keys for bucket_name/remote_folder. Uses a list convention
+# to go through keywords (i.e): ['a', 'b', 'c OR d OR e'] will 
+# find all files containing 'a' and 'b' and either 'c', 'd', or 'e'.
+# Using '' will return every file key in folder.
+def get_s3_keys(bucket_name, remote_folder, keywords=''):
+    """
+    Get s3 keys in s3 bucket based on keywords
+    
     Parameters
     ----------
-    remote_fname: string
-        Name of remote file in S3 bucket.
-    local_fname: string
-        Desired name to be stored on local computer.
+    remote_folder: string
+        Desired name to be stored in S3 bucket.
     bucket_name: string
         Bucket name on S3.
-
+    keywords: string or [strings]
+        Keyword or list of keywords to search for. ex:
+            ['a', 'b', 'c OR d OR e'] will 
+            find all files containing 'a' and 'b' and either 
+            'c', 'd', or 'e'. Using '' will return every 
+            file key in folder.
     """
-    if not os.path.exists(local_fname):
-        sthree = boto3.resource('s3')
-        buckt = sthree.Bucket(bucket_name)
-        buckt.download_file(remote_fname, local_fname)
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(bucket_name)
+    obj_list = []
+    keywords = [i.split('OR') for i in list(keywords)]
+    keywords = [list(map(lambda x:x.strip(), i)) for i in keywords]
+    for object in bucket.objects.all():
+        filename = object.key.split("/")[-1]
+        kwds_in = all(any(k in filename for k in ([keyword]*isinstance(keyword, str) or keyword)) for keyword in keywords)
+        if remote_folder in object.key and kwds_in:
+            obj_list.append(s3.Object(object.bucket_name, object.key))
+    return obj_list
+
+# Takes in a String, "bucket_name", a string, "remote_folder",
+# a list of strings or a single string, "keywords", an integer,
+# "days", and a string, "tier". Checks for files under keyword
+# if they are stored in S3 glacier. Restores for days days using
+# tier restore tier. Uses a list convention
+# to go through keywords (i.e): ['a', 'b', 'c OR d OR e'] will 
+# find all files containing 'a' and 'b' and either 'c', 'd', or 'e'.
+# Using '' will return every file key in folder. Tier options
+# are Expedited, Standard, and Bulk.
+def glacier_restore(bucket_name, remote_folder, keywords='', days=5, tier='Standard'):
+    """
+    Get s3 keys in s3 bucket based on keywords
+    
+    Parameters
+    ----------
+    remote_folder : string
+        Desired name to be stored in S3 bucket.
+    bucket_name : string
+        Bucket name on S3.
+    keywords : string or [strings]
+        Keyword or list of keywords to search for. ex:
+            ['a', 'b', 'c OR d OR e'] will 
+            find all files containing 'a' and 'b' and either 
+            'c', 'd', or 'e'. Using '' will return every 
+            file key in folder.
+    days : int
+        Number of days to restore
+    tier : string
+        Tier to restoer with. Acceptable tiers are 'Expedited', 'Standard', 'Bulk'
+    """
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(bucket_name)
+    restore_requestDict = {'Days': days,
+                           'GlacierJobParameters': {
+                               'Tier': tier},}
+    obj_list = get_s3_keys(bucket_name, remote_folder, keywords)
+    if len(obj_list) > 10:
+        press = input(f'Large amount of items. Ok to restore {len(obj_list)} items? (Y/N): ')
+        if press != 'Y':
+            print('Canceling restore')
+            return
+    for object in obj_list:
+        if object.storage_class == "GLACIER":
+            if object.restore is None:
+                print(f"Requesting restore for --> {object.key}")
+                object.restore_object(Bucket=object.bucket_name,
+                                      Key=object.key,
+                                      RestoreRequest=restore_requestDict)
+            elif 'ongoing-request="true"' in object.restore:
+                print(f"Already in restore queue --> {object.key}")
+            elif 'ongoing-request="false"' in object.restore:
+                print(f"Already restored --> {object.key}")
+        else:
+            print(f"File doesn't need restore --> {object.key}")
+    print('---REQUEST DONE---')
+    
+# Takes in a String, "bucket1", a string, "folder1", a string,
+# "bucket2", a string "folder2", and a list of strings or a 
+# single string, "keywords". Will check for similar files 
+# between bucket1/folder1 and bucket2/folder2 and output 
+# them as a set of tuples containing the location of these
+# files. if bucket2 or folder2 are not inputed, will check
+# the same bucket1/folder1 for duplicated files. Uses a list convention
+# to go through keywords (i.e): ['a', 'b', 'c OR d OR e'] will 
+# find all files containing 'a' and 'b' and either 'c', 'd', or 'e'.
+# Using '' will return every file key in folder.
+def check_duplicated_files(bucket1, folder1, bucket2=None, folder2=None, keywords=''):
+    """
+    Checks for duplicated files within s3
+    
+    Parameters
+    ----------
+    bucket1 : string
+        Bucket name on S3.
+    folder1 : string
+        Bucket name on S3.
+    bucket2 : string
+        Bucket name on S3.
+    folder2 : string
+        Bucket name on S3.
+    keywords : string or [strings]
+        Keyword or list of keywords to search for. ex:
+            ['a', 'b', 'c OR d OR e'] will 
+            find all files containing 'a' and 'b' and either 
+            'c', 'd', or 'e'. Using '' will return every 
+            file key in folder.
+    """
+    if (bucket2 == None):
+        bucket2 = bucket1
+    if (folder2 == None):
+        folder2 = folder1
+    s3 = boto3.client('s3')
+    obj_list1 = get_s3_keys(bucket1, folder1, keywords)
+    obj_list2 = get_s3_keys(bucket2, folder2, keywords)
+    duplicate_list = set()
+    for object1 in obj_list1:
+        duplicated_objects = [f"{object1.bucket_name}/{object1.key}"]
+        etag1 = s3.head_object(Bucket=object1.bucket_name,Key=object1.key)['ResponseMetadata']['HTTPHeaders']['etag']
+        for object2 in obj_list2:
+            etag2 = s3.head_object(Bucket=object2.bucket_name,Key=object2.key)['ResponseMetadata']['HTTPHeaders']['etag']
+            if (etag1 == etag2):
+                if (f"{object2.bucket_name}/{object2.key}" not in duplicated_objects):
+                    duplicated_objects.append(f"{object2.bucket_name}/{object2.key}")
+        if len(duplicated_objects) > 1:
+            duplicate_list.add(tuple(sorted(duplicated_objects, key=lambda sent: len(sent))))
+    return duplicate_list
+
+# Takes in a String, "bucket_name", a string, "remote_folder",
+# a list of strings or a single string, "keywords", and a string,
+# "local_folder". Downloads all files in bucket_name/remote_folder
+# from s3 that match keywords into remote_folder.
+# into a local folder Uses a list convention
+# to go through keywords (i.e): ['a', 'b', 'c OR d OR e'] will 
+# find all files containing 'a' and 'b' and either 'c', 'd', or 'e'.
+# Using '' will return every file key in folder.
+def download_s3(bucket_name, remote_folder, local_folder, keywords=''):
+    """
+    Download a file from s3 to local file system.
+    
+    Parameters
+    ----------
+    local_folder : string
+        Name of local file stored on computer.
+    remote_folder : string
+        Desired name to be stored in S3 bucket.
+    bucket_name : string
+        Bucket name on S3.
+    keywords : string or [strings]
+        Keyword or list of keywords to search for. ex:
+            ['a', 'b', 'c OR d OR e'] will 
+            find all files containing 'a' and 'b' and either 
+            'c', 'd', or 'e'. Using '' will return every 
+            file key in folder.
+    """
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(bucket_name)
+    for object in get_s3_keys(bucket_name, remote_folder, keywords):
+        local_path = '/'.join([local_folder, object.key.split('/')[-1]])
+        if not os.path.exists(local_path):
+            bucket.download_file(object.key, local_path)
 
 
 def upload_s3(local_fname, remote_fname, bucket_name="ccurtis.data"):
@@ -41,11 +194,11 @@ def upload_s3(local_fname, remote_fname, bucket_name="ccurtis.data"):
 
     Parameters
     ----------
-    local_fname: string
+    local_fname : string
         Name of local file stored on computer.
-    remote_fname: string
+    remote_fname : string
         Desired name to be stored in S3 bucket.
-    bucket_name: string
+    bucket_name : string
         Bucket name on S3.
 
     """
