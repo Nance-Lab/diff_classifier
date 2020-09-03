@@ -107,16 +107,7 @@ def glacier_restore(bucket_name, remote_folder, keywords='', days=5, tier='Stand
             print(f"File doesn't need restore --> {object.key}")
     print('---REQUEST DONE---')
     
-# Takes in a String, "bucket1", a string, "folder1", a string,
-# "bucket2", a string "folder2", and a list of strings or a 
-# single string, "keywords". Will check for similar files 
-# between bucket1/folder1 and bucket2/folder2 and output 
-# them as a set of tuples containing the location of these
-# files. if bucket2 or folder2 are not inputed, will check
-# the same bucket1/folder1 for duplicated files. Uses a list convention
-# to go through keywords (i.e): ['a', 'b', 'c OR d OR e'] will 
-# find all files containing 'a' and 'b' and either 'c', 'd', or 'e'.
-# Using '' will return every file key in folder.
+
 def check_duplicated_files(bucket1, folder1, bucket2=None, folder2=None, keywords=''):
     """
     Checks for duplicated files within s3. Will check for similar files
