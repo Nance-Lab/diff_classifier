@@ -14,7 +14,7 @@ import seaborn as sns
 from sklearn import neighbors
 from sklearn.decomposition import PCA as pca
 from sklearn.preprocessing import StandardScaler as stscale
-from sklearn.preprocessing import Imputer
+from sklearn.impute import SimpleImputer
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
@@ -211,7 +211,7 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
 
     # Fill in NaN values
     if imputenans:
-        imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+        imp = SimpleImputer(missing_values='NaN', strategy='mean', axis=0)
         imp.fit(dataset_raw)
         dataset_clean = imp.transform(dataset_raw)
     else:
@@ -271,7 +271,7 @@ def pca_analysis(dataset, dropcols=[], imputenans=True, scale=True,
 
 def recycle_pcamodel(pcamodel, df, imputenans=True, scale=True):
     if imputenans:
-        imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+        imp = SimpleImputer(missing_values='NaN', strategy='mean', axis=0)
         imp.fit(df)
         df_clean = imp.transform(df)
     else:
