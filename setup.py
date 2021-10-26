@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 import setuptools.command.build_py
 import os
+
+#from diff_classifier.version import LONG_DESCRIPTION_CONTENT_TYPE
 # try:
 #    import fijibin
 # except:
@@ -17,6 +19,7 @@ opts = dict(name=NAME,
             maintainer_email=MAINTAINER_EMAIL,
             description=DESCRIPTION,
             long_description=LONG_DESCRIPTION,
+            long_description_content_type=LONG_DESCRIPTION_CONTENT_TYPE,
             url=URL,
             packages=PACKAGES,
             download_url=DOWNLOAD_URL,

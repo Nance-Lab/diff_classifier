@@ -31,10 +31,11 @@ description = " "
 long_description = """ """
 
 NAME = "diff_classifier"
-MAINTAINER = "Chad Curtis"
-MAINTAINER_EMAIL = "ccurtis7@uw.edu"
+MAINTAINER = "Nels Schimek"
+MAINTAINER_EMAIL = "nlsschim@uw.edu"
 DESCRIPTION = description
 LONG_DESCRIPTION = long_description
+LONG_DESCRIPTION_CONTENT_TYPE = 'text/markdown'
 URL = "https://github.com/ccurtis7/diff_classifier"
 DOWNLOAD_URL = ""
 LICENSE = "MIT"
