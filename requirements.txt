@@ -1,0 +1,16 @@
+pytest
+pandas
+scikit-learn
+boto3
+shapely
+numpydoc
+seaborn
+Shapely
+imglyb
+ipywidgets
+#napari
+notebook
+numpy
+#pyimagej
+scikit-image
+pillow<10.0.0
