@@ -8,9 +8,9 @@ seaborn
 Shapely
 imglyb
 ipywidgets
-#napari
+napari
 notebook
 numpy
-#pyimagej
+pyimagej
 scikit-image
-pillow<10.0.0
+
