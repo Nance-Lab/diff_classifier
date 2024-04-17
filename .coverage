@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.5"
+install:
+  - pip install -e . --use-mirrors
+before_script:
+  - pip install -r requirements.txt --use-mirrors
+  - git clone https://github.com/ccurtis7/diff_classifier.git
+  - cd ./diff_classifier/diff_classifier/tests/
+script:
+  - py.test test_features.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
+  - py.test test_imagej.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
+  - py.test test_msd.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
+  - py.test test_utils.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
+after_success:
+  - coveralls
