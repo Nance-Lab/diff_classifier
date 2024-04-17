@@ -1,7 +1,0 @@
-[run]
-branch = True
-source = diff_classifier/*
-include = diff_classifier/*
-omit = */setup.py
-[report]
-include = diff_classifier/*

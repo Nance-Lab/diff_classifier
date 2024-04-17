@@ -1,7 +1,0 @@
-boto3==1.5.28
-cloudpickle==0.5.2
-matplotlib==2.2.0
-numpy==1.22.0
-pandas==0.22.0
-scipy==1.0.0
-shapely==1.6.4.post1

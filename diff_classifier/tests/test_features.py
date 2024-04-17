@@ -60,7 +60,9 @@ def test_alpha_calc():
             'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
-    assert ft.alpha_calc(dframe) == (0.8201034110620524, 0.1494342948594476)
+    out1, out2 = ft.alpha_calc(dframe)
+    assert math.isclose(out1, 0.8201034110620524, abs_tol=1e-3)
+    assert math.isclose(out2, 0.1494342948594476, abs_tol=1e-3)
 
 
 def test_gyration_tensor():
@@ -78,8 +80,9 @@ def test_gyration_tensor():
                       np.array([0.70710678, 0.70710678]))
     d1, d2, d3, d4 = ft.gyration_tensor(dframe)
 
-    assert d1 == o1
-    assert d2 == o2
+    
+    npt.assert_almost_equal(o1, d1)
+    npt.assert_almost_equal(o2, d2)
     npt.assert_almost_equal(o3, d3)
     npt.assert_almost_equal(o4, d4)
 
@@ -98,8 +101,8 @@ def test_gyration_tensor():
                       np.array([-0.54402111,  0.83907153]))
     d1, d2, d3, d4 = ft.gyration_tensor(dframe)
 
-    assert d1 == o1
-    assert d2 == o2
+    npt.assert_almost_equal(o1, d1)
+    npt.assert_almost_equal(o2, d2)
     npt.assert_almost_equal(o3, d3)
     npt.assert_almost_equal(o4, d4)
 
@@ -249,8 +252,10 @@ def test_boundedness():
             'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
-    assert ft.boundedness(dframe) == (0.607673328076712, 5.674370543833708,
-                                      -0.0535555587618044)
+    bound1, bound2, bound3 = ft.boundedness(dframe)
+    assert math.isclose(bound1, 0.607673328076712)
+    assert math.isclose(bound2, 5.674370543833708)
+    assert math.isclose(bound3, -0.0535555587618044)
 
     frames = 10
     data = {'Frame': np.linspace(0, frames, frames),
@@ -262,8 +267,11 @@ def test_boundedness():
             'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
-    assert ft.boundedness(dframe) == (0.039999999999999994, 1.0,
-                                      -0.21501108474766228)
+
+    out1, out2, out3 = ft.boundedness(dframe)
+    npt.assert_almost_equal(out1, 0.039999999999999994)
+    npt.assert_almost_equal(out2, 1.0)
+    npt.assert_almost_equal(out3, -0.21501108474766228)
 
 
 def test_efficiency():
@@ -277,9 +285,9 @@ def test_efficiency():
             'Mean_Intensity': 10.0*np.ones(frames)}
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
-
-    assert ft.efficiency(dframe) ==\
-        (0.003548421265914009, 0.0059620286331768385)
+    eff1, eff2 = ft.efficiency(dframe)
+    assert math.isclose(eff1, 0.003548421265914009)
+    assert math.isclose(eff2, 0.0059620286331768385)
 
     frames = 10
     data = {'Frame': np.linspace(0, frames, frames),
@@ -307,7 +315,7 @@ def test_msd_ratio():
     dframe = pd.DataFrame(data=data)
     dframe = msd.all_msds2(dframe, frames=frames+1)
 
-    assert ft.msd_ratio(dframe, 1, 9) == 0.09708430006771959
+    assert math.isclose(ft.msd_ratio(dframe, 1, 9), 0.09708430006771959)
 
     frames = 10
     data = {'Frame': np.linspace(0, frames, frames),

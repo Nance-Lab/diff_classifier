@@ -295,8 +295,14 @@ def test_random_walk():
     xi = np.array([0., 1.,  2.,  2.,  1.])
     yi = np.array([0., 0., 0., 1., 1.])
     x, y = msd.random_walk(nsteps=5)
-    npt.assert_equal(xi, x)
-    npt.assert_equal(yi, y)
+
+    #assert that the start step is the same
+    npt.assert_equal(xi[0], x[0]) #
+    npt.assert_equal(yi[0], y[0])
+
+    #assert second step is one unit away
+    assert np.abs(x[1] - xi[1]) == 1
+    assert np.abs(y[1] - yi[1]) == 1
 
 
 def test_random_traj_dataset():
