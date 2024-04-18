@@ -173,9 +173,9 @@ def test_geomean_msdisp():
     msds.to_csv('msd_test.csv')
 
     geomean, geostder = msd.geomean_msdisp('test', umppx=1, fps=1, upload=False)
-    npt.assert_equal(np.round(np.exp(geomean[geomean.mask == False].data), 1),
+    npt.assert_almost_equal(np.round(np.exp(geomean[geomean.mask is False].data), 1),
                      geomean_t)
-    npt.assert_equal(np.round(np.exp(geostder[geostder.mask == False].data), 1),
+    npt.assert_almost_equal(np.round(np.exp(geostder[geostder.mask is False].data), 1),
                      geostder_t)
 
     # test 2

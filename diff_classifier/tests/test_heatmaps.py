@@ -92,20 +92,23 @@ def test_plot_histogram():
     assert os.path.isfile('hist_{}.png'.format(prefix))
 
 
-def test_plot_individual_msds():
-    prefix = 'test'
-    msd_file = 'msd_{}.csv'.format(prefix)
-    ft_file = 'features_{}.csv'.format(prefix)
+#------------------------------------------------------------------------------------------------------------------------
+## plot individual MSDs has been moved to diff_visualizer
 
-    dataf = msd.random_traj_dataset(nparts=30, ndist=(1, 1), seed=3)
-    msds = msd.all_msds2(dataf, frames=100)
-    msds.to_csv(msd_file)
-    feat = ft.calculate_features(msds)
-    feat.to_csv(ft_file)
+# def test_plot_individual_msds():
+#     prefix = 'test'
+#     msd_file = 'msd_{}.csv'.format(prefix)
+#     ft_file = 'features_{}.csv'.format(prefix)
 
-    geomean, gSEM = hm.plot_individual_msds(prefix, umppx=1, fps=1, y_range=400, alpha=0.3, upload=False)
-    npt.assert_almost_equal(339.9, np.round(np.sum(geomean), 1))
-    npt.assert_almost_equal(35.3, np.round(np.sum(gSEM), 1))
+#     dataf = msd.random_traj_dataset(nparts=30, ndist=(1, 1), seed=3)
+#     msds = msd.all_msds2(dataf, frames=100)
+#     msds.to_csv(msd_file)
+#     feat = ft.calculate_features(msds)
+#     feat.to_csv(ft_file)
+
+#     geomean, gSEM = hm.plot_individual_msds(prefix, umppx=1, fps=1, y_range=400, alpha=0.3, upload=False)
+#     npt.assert_almost_equal(339.9, np.round(np.sum(geomean), 1))
+#     npt.assert_almost_equal(35.3, np.round(np.sum(gSEM), 1))
 
 
 def test_plot_particles_in_frame():
