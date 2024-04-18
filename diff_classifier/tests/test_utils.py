@@ -3,7 +3,7 @@ import pandas as pd
 import diff_classifier.utils as ut
 import sys
 from io import StringIO
-import pandas.util.testing as pdt
+import pandas.testing as pdt
 
 def test_csv_to_pd():
     tf = tempfile.NamedTemporaryFile(suffix=".csv")
