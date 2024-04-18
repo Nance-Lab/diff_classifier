@@ -164,7 +164,7 @@ def plot_heatmap(prefix, feature='asymmetry1', vmin=0, vmax=1, resolution=512, r
     regions, vertices = voronoi_finite_polygons_2d(vor)
     my_map = cm.get_cmap('viridis')
     norm = mpl.colors.Normalize(t_min, t_max, clip=True)
-    mapper = cm.ScalarMappable(norm=norm, cmap=cm.viridis)
+    mapper = cm.ScalarMappable(norm=norm, cmap=my_map)
 
     test = 0
     p2 = 0
