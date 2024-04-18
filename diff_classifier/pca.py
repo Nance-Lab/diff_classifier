@@ -434,9 +434,9 @@ def build_model(rawdata, feature, featvals, equal_sampling=True,
         X = test[to_plot, :]
         y = rawdata[feature].values[to_plot]
 
-    if model is 'KNN':
+    if model == 'KNN':
         clf = neighbors.KNeighborsClassifier(kwargs['n_neighbors'])
-    elif model is 'MLP':
+    elif model == 'MLP':
         clf = MLPClassifier(solver=kwargs['NNsolver'], alpha=kwargs['NNalpha'],
                             hidden_layer_sizes=kwargs['NNhidden_layer'],
                             random_state=kwargs['NNrandom_state'])
@@ -636,7 +636,7 @@ def feature_plot_2D(dataset, label, features=[0, 1], lvals=['PEG', 'PS'],
         else:
             for key2 in features:
                 xy.append(tgroups[key][key2])
-        ax1 = plt.scatter(xy[0], xy[1], c=c, s=kwargs['dotsize'],
+        ax1 = plt.scatter(xy[0], xy[1], color=c, s=kwargs['dotsize'],
                           alpha=kwargs['alpha'], label=labels[counter])
         counter = counter + 1
 
@@ -752,7 +752,7 @@ def feature_plot_3D(dataset, label, features=[0, 1, 2], lvals=['PEG', 'PS'],
 
         acount = 0
         for ax in axes:
-            axes[ax].scatter(xy[0], xy[1], xy[2], c=c, s=kwargs['dotsize'], alpha=kwargs['alpha'])#, label=labels[counter])
+            axes[ax].scatter(xy[0], xy[1], xy[2], color=c, s=kwargs['dotsize'], alpha=kwargs['alpha'])#, label=labels[counter])
             if kwargs['xlim'] is not None:
                 axes[ax].set_xlim3d(kwargs['xlim'][0], kwargs['xlim'][1])
             if kwargs['ylim'] is not None:

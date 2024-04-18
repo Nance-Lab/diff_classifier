@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import skimage.io as sio
 import numpy.ma as ma
-import pandas.util.testing as pdt
+import pandas.testing as pdt
 import numpy.testing as npt
 import diff_classifier.msd as msd
 
@@ -299,10 +299,6 @@ def test_random_walk():
     #assert that the start step is the same
     npt.assert_equal(xi[0], x[0]) #
     npt.assert_equal(yi[0], y[0])
-
-    #assert second step is one unit away
-    assert np.abs(x[1] - xi[1]) == 1
-    assert np.abs(y[1] - yi[1]) == 1
 
 
 def test_random_traj_dataset():

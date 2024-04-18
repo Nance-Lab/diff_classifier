@@ -16,7 +16,7 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 import diff_classifier.aws as aws
-from scipy.ndimage.morphology import distance_transform_edt as eudist
+from scipy.ndimage import distance_transform_edt as eudist
 
 
 def nth_diff(dataframe, n=1, axis=0):
