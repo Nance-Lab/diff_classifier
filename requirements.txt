@@ -10,7 +10,7 @@ imglyb
 ipywidgets
 napari
 notebook
-numpy
+numpy==1.24.2
 pyimagej
 scikit-image
 matplotlib==3.7.1
