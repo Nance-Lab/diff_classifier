@@ -1,16 +1,1 @@
-language: python
-python:
-  - "3.5"
-install:
-  - pip install -e . --use-mirrors
-before_script:
-  - pip install -r requirements.txt --use-mirrors
-  - git clone https://github.com/ccurtis7/diff_classifier.git
-  - cd ./diff_classifier/diff_classifier/tests/
-script:
-  - py.test test_features.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
-  - py.test test_imagej.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
-  - py.test test_msd.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
-  - py.test test_utils.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
-after_success:
-  - coveralls
+!coverage.py: This is a private format, don't read it directly!{"arcs":{"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/__init__.py":[[-1,1],[1,-1]],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/knotlets.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/version.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/msd.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/__init__.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/features.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/aws.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/imagej.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/utils.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/due.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/pca.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/heatmaps.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/test_imagej.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/test_utils.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/test_features.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/test_aws.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/test_msd.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/test_heatmaps.py":[],"/Users/nelsschimek/Documents/nancelab/diff_classifier/diff_classifier/tests/test_pca.py":[]}}
