@@ -12,5 +12,5 @@ napari
 notebook
 numpy==1.24.2
 pyimagej
-scikit-image
+scikit-image==0.20.0
 matplotlib==3.7.1
