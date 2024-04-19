@@ -1,7 +1,7 @@
 ## diff_classifier
 [![status](http://joss.theoj.org/papers/003901de75c26c1dd3f060043249bc4f/status.svg)](http://joss.theoj.org/papers/003901de75c26c1dd3f060043249bc4f)
-[![Build Status](https://travis-ci.org/ccurtis7/diff_classifier.svg?branch=master)](https://travis-ci.org/ccurtis7/diff_classifier)
-[![Coverage Status](https://coveralls.io/repos/github/ccurtis7/diff_classifier/badge.svg)](https://coveralls.io/github/ccurtis7/diff_classifier)
+[![Tests](https://github.com/Nance-Lab/diff_classifier/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/Nance-Lab/diff_classifier/actions/workflows/python-package.yml)
+[![codecov](https://codecov.io/gh/Nance-Lab/diff_classifier/branch/master/graph/badge.svg?token=GKJQGMB080)](https://codecov.io/gh/Nance-Lab/diff_classifier)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/ccurtis7/diff_classifier.svg)](https://scrutinizer-ci.com/g/ccurtis7/diff_classifier/?branch=master)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/ccurtis7/diff_classifier.svg)](http://isitmaintained.com/project/ccurtis7/diff_classifier "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/ccurtis7/diff_classifier.svg)](http://isitmaintained.com/project/ccurtis7/diff_classifier "Percentage of issues still open")
