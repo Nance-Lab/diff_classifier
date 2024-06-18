@@ -1,6 +1,6 @@
 pytest==7.3.1
 pandas==1.5.3
-scikit-learn==1.2.2
+scikit-learn==1.5.0
 boto3
 shapely
 numpydoc
