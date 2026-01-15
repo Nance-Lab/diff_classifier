@@ -1,6 +1,6 @@
-pytest==7.3.1
-pandas==1.5.3
-scikit-learn==1.2.2
+pytest
+pandas
+scikit-learn
 boto3
 shapely
 numpydoc
@@ -10,7 +10,7 @@ imglyb
 ipywidgets
 napari
 notebook
-numpy==1.24.2
+numpy
 pyimagej
 scikit-image==0.20.0
 matplotlib==3.7.1
